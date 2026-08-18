@@ -31,4 +31,15 @@ final class ReminderPlannerTests: XCTestCase {
             [120, 60, 30, 10, 5]
         )
     }
+
+    func testNotificationCopyInterpolatesRemainingMinutes() {
+        XCTAssertEqual(
+            ParkingNotificationCopy.body(offsetMinutes: 15),
+            "15 minutes remain on your saved parking meter."
+        )
+        XCTAssertEqual(
+            ParkingNotificationCopy.body(offsetMinutes: 0),
+            "Your saved parking meter time has ended."
+        )
+    }
 }
