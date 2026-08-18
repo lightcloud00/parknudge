@@ -1,6 +1,6 @@
 # ParkNudge roadmap
 
-This roadmap separates implemented source from evidence that requires a physical device, Apple systems, public infrastructure, or release authority. Open GitHub issues are the execution queue after repository publication.
+This roadmap separates implemented source from evidence that requires a physical device, Apple systems, public infrastructure, or release authority. The [open GitHub issues](https://github.com/lightcloud00/parknudge/issues) are the execution queue; milestones group work by evidence gate.
 
 ## Local MVP implementation
 
@@ -18,39 +18,31 @@ This roadmap separates implemented source from evidence that requires a physical
 - [x] Privacy manifest, contextual permission copy, time-sensitive entitlement, no background modes
 - [x] Unit and simulator UI test sources
 - [x] Dependency-free static website, privacy, terms, support, roadmap, natural-search guides, JSON-LD, sitemap, and checker
+- [ ] Complete the deterministic full simulator, Release, audit, and CI gate ([#1](https://github.com/lightcloud00/parknudge/issues/1))
 
 ## Device and accessibility acceptance
 
-- [ ] Real GPS: authorized, denied, restricted, reduced accuracy, stale fix, and failure
-- [ ] Real camera capture and unavailable-camera behavior
-- [ ] Local notifications while foregrounded, backgrounded, and terminated
-- [ ] Focus and time-sensitive delivery behavior
-- [ ] VoiceOver reading/order/actions on every primary screen
-- [ ] Accessibility Extra Large, smaller and larger iPhones, light/dark, Reduce Motion
-- [ ] Apple Maps handoff and failure behavior on hardware
+- [ ] Real GPS states and Apple Maps handoff/failure behavior ([#2](https://github.com/lightcloud00/parknudge/issues/2))
+- [ ] Real camera capture, unavailable-camera behavior, and photo lifecycle ([#3](https://github.com/lightcloud00/parknudge/issues/3))
+- [ ] Notifications while foregrounded/backgrounded/terminated plus Focus and time-sensitive behavior ([#4](https://github.com/lightcloud00/parknudge/issues/4))
+- [ ] VoiceOver, Accessibility Extra Large, small/large iPhones, light/dark, and Reduce Motion ([#5](https://github.com/lightcloud00/parknudge/issues/5))
 
 ## Commerce and beta
 
-- [ ] Reserve the product identity and complete trademark review
-- [ ] Create `com.gusdigitalsolutions.parknudge.pro.lifetime` in App Store Connect
-- [ ] Configure localized non-consumable pricing using $9.99 as the U.S. reference
-- [ ] Apple Sandbox purchase, cancellation, pending, restore, refund, and revocation acceptance
-- [ ] Final support/privacy/terms contact and legal review
-- [ ] App Store privacy answers, age rating, metadata, and screenshot set
-- [ ] Signed archive, TestFlight upload, external beta, crash feedback, and go/no-go review
+- [ ] Reserve the product identity and complete trademark review ([#6](https://github.com/lightcloud00/parknudge/issues/6))
+- [ ] Configure the Lifetime Pro product, localized pricing, and every Apple Sandbox outcome ([#7](https://github.com/lightcloud00/parknudge/issues/7))
+- [ ] Finalize support/privacy/terms review, privacy answers, age rating, metadata, and screenshots ([#8](https://github.com/lightcloud00/parknudge/issues/8))
+- [ ] Create a signed archive and complete TestFlight beta installation, feedback, and go/no-go review ([#9](https://github.com/lightcloud00/parknudge/issues/9))
 
 ## Website launch
 
-- [ ] Acquire the selected domain; current `parknudge.app` references are candidates, not ownership proof
-- [ ] Deploy static site and verify HTTPS, canonical URLs, redirects, robots, and sitemap from the public edge
-- [ ] Connect Search Console after verified ownership and submit the sitemap
-- [ ] Replace GitHub-only beta support with the final support channel
+- [ ] Acquire the selected domain, replace candidate canonicals, and establish the final support channel ([#10](https://github.com/lightcloud00/parknudge/issues/10))
+- [ ] Deploy and verify HTTPS, redirects, canonical URLs, robots, sitemap, and Search Console from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
 
 ## v1.1 candidates
 
-- [ ] Live Activity for active meter status as a candidate Pro feature
-- [ ] Evaluate opt-in automatic parking suggestions for privacy, battery, and reliability
-- [ ] Validate demand before considering widgets or Apple Watch
+- [ ] Evaluate Live Activity for active meter status as a candidate Pro feature ([#12](https://github.com/lightcloud00/parknudge/issues/12))
+- [ ] Evaluate opt-in automatic parking suggestions, widgets, and Apple Watch only after demand, privacy, battery, and reliability validation ([#13](https://github.com/lightcloud00/parknudge/issues/13))
 
 ## Explicitly deferred
 
