@@ -149,6 +149,7 @@ struct ParkingEditorView: View {
                 LabeledContent("Captured accuracy", value: "±\(Int(draft.horizontalAccuracy.rounded())) m")
             } else {
                 LabeledContent("Location source", value: "Manual pin")
+                    .accessibilityIdentifier("manual-pin-source")
             }
         } header: {
             Text("Location")

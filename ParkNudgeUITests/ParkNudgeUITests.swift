@@ -22,7 +22,9 @@ final class ParkNudgeUITests: XCTestCase {
         let app = launch(extraArguments: ["-ui-test-location-denied"])
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.otherElements["parking-pin-map"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Manual pin"].exists)
+        XCTAssertTrue(
+            app.descendants(matching: .any)["manual-pin-source"].waitForExistence(timeout: 3)
+        )
     }
 
     @MainActor
