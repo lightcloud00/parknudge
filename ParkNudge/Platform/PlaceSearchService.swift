@@ -1,4 +1,4 @@
-import MapKit
+@preconcurrency import MapKit
 
 struct PlaceSuggestion: Identifiable, Equatable {
     let id = UUID()
