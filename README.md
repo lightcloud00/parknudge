@@ -10,7 +10,7 @@ The complete parking loop is free: one active spot, GPS/manual pin, place search
 
 Lifetime Pro is a planned one-time, non-subscription purchase with a $9.99 U.S. reference price. StoreKit's localized `displayPrice` is the only price rendered inside the app. Pro adds unlimited visible history, custom reminder presets, parking-cost records, and CSV export. Older history is never deleted when Pro is absent or revoked.
 
-See [MONETIZATION.md](Docs/MONETIZATION.md), [ROADMAP.md](Docs/ROADMAP.md), and the [GitHub execution queue](https://github.com/lightcloud00/parknudge/issues) for the exact boundary and remaining gates.
+See [MONETIZATION.md](Docs/MONETIZATION.md), [ROADMAP.md](Docs/ROADMAP.md), [REVENUE-ROADMAP.md](Docs/REVENUE-ROADMAP.md), [EXECUTION-PLAN.md](Docs/EXECUTION-PLAN.md), and the [GitHub execution queue](https://github.com/lightcloud00/parknudge/issues) for the exact boundary, implementation order, growth plan, and remaining gates.
 
 ## Stack
 

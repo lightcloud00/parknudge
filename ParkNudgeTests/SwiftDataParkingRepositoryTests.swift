@@ -4,20 +4,8 @@ import XCTest
 
 @MainActor
 final class SwiftDataParkingRepositoryTests: XCTestCase {
-    private var container: ModelContainer!
-    private var repository: SwiftDataParkingRepository!
-
-    override func setUpWithError() throws {
-        container = try ParkNudgeContainerFactory.make(inMemory: true)
-        repository = SwiftDataParkingRepository(container: container)
-    }
-
-    override func tearDown() {
-        repository = nil
-        container = nil
-    }
-
     func testOneActiveSessionInvariant() throws {
+        let (_, repository) = try makeRepository()
         try repository.create(TestFixtures.session())
         XCTAssertThrowsError(try repository.create(TestFixtures.session())) { error in
             XCTAssertEqual(error as? ParkingRepositoryError, .activeSessionExists)
@@ -26,6 +14,7 @@ final class SwiftDataParkingRepositoryTests: XCTestCase {
     }
 
     func testReplacementArchivesExistingAndKeepsOneActive() throws {
+        let (_, repository) = try makeRepository()
         let first = TestFixtures.session()
         let replacement = TestFixtures.session(startedAt: TestFixtures.date.addingTimeInterval(600))
         try repository.create(first)
@@ -41,6 +30,7 @@ final class SwiftDataParkingRepositoryTests: XCTestCase {
     }
 
     func testNewRepositoryContextReadsPersistedContainerState() throws {
+        let (container, repository) = try makeRepository()
         let session = TestFixtures.session()
         try repository.create(session)
 
@@ -49,6 +39,7 @@ final class SwiftDataParkingRepositoryTests: XCTestCase {
     }
 
     func testReminderReplacementAndDeleteCascade() throws {
+        let (container, repository) = try makeRepository()
         let session = TestFixtures.session(photoRelativePath: "Photos/test.jpg")
         try repository.create(session)
         let reminder = StoredReminder(
@@ -66,5 +57,10 @@ final class SwiftDataParkingRepositoryTests: XCTestCase {
         let context = ModelContext(container)
         XCTAssertEqual(try context.fetch(FetchDescriptor<ReminderRequestRecord>()).count, 0)
         XCTAssertEqual(try context.fetch(FetchDescriptor<PhotoMetadataRecord>()).count, 0)
+    }
+
+    private func makeRepository() throws -> (ModelContainer, SwiftDataParkingRepository) {
+        let container = try ParkNudgeContainerFactory.make(inMemory: true)
+        return (container, SwiftDataParkingRepository(container: container))
     }
 }

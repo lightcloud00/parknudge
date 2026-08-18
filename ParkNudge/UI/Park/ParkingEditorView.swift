@@ -38,7 +38,8 @@ struct ParkingEditorView: View {
         _draft = State(initialValue: context.draft)
         _meterEnabled = State(initialValue: context.draft.meterExpiresAt != nil)
         _costText = State(initialValue: ParkNudgeFormatting.decimalMoneyText(
-            minorUnits: context.draft.paidAmountMinor
+            minorUnits: context.draft.paidAmountMinor,
+            currencyCode: context.draft.currencyCode
         ))
         let center = CLLocationCoordinate2D(
             latitude: context.draft.coordinate.latitude,
@@ -334,7 +335,10 @@ struct ParkingEditorView: View {
     private func save() {
         let trimmedCost = costText.trimmingCharacters(in: .whitespacesAndNewlines)
         if model.hasAccess(to: .parkingCosts), !trimmedCost.isEmpty {
-            guard let amount = MoneyParser.minorUnits(from: trimmedCost) else {
+            guard let amount = MoneyParser.minorUnits(
+                from: trimmedCost,
+                currencyCode: draft.currencyCode
+            ) else {
                 validationMessage = "Enter a valid non-negative parking cost using your locale's decimal separator."
                 return
             }

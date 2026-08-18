@@ -25,17 +25,60 @@ final class CSVAndMoneyTests: XCTestCase {
 
     func testMoneyParsingUsesLocaleSeparatorAndBankersRounding() {
         XCTAssertEqual(
-            MoneyParser.minorUnits(from: "12.50", locale: Locale(identifier: "en_US")),
+            MoneyParser.minorUnits(
+                from: "12.50",
+                currencyCode: "USD",
+                locale: Locale(identifier: "en_US")
+            ),
             1_250
         )
         XCTAssertEqual(
-            MoneyParser.minorUnits(from: "12,50", locale: Locale(identifier: "de_DE")),
+            MoneyParser.minorUnits(
+                from: "12,50",
+                currencyCode: "EUR",
+                locale: Locale(identifier: "de_DE")
+            ),
             1_250
         )
         XCTAssertEqual(
-            MoneyParser.minorUnits(from: "1.005", locale: Locale(identifier: "en_US")),
+            MoneyParser.minorUnits(
+                from: "1.005",
+                currencyCode: "USD",
+                locale: Locale(identifier: "en_US")
+            ),
             100
         )
-        XCTAssertNil(MoneyParser.minorUnits(from: "-1", locale: Locale(identifier: "en_US")))
+        XCTAssertNil(MoneyParser.minorUnits(
+            from: "-1",
+            currencyCode: "USD",
+            locale: Locale(identifier: "en_US")
+        ))
+    }
+
+    func testMoneyParsingUsesCurrencySpecificMinorUnits() {
+        XCTAssertEqual(
+            MoneyParser.minorUnits(
+                from: "1250",
+                currencyCode: "JPY",
+                locale: Locale(identifier: "ja_JP")
+            ),
+            1_250
+        )
+        XCTAssertEqual(
+            MoneyParser.minorUnits(
+                from: "1.234",
+                currencyCode: "BHD",
+                locale: Locale(identifier: "en_US")
+            ),
+            1_234
+        )
+        XCTAssertEqual(
+            ParkNudgeFormatting.decimalMoneyText(
+                minorUnits: 1_234,
+                currencyCode: "BHD",
+                locale: Locale(identifier: "en_US")
+            ),
+            "1.234"
+        )
     }
 }

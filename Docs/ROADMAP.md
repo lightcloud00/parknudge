@@ -39,6 +39,23 @@ This roadmap separates implemented source from evidence that requires a physical
 - [ ] Acquire the selected domain, replace candidate canonicals, and establish the final support channel ([#10](https://github.com/lightcloud00/parknudge/issues/10))
 - [ ] Deploy and verify HTTPS, redirects, canonical URLs, robots, sitemap, and Search Console from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
 
+## Revenue foundation
+
+- [ ] Establish an aggregate App Store Connect and Search Console revenue scorecard without an app analytics SDK ([#14](https://github.com/lightcloud00/parknudge/issues/14))
+- [ ] Add a respectful contextual rating request after repeated successful sessions ([#15](https://github.com/lightcloud00/parknudge/issues/15))
+- [ ] Add and accept the promoted Lifetime Pro PurchaseIntent flow ([#18](https://github.com/lightcloud00/parknudge/issues/18))
+- [ ] Review the $9.99 price from real proceeds, conversion, refund, and value evidence ([#20](https://github.com/lightcloud00/parknudge/issues/20))
+- [ ] Establish a privacy-safe support and feature-demand feedback loop ([#24](https://github.com/lightcloud00/parknudge/issues/24))
+
+## Organic and paid growth gates
+
+- [ ] Run a controlled App Store product-page optimization test ([#16](https://github.com/lightcloud00/parknudge/issues/16))
+- [ ] Create intent-specific Find My Car, Meter Reminder, and Garage custom product pages ([#17](https://github.com/lightcloud00/parknudge/issues/17))
+- [ ] Localize one complete market at a time from territory and search evidence ([#19](https://github.com/lightcloud00/parknudge/issues/19))
+- [ ] Refresh parking-app and iOS trend evidence quarterly ([#21](https://github.com/lightcloud00/parknudge/issues/21))
+- [ ] Prepare a bounded Apple Ads experiment; activation requires separate spend approval ([#22](https://github.com/lightcloud00/parknudge/issues/22))
+- [ ] Expand SEO/AEO pages only from verified Search Console demand ([#23](https://github.com/lightcloud00/parknudge/issues/23))
+
 ## v1.1 candidates
 
 - [ ] Evaluate Live Activity for active meter status as a candidate Pro feature ([#12](https://github.com/lightcloud00/parknudge/issues/12))
@@ -47,3 +64,5 @@ This roadmap separates implemented source from evidence that requires a physical
 ## Explicitly deferred
 
 Motion/Bluetooth monitoring, CarPlay, iPad, CloudKit, accounts, municipal meter payments, subscriptions, ads, third-party analytics, and automatic release automation.
+
+See the [issue execution plan](EXECUTION-PLAN.md) for dependency order and proof requirements, and the [revenue roadmap](REVENUE-ROADMAP.md) for measurement, unit economics, growth experiments, and the August 2026 trend snapshot.

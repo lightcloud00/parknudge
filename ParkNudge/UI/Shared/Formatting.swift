@@ -10,18 +10,35 @@ enum ParkNudgeFormatting {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
-    static func money(minorUnits: Int64, currencyCode: String) -> String {
+    static func money(
+        minorUnits: Int64,
+        currencyCode: String,
+        locale: Locale = .current
+    ) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.locale = locale
         formatter.currencyCode = currencyCode
-        let decimal = NSDecimalNumber(value: minorUnits).dividing(by: NSDecimalNumber(value: 100))
+        let decimal = NSDecimalNumber(value: minorUnits).multiplying(
+            byPowerOf10: Int16(-MoneyParser.fractionDigits(currencyCode: currencyCode, locale: locale))
+        )
         return formatter.string(from: decimal) ?? "\(minorUnits) \(currencyCode)"
     }
 
-    static func decimalMoneyText(minorUnits: Int64?) -> String {
+    static func decimalMoneyText(
+        minorUnits: Int64?,
+        currencyCode: String,
+        locale: Locale = .current
+    ) -> String {
         guard let minorUnits else { return "" }
-        return NSDecimalNumber(value: minorUnits)
-            .dividing(by: NSDecimalNumber(value: 100))
-            .stringValue
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = locale
+        formatter.usesGroupingSeparator = false
+        let fractionDigits = MoneyParser.fractionDigits(currencyCode: currencyCode, locale: locale)
+        formatter.minimumFractionDigits = fractionDigits
+        formatter.maximumFractionDigits = fractionDigits
+        let decimal = NSDecimalNumber(value: minorUnits).multiplying(byPowerOf10: Int16(-fractionDigits))
+        return formatter.string(from: decimal) ?? decimal.stringValue
     }
 }

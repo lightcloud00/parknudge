@@ -42,22 +42,42 @@ enum ParkingCSVEncoder {
 }
 
 enum MoneyParser {
-    static func minorUnits(from text: String, locale: Locale = .current) -> Int64? {
+    static func fractionDigits(currencyCode: String, locale: Locale = .current) -> Int {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = locale
+        formatter.currencyCode = currencyCode
+        return max(0, formatter.maximumFractionDigits)
+    }
+
+    static func minorUnits(
+        from text: String,
+        currencyCode: String,
+        locale: Locale = .current
+    ) -> Int64? {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = locale
         formatter.generatesDecimalNumbers = true
+        formatter.isLenient = false
         guard let number = formatter.number(from: text),
               let decimal = number as? NSDecimalNumber,
               decimal.compare(NSDecimalNumber.zero) != .orderedAscending else { return nil }
-        let scaled = decimal.multiplying(byPowerOf10: 2)
-        return scaled.rounding(accordingToBehavior: NSDecimalNumberHandler(
+        let scaled = decimal.multiplying(
+            byPowerOf10: Int16(fractionDigits(currencyCode: currencyCode, locale: locale))
+        )
+        let rounded = scaled.rounding(accordingToBehavior: NSDecimalNumberHandler(
             roundingMode: .bankers,
             scale: 0,
             raiseOnExactness: false,
             raiseOnOverflow: false,
             raiseOnUnderflow: false,
             raiseOnDivideByZero: false
-        )).int64Value
+        ))
+        guard rounded != .notANumber,
+              rounded.compare(NSDecimalNumber(value: Int64.max)) != .orderedDescending else {
+            return nil
+        }
+        return rounded.int64Value
     }
 }
