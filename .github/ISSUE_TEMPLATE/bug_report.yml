@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible ParkNudge app or website defect without sharing private location data.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include coordinates, parking-history exports, purchase receipts, Apple ID details, or other private data."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observed and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: "1. Open…\n2. Tap…\n3. Observe…"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "iPhone model, iOS version, app build or website browser"
+    validations:
+      required: true
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility settings
+      description: Include VoiceOver, Dynamic Type, Reduce Motion, contrast, or appearance settings when relevant.

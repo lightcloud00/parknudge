@@ -1,0 +1,41 @@
+import XCTest
+@testable import ParkNudge
+
+final class CSVAndMoneyTests: XCTestCase {
+    func testRFC4180Escaping() {
+        XCTAssertEqual(ParkingCSVEncoder.escape("plain"), "plain")
+        XCTAssertEqual(ParkingCSVEncoder.escape("a,b"), "\"a,b\"")
+        XCTAssertEqual(ParkingCSVEncoder.escape("say \"hi\""), "\"say \"\"hi\"\"\"")
+        XCTAssertEqual(ParkingCSVEncoder.escape("a\nb"), "\"a\nb\"")
+    }
+
+    func testCSVHasCRLFAndOmitsPhotoPath() {
+        let session = TestFixtures.session(
+            endedAt: TestFixtures.date.addingTimeInterval(3_600),
+            photoRelativePath: "Photos/private.jpg"
+        )
+        let csv = ParkingCSVEncoder.encode([session])
+
+        XCTAssertTrue(csv.hasSuffix("\r\n"))
+        XCTAssertTrue(csv.contains("paid_amount_minor,currency_code"))
+        XCTAssertTrue(csv.contains("1250,USD"))
+        XCTAssertFalse(csv.contains("private.jpg"))
+        XCTAssertEqual(csv.components(separatedBy: "\r\n").count, 3)
+    }
+
+    func testMoneyParsingUsesLocaleSeparatorAndBankersRounding() {
+        XCTAssertEqual(
+            MoneyParser.minorUnits(from: "12.50", locale: Locale(identifier: "en_US")),
+            1_250
+        )
+        XCTAssertEqual(
+            MoneyParser.minorUnits(from: "12,50", locale: Locale(identifier: "de_DE")),
+            1_250
+        )
+        XCTAssertEqual(
+            MoneyParser.minorUnits(from: "1.005", locale: Locale(identifier: "en_US")),
+            100
+        )
+        XCTAssertNil(MoneyParser.minorUnits(from: "-1", locale: Locale(identifier: "en_US")))
+    }
+}

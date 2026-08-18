@@ -1,0 +1,107 @@
+name: ParkNudge
+options:
+  minimumXcodeGenVersion: 2.45.0
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    SWIFT_STRICT_CONCURRENCY: complete
+    CLANG_ENABLE_MODULES: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    SUPPORTS_MACCATALYST: NO
+targets:
+  ParkNudge:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: ParkNudge
+        excludes:
+          - Resources
+      - path: ParkNudge/Resources
+        buildPhase: resources
+        excludes:
+          - ParkNudge.storekit
+    entitlements:
+      path: ParkNudge/ParkNudge.entitlements
+      properties:
+        com.apple.developer.usernotifications.time-sensitive: true
+    attributes:
+      SystemCapabilities:
+        com.apple.InAppPurchase:
+          enabled: 1
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gusdigitalsolutions.parknudge
+        PRODUCT_NAME: ParkNudge
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: ParkNudge
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.navigation
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: Your location is used only when you save where you parked.
+        INFOPLIST_KEY_NSCameraUsageDescription: Take a photo to help remember where you parked.
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone:
+          - UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+  ParkNudgeTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: ParkNudgeTests
+      - path: ParkNudge/Resources/ParkNudge.storekit
+        buildPhase: resources
+    dependencies:
+      - target: ParkNudge
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gusdigitalsolutions.parknudge.tests
+        GENERATE_INFOPLIST_FILE: YES
+  ParkNudgeUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: ParkNudgeUITests
+    dependencies:
+      - target: ParkNudge
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.gusdigitalsolutions.parknudge.uitests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  ParkNudge:
+    build:
+      targets:
+        ParkNudge: all
+        ParkNudgeTests: [test]
+        ParkNudgeUITests: [test]
+    run:
+      config: Debug
+      storeKitConfiguration: ParkNudge/Resources/ParkNudge.storekit
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - name: ParkNudgeTests
+        - name: ParkNudgeUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

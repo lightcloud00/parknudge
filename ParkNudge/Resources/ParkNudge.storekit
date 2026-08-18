@@ -1,0 +1,41 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "5B4D9D47",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "A9F17101",
+      "localizations" : [
+        {
+          "description" : "Unlock unlimited history, custom reminders, parking costs, and CSV export.",
+          "displayName" : "ParkNudge Lifetime Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.gusdigitalsolutions.parknudge.pro.lifetime",
+      "referenceName" : "ParkNudge Lifetime Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA"
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

@@ -1,0 +1,11 @@
+.DS_Store
+DerivedData/
+build/
+.build/
+*.xcresult
+*.xccheckout
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.site-preview/
+site/.cache/
