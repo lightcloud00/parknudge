@@ -43,9 +43,11 @@ The static site targets three human questions with dedicated visible pages:
 
 The homepage uses descriptive title and heading copy, visible concise answers, internal links, `SoftwareApplication` and `FAQPage` JSON-LD, a sitemap, and robots file. Google recommends descriptive, concise title text and requires structured data to match visible page content: [title link guidance](https://developers.google.com/search/docs/appearance/title-link) and [software app structured data](https://developers.google.com/search/docs/appearance/structured-data/software-app).
 
+The product-owned [search-engine handoff](SEARCH-ENGINE.md) registers ParkNudge in the shared Google/Bing Engine without inventing a separate product. It records provider states and the distinction between source readiness, deployment, property verification, submission, indexing, observed search demand, and revenue.
+
 ## Before public use
 
 1. Complete trademark review in relevant markets.
 2. Recheck App Store, search-engine, social-handle, GitHub, and domain collisions.
 3. Acquire the selected domain.
-4. Replace or confirm candidate canonical URLs, then deploy and verify HTTPS, redirects, sitemap, and Search Console.
+4. Replace or confirm candidate canonical URLs, then deploy and verify HTTPS, redirects, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow receipts under issues #11 and #25.

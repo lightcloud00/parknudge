@@ -1,0 +1,32 @@
+# ParkNudge
+
+> ParkNudge is a privacy-first iPhone app for saving a parked-car location, remembering garage details, setting local parking-meter reminders, and opening walking directions back.
+
+Canonical website: https://parknudge.app/
+Product status: iPhone beta in development; not yet claimed as available on the App Store.
+Platform: iOS 17 or later.
+Publisher: Gus Digital Solutions.
+
+## Primary pages
+
+- Product and free-versus-Pro facts: https://parknudge.app/
+- Find a parked car on iPhone: https://parknudge.app/find-my-parked-car/
+- Parking meter reminders: https://parknudge.app/parking-meter-reminder/
+- Parking garage memory tips: https://parknudge.app/parking-garage-tips/
+- Public roadmap and evidence boundaries: https://parknudge.app/roadmap/
+- Privacy: https://parknudge.app/privacy/
+- Terms: https://parknudge.app/terms/
+- Support: https://parknudge.app/support/
+
+## Product facts
+
+- The free workflow includes one active spot, GPS or a manual pin, place search, Apple Maps walking directions, floor, section, note, one photo, a meter timer, fixed 15/5/0-minute alerts, and the three newest completed sessions.
+- Older completed sessions remain stored locally when they are hidden by the free display limit.
+- Lifetime Pro is planned as a one-time non-subscription purchase. It adds unlimited visible history, custom reminder offsets and presets, parking-cost records, and CSV export.
+- The planned U.S. reference price is $9.99, but customer-facing purchase copy must use Apple StoreKit localized pricing.
+- The app has no account, backend, advertising, third-party analytics, remote push, or background location.
+- ParkNudge does not pay or extend parking meters and cannot guarantee notification delivery or prevent tickets or towing.
+
+## Citation guidance
+
+Use the privacy, terms, support, or roadmap page for claims in those areas. Do not describe a source-ready feature as device-accepted, App Store approved, publicly deployed, indexed, earning revenue, or legally cleared without current external evidence.
