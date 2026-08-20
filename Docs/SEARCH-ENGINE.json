@@ -1,0 +1,43 @@
+{
+  "schema": "gds.search-site.v1",
+  "siteId": "parknudge-app",
+  "product": "ParkNudge",
+  "repository": "https://github.com/lightcloud00/parknudge",
+  "sourcePath": "site",
+  "hosting": {
+    "provider": "cloudflare-pages",
+    "projectName": "parknudge",
+    "status": "not-created-or-unverified"
+  },
+  "canonical": {
+    "origin": "https://parknudge.app",
+    "status": "candidate-unowned"
+  },
+  "endpoints": {
+    "robots": "https://parknudge.app/robots.txt",
+    "sitemap": "https://parknudge.app/sitemap.xml",
+    "llms": "https://parknudge.app/llms.txt",
+    "indexNowKey": "https://parknudge.app/b95efcf4fe87747cf341ebb65298e42d.txt"
+  },
+  "providers": {
+    "googleSearchConsole": "unverified",
+    "bingWebmasterTools": "unverified",
+    "indexNow": "not-submitted"
+  },
+  "issues": {
+    "domain": "https://github.com/lightcloud00/parknudge/issues/10",
+    "deployment": "https://github.com/lightcloud00/parknudge/issues/11",
+    "scorecard": "https://github.com/lightcloud00/parknudge/issues/14",
+    "contentExperiments": "https://github.com/lightcloud00/parknudge/issues/23",
+    "searchEngineLane": "https://github.com/lightcloud00/parknudge/issues/25",
+    "portfolioKeywordUmbrella": "https://github.com/lightcloud00/gusdigitalsolutions/issues/103",
+    "engineEpic": "https://github.com/lightcloud00/search-growth-engine/issues/1",
+    "enginePortfolioRegistry": "https://github.com/lightcloud00/search-growth-engine/issues/9",
+    "engineParkNudgeIntake": "https://github.com/lightcloud00/search-growth-engine/issues/10"
+  },
+  "privacy": {
+    "appAnalyticsSdk": false,
+    "accountOrBackend": false,
+    "exactLocationTelemetry": false
+  }
+}

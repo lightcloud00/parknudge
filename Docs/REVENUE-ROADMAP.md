@@ -41,7 +41,7 @@ Exit gate: deterministic verification, device/accessibility acceptance, identity
 
 - Verification and device gates: [#1](https://github.com/lightcloud00/parknudge/issues/1)–[#5](https://github.com/lightcloud00/parknudge/issues/5)
 - Identity, commerce, metadata, and beta: [#6](https://github.com/lightcloud00/parknudge/issues/6)–[#9](https://github.com/lightcloud00/parknudge/issues/9)
-- Domain and website launch: [#10](https://github.com/lightcloud00/parknudge/issues/10)–[#11](https://github.com/lightcloud00/parknudge/issues/11)
+- Domain and website launch: [#10](https://github.com/lightcloud00/parknudge/issues/10)–[#11](https://github.com/lightcloud00/parknudge/issues/11), with the shared Google/Bing Engine handoff in [#25](https://github.com/lightcloud00/parknudge/issues/25)
 
 No revenue projection is promoted until these evidence gates are complete.
 
@@ -58,7 +58,7 @@ Exit gate: the sources and definitions are documented, the purchase path is acce
 
 - [#16](https://github.com/lightcloud00/parknudge/issues/16): test one App Store product-page variable at a time.
 - [#17](https://github.com/lightcloud00/parknudge/issues/17): align custom product pages to Find My Car, Meter Reminder, and Garage intent.
-- [#23](https://github.com/lightcloud00/parknudge/issues/23): expand SEO/AEO pages only from verified Search Console demand.
+- [#23](https://github.com/lightcloud00/parknudge/issues/23): expand SEO/AEO pages only from verified Google Search Console and Bing Webmaster query demand.
 - [#19](https://github.com/lightcloud00/parknudge/issues/19): localize one complete market at a time from territory evidence.
 
 Apple's Product Page Optimization supports controlled creative treatments and labels better/worse results at 90% confidence. Custom product pages can vary screenshots, promotional text, previews, and keywords for distinct audiences. Sources: [Product Page Optimization](https://developer.apple.com/help/app-store-connect-analytics/acquisition/product-page-optimization/), [Custom Product Pages](https://developer.apple.com/app-store/custom-product-pages/).

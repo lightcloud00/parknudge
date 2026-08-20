@@ -10,7 +10,7 @@ The complete parking loop is free: one active spot, GPS/manual pin, place search
 
 Lifetime Pro is a planned one-time, non-subscription purchase with a $9.99 U.S. reference price. StoreKit's localized `displayPrice` is the only price rendered inside the app. Pro adds unlimited visible history, custom reminder presets, parking-cost records, and CSV export. Older history is never deleted when Pro is absent or revoked.
 
-See [MONETIZATION.md](Docs/MONETIZATION.md), [ROADMAP.md](Docs/ROADMAP.md), [REVENUE-ROADMAP.md](Docs/REVENUE-ROADMAP.md), [EXECUTION-PLAN.md](Docs/EXECUTION-PLAN.md), and the [GitHub execution queue](https://github.com/lightcloud00/parknudge/issues) for the exact boundary, implementation order, growth plan, and remaining gates.
+See [MONETIZATION.md](Docs/MONETIZATION.md), [ROADMAP.md](Docs/ROADMAP.md), [REVENUE-ROADMAP.md](Docs/REVENUE-ROADMAP.md), [EXECUTION-PLAN.md](Docs/EXECUTION-PLAN.md), [SEARCH-ENGINE.md](Docs/SEARCH-ENGINE.md), and the [GitHub execution queue](https://github.com/lightcloud00/parknudge/issues) for the exact boundary, implementation order, search-growth handoff, and remaining gates.
 
 ## Stack
 
@@ -40,7 +40,7 @@ To preview the website locally:
 python3 -m http.server 8080 --directory site
 ```
 
-Then visit `http://localhost:8080`. The `parknudge.app` canonical URL is a candidate only until the domain is acquired and deployment is verified.
+Then visit `http://localhost:8080`. The `parknudge.app` canonical URL and `parknudge` Cloudflare Pages project name are candidates only until the domain is acquired and the public deployment is verified. The source includes a real 404 page, path-normalization redirects, crawler files, `llms.txt`, an IndexNow verification file, and a provider-neutral search-engine manifest; none is provider or indexing proof by itself.
 
 ## Repository map
 

@@ -18,7 +18,8 @@ This roadmap separates implemented source from evidence that requires a physical
 - [x] Privacy manifest, contextual permission copy, time-sensitive entitlement, no background modes
 - [x] Unit and simulator UI test sources
 - [x] Dependency-free static website, privacy, terms, support, roadmap, natural-search guides, JSON-LD, sitemap, and checker
-- [ ] Complete the deterministic full simulator, Release, audit, and CI gate ([#1](https://github.com/lightcloud00/parknudge/issues/1))
+- [x] Cloudflare-ready 404/redirect assets, crawler/LLM/IndexNow files, and provider-neutral search-engine handoff
+- [x] Deterministic full simulator, Release, audit, and exact-head CI gate ([#1](https://github.com/lightcloud00/parknudge/issues/1))
 
 ## Device and accessibility acceptance
 
@@ -37,7 +38,8 @@ This roadmap separates implemented source from evidence that requires a physical
 ## Website launch
 
 - [ ] Acquire the selected domain, replace candidate canonicals, and establish the final support channel ([#10](https://github.com/lightcloud00/parknudge/issues/10))
-- [ ] Deploy and verify HTTPS, redirects, canonical URLs, robots, sitemap, and Search Console from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
+- [ ] Deploy and verify HTTPS, redirects, canonical URLs, robots, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
+- [ ] Complete the shared Google/Bing Engine lane and record merged, provider, query-baseline, Obsidian, and Hindsight evidence ([#25](https://github.com/lightcloud00/parknudge/issues/25))
 
 ## Revenue foundation
 
@@ -54,7 +56,7 @@ This roadmap separates implemented source from evidence that requires a physical
 - [ ] Localize one complete market at a time from territory and search evidence ([#19](https://github.com/lightcloud00/parknudge/issues/19))
 - [ ] Refresh parking-app and iOS trend evidence quarterly ([#21](https://github.com/lightcloud00/parknudge/issues/21))
 - [ ] Prepare a bounded Apple Ads experiment; activation requires separate spend approval ([#22](https://github.com/lightcloud00/parknudge/issues/22))
-- [ ] Expand SEO/AEO pages only from verified Search Console demand ([#23](https://github.com/lightcloud00/parknudge/issues/23))
+- [ ] Expand SEO/AEO pages only from verified Google and Bing query demand ([#23](https://github.com/lightcloud00/parknudge/issues/23))
 
 ## v1.1 candidates
 
@@ -65,4 +67,4 @@ This roadmap separates implemented source from evidence that requires a physical
 
 Motion/Bluetooth monitoring, CarPlay, iPad, CloudKit, accounts, municipal meter payments, subscriptions, ads, third-party analytics, and automatic release automation.
 
-See the [issue execution plan](EXECUTION-PLAN.md) for dependency order and proof requirements, and the [revenue roadmap](REVENUE-ROADMAP.md) for measurement, unit economics, growth experiments, and the August 2026 trend snapshot.
+See the [issue execution plan](EXECUTION-PLAN.md) for dependency order and proof requirements, the [revenue roadmap](REVENUE-ROADMAP.md) for measurement and growth experiments, and the [search-engine handoff](SEARCH-ENGINE.md) for the shared Google/Bing Engine contract.

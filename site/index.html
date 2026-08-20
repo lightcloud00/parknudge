@@ -9,7 +9,13 @@
   <meta property="og:title" content="ParkNudge — Your parking spot and meter reminder">
   <meta property="og:description" content="A private iPhone parking reminder that keeps your spot, meter time, notes, photo, costs, and history on-device.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://parknudge.app/">
   <meta property="og:image" content="https://parknudge.app/assets/app-icon.png">
+  <meta property="og:site_name" content="ParkNudge">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ParkNudge — Find your parked car and remember the meter">
+  <meta name="twitter:description" content="Save a corrected parking pin, garage details, and local meter reminders without background tracking.">
+  <meta name="twitter:image" content="https://parknudge.app/assets/app-icon.png">
   <link rel="canonical" href="https://parknudge.app/">
   <link rel="icon" href="assets/app-icon.png">
   <link rel="stylesheet" href="assets/styles.css">
@@ -28,6 +34,27 @@
       "priceCurrency": "USD",
       "description": "Free core parking workflow with an optional Lifetime Pro in-app purchase."
     }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://parknudge.app/#publisher",
+        "name": "Gus Digital Solutions",
+        "url": "https://parknudge.app/"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://parknudge.app/#website",
+        "name": "ParkNudge",
+        "url": "https://parknudge.app/",
+        "publisher": {"@id": "https://parknudge.app/#publisher"},
+        "inLanguage": "en-US"
+      }
+    ]
   }
   </script>
   <script type="application/ld+json">
@@ -60,7 +87,7 @@
           <a class="button primary" href="roadmap/">See the beta roadmap</a>
           <a class="button" href="#how">How it works</a>
         </div>
-        <p class="fine">iPhone beta in development. App Store release and domain launch are not yet complete.</p>
+        <p class="fine">iPhone beta in development. The source is simulator-verified; App Store release, domain ownership, and public website launch are not yet complete.</p>
       </div>
       <div class="icon-stage"><img class="app-icon" src="assets/app-icon.png" width="1024" height="1024" alt="ParkNudge app icon: a car, location pin, and reminder clock"></div>
     </section>
