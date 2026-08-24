@@ -25,6 +25,37 @@ enum ProFeature: String, CaseIterable, Identifiable, Sendable {
         case .csvExport: "square.and.arrow.up"
         }
     }
+
+    /// Shorter wording for the paywall's comparison rows, where the feature
+    /// name sits beside two narrow columns.
+    var comparisonTitle: String {
+        switch self {
+        case .fullHistory: "Finished sessions shown"
+        case .customReminders: "Meter reminders"
+        case .parkingCosts: "Parking cost records"
+        case .csvExport: "CSV export"
+        }
+    }
+
+    /// What free already gives for this feature, or `nil` when free gives
+    /// nothing. Derived from the policies themselves so the paywall cannot
+    /// drift away from what the app actually enforces.
+    var freeAllowance: String? {
+        switch self {
+        case .fullHistory: "\(FeatureAccessPolicy.freeHistoryLimit)"
+        case .customReminders: ReminderPlanner.freeOffsets.map(String.init).joined(separator: "/")
+        case .parkingCosts, .csvExport: nil
+        }
+    }
+
+    /// The Pro column's wording, or `nil` for a plain checkmark.
+    var proAllowance: String? {
+        switch self {
+        case .fullHistory: "All"
+        case .customReminders: "Yours"
+        case .parkingCosts, .csvExport: nil
+        }
+    }
 }
 enum EntitlementState: Equatable, Sendable {
     case loading

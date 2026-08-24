@@ -32,6 +32,10 @@ struct ParkingEditorView: View {
     @State private var mapPosition: MapCameraPosition
 
     private let context: ParkingEditorContext
+    /// `ReminderPlanner.plans` needs a session id to build notification
+    /// identifiers. The preview only reads the fire dates, so any stable id
+    /// does.
+    private let draftReminderPreviewID = UUID()
 
     init(context: ParkingEditorContext) {
         self.context = context
@@ -126,14 +130,14 @@ struct ParkingEditorView: View {
                         Image(systemName: "car.circle.fill")
                             .font(.system(size: 38))
                             .symbolRenderingMode(.palette)
-                            .foregroundStyle(.white, .orange)
+                            .foregroundStyle(.white, Theme.brand)
                             .shadow(radius: 4)
                     }
                 }
                 .mapStyle(.standard(elevation: .realistic))
                 .mapControls { MapCompass(); MapScaleView() }
                 .frame(height: 260)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.radiusTile))
                 .onTapGesture { point in
                     guard let coordinate = proxy.convert(point, from: .local) else { return }
                     setCoordinate(coordinate, source: .manualPin)
@@ -230,11 +234,7 @@ struct ParkingEditorView: View {
                     in: Date().addingTimeInterval(60)...,
                     displayedComponents: [.date, .hourAndMinute]
                 )
-                Text(model.entitlement.isPro
-                     ? "Using your custom reminder presets."
-                     : "Free reminders arrive 15 minutes, 5 minutes, and at expiry when those times are still in the future.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                reminderPreview
             }
         } header: {
             Text("Meter")
@@ -250,7 +250,7 @@ struct ParkingEditorView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(maxHeight: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.radiusTile))
                     .accessibilityLabel("Selected parking photo")
             }
 
@@ -304,6 +304,48 @@ struct ParkingEditorView: View {
         } footer: {
             Text("Cost records stay on this iPhone and are included in Pro CSV exports.")
         }
+    }
+
+    /// The reminders this meter would really schedule, at real clock times.
+    ///
+    /// The previous copy described the free offsets in prose, which was
+    /// silently wrong whenever a warning time had already passed —
+    /// `ReminderPlanner.plans` drops those, so a meter set for eight minutes
+    /// from now schedules one reminder, not three. Showing the planner's own
+    /// output cannot drift from what gets scheduled.
+    @ViewBuilder
+    private var reminderPreview: some View {
+        let plans = ReminderPlanner.plans(
+            sessionID: draftReminderPreviewID,
+            expiry: draft.meterExpiresAt ?? Date(),
+            offsets: model.reminderOffsets,
+            now: Date()
+        )
+
+        if draft.meterExpiresAt == nil {
+            EmptyView()
+        } else if plans.isEmpty {
+            Label(
+                "No reminders — every warning time is already in the past.",
+                systemImage: "bell.slash"
+            )
+            .font(.footnote)
+            .foregroundStyle(Theme.brandInk)
+        } else {
+            Label {
+                Text("You'll be nudged at \(Self.clockList(plans.map(\.fireDate))).")
+            } icon: {
+                Image(systemName: "bell.badge")
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+        }
+    }
+
+    private static func clockList(_ dates: [Date]) -> String {
+        let times = dates.map { $0.formatted(date: .omitted, time: .shortened) }
+        guard times.count > 1 else { return times.first ?? "" }
+        return times.dropLast().joined(separator: ", ") + " and " + (times.last ?? "")
     }
 
     private var mapCoordinate: CLLocationCoordinate2D {

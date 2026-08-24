@@ -50,10 +50,22 @@ struct SettingsView: View {
                     model.isPaywallPresented = true
                 } label: {
                     HStack {
-                        Label("Lifetime Pro", systemImage: "sparkles")
+                        Label {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Lifetime Pro")
+                                Text("One-time purchase")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "sparkles")
+                                .foregroundStyle(Theme.brand)
+                        }
                         Spacer()
                         if let price = model.lifetimeProduct?.displayPrice {
-                            Text(price).foregroundStyle(.secondary)
+                            Text(price)
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -74,9 +86,17 @@ struct SettingsView: View {
             if model.hasAccess(to: .customReminders) {
                 ReminderPresetEditor(settings: model.settings)
             } else {
-                LabeledContent("Free reminders", value: "15 / 5 / 0 min")
+                LabeledContent(
+                    "Free reminders",
+                    value: ReminderPlanner.freeOffsets.map(String.init).joined(separator: " / ") + " min"
+                )
                 Button { model.requestAccess(to: .customReminders) } label: {
-                    Label("Customize with Pro", systemImage: "lock.fill")
+                    Label {
+                        Text("Customize with Pro")
+                    } icon: {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(Theme.brandInk)
+                    }
                 }
             }
         } header: {

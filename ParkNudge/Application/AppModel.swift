@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import UIKit
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -24,6 +25,7 @@ final class AppModel: ObservableObject {
     private let clock: Clock
     private var entitlementTask: Task<Void, Never>?
     private var hasBootstrapped = false
+    private let thumbnailCache = NSCache<NSString, UIImage>()
 
     init(
         repository: ParkingRepository,
@@ -282,7 +284,39 @@ final class AppModel: ObservableObject {
         return photos.load(relativePath: path)
     }
 
-    private var reminderOffsets: [Int] {
+    /// A small square for History rows.
+    ///
+    /// Stored photos are up to 1600 px, and a `List` re-renders its rows
+    /// freely, so decoding the full JPEG per row is not affordable. `updatedAt`
+    /// is part of the key: replacing a photo reuses the same relative path but
+    /// always bumps that date, which retires the stale entry without any
+    /// separate invalidation.
+    func thumbnail(for session: ParkingSession, edge: CGFloat = 120) -> UIImage? {
+        guard let path = session.photoRelativePath else { return nil }
+        let key = "\(path)@\(Int(edge))@\(session.updatedAt.timeIntervalSince1970)" as NSString
+        if let cached = thumbnailCache.object(forKey: key) { return cached }
+        guard let data = photos.load(relativePath: path), let source = UIImage(data: data) else {
+            return nil
+        }
+
+        let side = CGSize(width: edge, height: edge)
+        let rendered = UIGraphicsImageRenderer(size: side).image { _ in
+            let scale = max(edge / max(source.size.width, 1), edge / max(source.size.height, 1))
+            let filled = CGSize(width: source.size.width * scale, height: source.size.height * scale)
+            source.draw(in: CGRect(
+                x: (edge - filled.width) / 2,
+                y: (edge - filled.height) / 2,
+                width: filled.width,
+                height: filled.height
+            ))
+        }
+        thumbnailCache.setObject(rendered, forKey: key)
+        return rendered
+    }
+
+    /// The offsets a meter saved right now would actually schedule. Exposed so
+    /// the editor can show the real reminder times instead of describing them.
+    var reminderOffsets: [Int] {
         entitlement.isPro ? settings.customReminderOffsets : ReminderPlanner.freeOffsets
     }
 
