@@ -220,7 +220,7 @@ struct ParkView: View {
                     .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget - 16)
             }
             .buttonStyle(.bordered)
-            .tint(Theme.brand)
+            .tint(Theme.brandInk)
 
             Button(role: .destructive) { confirmsFinish = true } label: {
                 Label("Finish", systemImage: "checkmark.circle")
@@ -230,7 +230,7 @@ struct ParkView: View {
             // The destructive role alone loses to the TabView's brand tint,
             // so Finish rendered in the same orange as Directions and Edit —
             // three identical-looking buttons, one of which ends the session.
-            .tint(.red)
+            .tint(Theme.alertInk)
             .accessibilityIdentifier("finish-parking")
         }
     }

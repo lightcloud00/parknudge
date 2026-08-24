@@ -102,7 +102,7 @@ struct PaywallView: View {
                 }
                 .padding()
             }
-            .tint(Theme.brand)
+            .tint(Theme.brandInk)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Image(systemName: "xmark") }

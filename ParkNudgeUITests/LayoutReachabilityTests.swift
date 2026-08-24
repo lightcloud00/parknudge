@@ -66,7 +66,10 @@ final class LayoutReachabilityTests: XCTestCase {
         )
 
         app.tabBars.buttons["Settings"].tap()
-        XCTAssertTrue(app.staticTexts["Version"].waitForExistence(timeout: 5))
+        // Not `staticTexts["Version"]`: a `LabeledContent` row is one
+        // accessibility element carrying label *and* value, so the bare title
+        // never matches. A button is the stable thing to assert on.
+        assertReachable(app.buttons["Restore Purchases"], "Settings restore button")
     }
 
     // MARK: - Helpers
