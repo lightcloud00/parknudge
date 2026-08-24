@@ -61,3 +61,13 @@ protocol CSVExporting: AnyObject {
     func makeExport(sessions: [ParkingSession]) throws -> URL
     func cleanupTemporaryExports()
 }
+
+/// Asks the system to consider showing its rating prompt.
+///
+/// Deliberately returns nothing. StoreKit decides whether the prompt appears,
+/// and never tells the app — so there is no outcome here to report, log, or
+/// branch on, and any such signal would be fabricated.
+@MainActor
+protocol ReviewRequesting: AnyObject {
+    func requestReview()
+}

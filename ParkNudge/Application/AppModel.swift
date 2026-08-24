@@ -22,6 +22,7 @@ final class AppModel: ObservableObject {
     private let purchases: PurchaseProviding
     private let exporter: CSVExporting
     private let photos: PhotoStoring
+    private let reviews: ReviewRequesting
     private let clock: Clock
     private var entitlementTask: Task<Void, Never>?
     private var hasBootstrapped = false
@@ -36,6 +37,11 @@ final class AppModel: ObservableObject {
         exporter: CSVExporting,
         photos: PhotoStoring,
         settings: AppSettings,
+        // Deliberately not defaulted. A default argument here would construct a
+        // `@MainActor` type from a nonisolated context — which the target's
+        // settings happen to accept, but which makes every caller's dependency
+        // implicit and trips any stricter check.
+        reviews: ReviewRequesting,
         clock: Clock
     ) {
         self.repository = repository
@@ -46,6 +52,7 @@ final class AppModel: ObservableObject {
         self.exporter = exporter
         self.photos = photos
         self.settings = settings
+        self.reviews = reviews
         self.clock = clock
     }
 
@@ -166,9 +173,37 @@ final class AppModel: ObservableObject {
                 requestedProFeature = nil
                 isPaywallPresented = true
             }
+            considerRequestingReview()
         } catch {
             alertMessage = error.localizedDescription
         }
+    }
+
+    /// Considers asking for an App Store rating, after a session the user
+    /// finished successfully.
+    ///
+    /// Evaluated *after* the first-completion paywall has had its say, so the
+    /// paywall flag it reads is the current one — asking for a rating while a
+    /// purchase sheet is going up is exactly the pressure the policy forbids.
+    private func considerRequestingReview() {
+        let context = ReviewPromptContext(
+            completedSessionCount: completedSessions.count,
+            lastRequestedVersion: settings.lastReviewRequestVersion,
+            currentVersion: Self.marketingVersion,
+            hasActiveAlert: alertMessage != nil,
+            isPaywallPresented: isPaywallPresented,
+            // `finishActive` holds `isBusy` for its whole body, so this is read
+            // as "is anything *else* in flight" from the policy's point of view.
+            isBusy: false
+        )
+        guard ReviewPromptPolicy.shouldRequest(context) else { return }
+
+        settings.lastReviewRequestVersion = Self.marketingVersion
+        reviews.requestReview()
+    }
+
+    static var marketingVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
     }
 
     func delete(_ session: ParkingSession) async {

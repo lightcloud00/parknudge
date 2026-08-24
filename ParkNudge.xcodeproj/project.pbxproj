@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0735C9E7FA35A18B5A6EB3FD /* ReviewPromptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B416813A621E5C755EE0C0B0 /* ReviewPromptPolicy.swift */; };
 		0D40C197944341BE5CF4FCEE /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2304928308586BD34F76033E /* AppSettings.swift */; };
 		0F98DAB48CE337DFF9005C37 /* ParkNudgeSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */; };
 		22663C721723824158F78C70 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1562DDDBE12B6F70CD7EEB74 /* PrivacyInfo.xcprivacy */; };
@@ -33,6 +34,7 @@
 		81A74E53AE99E5C08E08D971 /* ParkNudgeTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF8FAB5780831FA258A0E45 /* ParkNudgeTheme.swift */; };
 		831EDCA3232FABD9C48C19CD /* ParkingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */; };
 		881712E7C5C982F61EE99A89 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193EF026C7D109DF426DBB98 /* TestFixtures.swift */; };
+		8CBC18810AB9699F161430F6 /* ReviewRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A184EAAC5CA4FB586B97DB /* ReviewRequester.swift */; };
 		94D33FC8B5250A9B6577053F /* SwiftDataParkingRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */; };
 		97906D19862442D700B89768 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A493D05EE1EF49A061A6151 /* LocationService.swift */; };
 		9DA6BE54D4B984CBA4F93E54 /* ParkNudge.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D5C278146C7DD473E256D402 /* ParkNudge.storekit */; };
@@ -42,7 +44,9 @@
 		A38A36DC5E9795FC66CF40D2 /* MeterStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DAC73BE4A04DBDC5AF973C /* MeterStateTests.swift */; };
 		B2D2F88B69AACF1FD4E6DA5C /* DirectionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B815C7ECEF83FB654AA6B7 /* DirectionsService.swift */; };
 		C39BD4D7287322E4EA4BB8FD /* ParkingEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275830D0C012ACD3A2420118 /* ParkingEditorView.swift */; };
+		C4C237BBC9F1653BF8A87C26 /* LayoutReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905DE64737FA004246B8E24C /* LayoutReachabilityTests.swift */; };
 		D23BF9E7CA93597B8434D0F2 /* MeterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8C61F50D93EDD27A912FA8 /* MeterState.swift */; };
+		D3672089E80290ADB26AED01 /* ReviewPromptPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */; };
 		D4873D443D4B1B74A7D7A2E6 /* ReminderPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */; };
 		D58A95D195922C5942073A47 /* CommerceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5979F5EACD343FD04685AF /* CommerceModels.swift */; };
 		E7A35EC0420000C91123C024 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77214E081DE879A62D84879E /* SettingsView.swift */; };
@@ -89,6 +93,7 @@
 		62FF803E4A990B88DDAD018E /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
 		67F41A0705254D59FBD77B5E /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		6C1409804DA02D694FEF00A7 /* ParkNudgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkNudgeApp.swift; sourceTree = "<group>"; };
+		6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPromptPolicyTests.swift; sourceTree = "<group>"; };
 		6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataParkingRepositoryTests.swift; sourceTree = "<group>"; };
 		70C995C6A5BB423CA24EA756 /* ParkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkView.swift; sourceTree = "<group>"; };
 		71C2678EB2B7CC58A6BEEE3B /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
@@ -98,11 +103,14 @@
 		7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkNudgeSchema.swift; sourceTree = "<group>"; };
 		815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingCoordinator.swift; sourceTree = "<group>"; };
 		8F8C61F50D93EDD27A912FA8 /* MeterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterState.swift; sourceTree = "<group>"; };
+		905DE64737FA004246B8E24C /* LayoutReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutReachabilityTests.swift; sourceTree = "<group>"; };
 		94D8FAEF4939019BD10C3A50 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		96A184EAAC5CA4FB586B97DB /* ReviewRequester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewRequester.swift; sourceTree = "<group>"; };
 		97973F2B5EDFEDE4986A50DD /* ParkNudgeUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ParkNudgeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		98B815C7ECEF83FB654AA6B7 /* DirectionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionsService.swift; sourceTree = "<group>"; };
 		A3616FE44C70AC1DC55777A9 /* ParkingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingModels.swift; sourceTree = "<group>"; };
 		A836C6BCDF9B3F2013AFB86E /* ParkNudge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ParkNudge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B416813A621E5C755EE0C0B0 /* ReviewPromptPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPromptPolicy.swift; sourceTree = "<group>"; };
 		BD64141FD66B016719966655 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		BEE6CF9358C9FB22AD7B883E /* ParkingCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingCoordinatorTests.swift; sourceTree = "<group>"; };
 		C4F074A9CB5A39DB8665D84B /* ParkNudge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ParkNudge.entitlements; sourceTree = "<group>"; };
@@ -179,6 +187,7 @@
 			children = (
 				8F8C61F50D93EDD27A912FA8 /* MeterState.swift */,
 				26F90EA87BD5A7865DCA9211 /* ReminderPlanner.swift */,
+				B416813A621E5C755EE0C0B0 /* ReviewPromptPolicy.swift */,
 			);
 			path = Policies;
 			sourceTree = "<group>";
@@ -220,6 +229,7 @@
 				45DAC73BE4A04DBDC5AF973C /* MeterStateTests.swift */,
 				BEE6CF9358C9FB22AD7B883E /* ParkingCoordinatorTests.swift */,
 				F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */,
+				6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */,
 				6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */,
 				193EF026C7D109DF426DBB98 /* TestFixtures.swift */,
 			);
@@ -246,6 +256,7 @@
 		BB4D76CBF8B6D2B589EA63EE /* ParkNudgeUITests */ = {
 			isa = PBXGroup;
 			children = (
+				905DE64737FA004246B8E24C /* LayoutReachabilityTests.swift */,
 				2204CFFA0375A28287D92280 /* ParkNudgeUITests.swift */,
 			);
 			path = ParkNudgeUITests;
@@ -323,6 +334,7 @@
 				71C2678EB2B7CC58A6BEEE3B /* PhotoStore.swift */,
 				F9A9EA2DFFAFE1AD839104CF /* PlaceSearchService.swift */,
 				5B2CDA4A0325C839A543EADC /* PurchaseService.swift */,
+				96A184EAAC5CA4FB586B97DB /* ReviewRequester.swift */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -474,6 +486,8 @@
 				64D293ACB513A9880B3DF41B /* PlaceSearchService.swift in Sources */,
 				5665510805039382EBB8A58B /* PurchaseService.swift in Sources */,
 				A09D7EFFFEA0B5EEFF5037CF /* ReminderPlanner.swift in Sources */,
+				0735C9E7FA35A18B5A6EB3FD /* ReviewPromptPolicy.swift in Sources */,
+				8CBC18810AB9699F161430F6 /* ReviewRequester.swift in Sources */,
 				714A4189EE24A448C7C57AB3 /* RootTabView.swift in Sources */,
 				27C114DB450A0C13B88BF0AD /* ServiceProtocols.swift in Sources */,
 				E7A35EC0420000C91123C024 /* SettingsView.swift in Sources */,
@@ -491,6 +505,7 @@
 				A38A36DC5E9795FC66CF40D2 /* MeterStateTests.swift in Sources */,
 				F665962FEB106B420427463D /* ParkingCoordinatorTests.swift in Sources */,
 				D4873D443D4B1B74A7D7A2E6 /* ReminderPlannerTests.swift in Sources */,
+				D3672089E80290ADB26AED01 /* ReviewPromptPolicyTests.swift in Sources */,
 				94D33FC8B5250A9B6577053F /* SwiftDataParkingRepositoryTests.swift in Sources */,
 				881712E7C5C982F61EE99A89 /* TestFixtures.swift in Sources */,
 			);
@@ -500,6 +515,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4C237BBC9F1653BF8A87C26 /* LayoutReachabilityTests.swift in Sources */,
 				4D491A0AB2A524458F109AF4 /* ParkNudgeUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
