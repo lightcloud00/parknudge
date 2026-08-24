@@ -158,7 +158,8 @@ final class AppModel: ObservableObject {
             await reload()
             if !entitlement.isPro,
                completedSessions.count == 1,
-               !settings.didOfferFirstCompletionPaywall {
+               !settings.didOfferFirstCompletionPaywall
+            {
                 settings.didOfferFirstCompletionPaywall = true
                 requestedProFeature = nil
                 isPaywallPresented = true
@@ -209,6 +210,19 @@ final class AppModel: ObservableObject {
     func requestAccess(to feature: ProFeature) {
         requestedProFeature = feature
         isPaywallPresented = true
+    }
+
+    /// `bootstrap()` loads the product exactly once, so a first launch that
+    /// could not reach the App Store left the paywall permanently showing
+    /// "Lifetime Pro Unavailable" with no way to try again for the rest of the
+    /// process lifetime.
+    func refreshLifetimeProduct() async {
+        isBusy = true
+        defer { isBusy = false }
+        lifetimeProduct = await purchases.loadProduct()
+        if lifetimeProduct == nil {
+            alertMessage = "The App Store price is still unavailable. Free parking features are unaffected."
+        }
     }
 
     func purchaseLifetime() async {
