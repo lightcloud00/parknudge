@@ -20,7 +20,7 @@ struct HistoryView: View {
                         Section {
                             ForEach(model.visibleHistory) { session in
                                 NavigationLink(value: session) {
-                                    HistoryRow(session: session)
+                                    HistoryRow(session: session, thumbnail: model.thumbnail(for: session))
                                 }
                                 .swipeActions {
                                     Button("Delete", role: .destructive) {
@@ -37,11 +37,15 @@ struct HistoryView: View {
                         if model.hiddenHistoryCount > 0 {
                             Section {
                                 Button { model.requestAccess(to: .fullHistory) } label: {
-                                    HStack {
-                                        Label(
-                                            "Reveal \(model.hiddenHistoryCount) older \(model.hiddenHistoryCount == 1 ? "session" : "sessions")",
-                                            systemImage: "lock.fill"
-                                        )
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "lock.fill")
+                                            .foregroundStyle(Theme.brandInk)
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            Text("Reveal \(model.hiddenHistoryCount) older \(model.hiddenHistoryCount == 1 ? "session" : "sessions")")
+                                            Text("Included in Lifetime Pro")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
                                         Spacer()
                                         Image(systemName: "chevron.right")
                                             .foregroundStyle(.tertiary)
@@ -99,29 +103,112 @@ struct HistoryView: View {
 
 private struct HistoryRow: View {
     let session: ParkingSession
+    let thumbnail: UIImage?
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "car.circle.fill")
-                .font(.title2)
-                .foregroundStyle(.orange)
+            leading
+                .frame(width: 52, height: 52)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.radiusInline))
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(session.locationLabel ?? "Parking session")
                     .font(.headline)
                 Text(session.endedAt ?? session.updatedAt, format: .dateTime.month(.abbreviated).day().year().hour().minute())
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(ParkNudgeFormatting.duration(session.duration))
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            if let amount = session.paidAmountMinor, let currency = session.currencyCode {
-                Text(ParkNudgeFormatting.money(minorUnits: amount, currencyCode: currency))
-                    .font(.subheadline)
+
+                // Duration, cost and "the meter ran out" used to be spread
+                // between a caption line and a trailing column that collided
+                // with the title at accessibility sizes. As wrapping chips they
+                // reflow instead.
+                HistoryChips(session: session)
             }
         }
         .padding(.vertical, 3)
+    }
+
+    @ViewBuilder
+    private var leading: some View {
+        if let thumbnail {
+            Image(uiImage: thumbnail)
+                .resizable()
+                .scaledToFill()
+                .accessibilityHidden(true)
+        } else {
+            ZStack {
+                Theme.surfaceRaised
+                Image(systemName: "car.fill")
+                    .font(.title3)
+                    .foregroundStyle(.tertiary)
+            }
+            .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct HistoryChips: View {
+    let session: ParkingSession
+
+    /// A meter that was still ticking when the session ended did its job; one
+    /// the driver came back to late is worth flagging on the row.
+    private var overranMeter: Bool {
+        guard let expiry = session.meterExpiresAt, let ended = session.endedAt else { return false }
+        return ended > expiry
+    }
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) { chips }
+            VStack(alignment: .leading, spacing: 4) { chips }
+        }
+    }
+
+    @ViewBuilder
+    private var chips: some View {
+        Chip(
+            text: ParkNudgeFormatting.duration(session.duration),
+            foreground: .secondary,
+            background: Theme.surfaceRaised
+        )
+        .accessibilityLabel("Parked for \(ParkNudgeFormatting.duration(session.duration))")
+
+        if let amount = session.paidAmountMinor, let currency = session.currencyCode {
+            Chip(
+                text: ParkNudgeFormatting.money(minorUnits: amount, currencyCode: currency),
+                foreground: Theme.brandInk,
+                background: Color("MeterWarnSurface", bundle: .main)
+            )
+        }
+
+        if overranMeter {
+            Chip(
+                text: "meter ran out",
+                symbol: "exclamationmark.triangle.fill",
+                foreground: Color("MeterAlertInk", bundle: .main),
+                background: Color("MeterAlertSurface", bundle: .main)
+            )
+        }
+    }
+}
+
+private struct Chip: View {
+    let text: String
+    var symbol: String?
+    let foreground: Color
+    let background: Color
+
+    var body: some View {
+        Label {
+            Text(text)
+        } icon: {
+            if let symbol { Image(systemName: symbol) }
+        }
+        .font(.caption.weight(.semibold).monospacedDigit())
+        .foregroundStyle(foreground)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(background, in: RoundedRectangle(cornerRadius: 5))
     }
 }
 
@@ -146,8 +233,13 @@ private struct HistoryDetailView: View {
                         .tint(.orange)
                 }
                 .frame(height: 230)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
                 .allowsHitTesting(false)
+                .accessibilityElement()
+                .accessibilityLabel(
+                    session.locationLabel.map { "Map showing this parking spot at \($0)" }
+                        ?? "Map showing this parking spot"
+                )
             }
 
             Section("Session") {
@@ -185,7 +277,7 @@ private struct HistoryDetailView: View {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.radiusTile))
                 }
             }
 
