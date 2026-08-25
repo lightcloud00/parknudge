@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .cap { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; }
+    .sq { border-radius: 22.5%; overflow: hidden; display: block; }
+  </style>
+</helmet>
+
+<div style="width: 940px; box-sizing: border-box; padding: 40px; background: #FFFFFF; color: #031738;">
+
+  <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 28px;">
+    <div class="cap">Identity</div>
+    <div style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em;">App icon &#8212; three refinements</div>
+    <div style="font-size: 15px; color: #4B5563; max-width: 680px; text-wrap: pretty;">The shipped mark is already the right idea: an orange pin on the icon navy. Two things hold it back &#8212; a soft radial glow that reads as AI output, and a car grille whose two slots read as eyes at small sizes. Each concept keeps the pin and the palette and fixes one of those.</div>
+  </div>
+
+  <!-- ROW: current + concepts at 168 -->
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-bottom: 12px;">
+
+    <!-- CURRENT -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <img src="./current-icon.png" alt="Current ParkNudge app icon" class="sq" style="width: 100%; height: auto;">
+      <div>
+        <div style="font-size: 15px; font-weight: 600;">Shipping today</div>
+        <div style="font-size: 13px; color: #6B7280; line-height: 1.4; text-wrap: pretty;">Glow, plus a grille that reads as a face.</div>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <svg viewBox="0 0 200 200" class="sq" style="width: 100%; height: auto;">
+        <rect width="200" height="200" fill="#031738"/>
+        <path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#F5820B"/>
+        <path d="M100 176c33-38 55-63 55-89a55 55 0 0 0-55-55v144Z" fill="#EE6605"/>
+        <g transform="translate(100 84)">
+          <path d="M-30 6-25.4-6.6A7.4 7.4 0 0 1-18.4-11.6h36.8a7.4 7.4 0 0 1 7 5L30 6v16.4a3 3 0 0 1-3 3h-4.6a3 3 0 0 1-3-3v-2.6h-38.8v2.6a3 3 0 0 1-3 3H-27a3 3 0 0 1-3-3Z" fill="#031738"/>
+          <path d="M-23.4 4h46.8L18.8-8.4a3 3 0 0 0-2.8-2H-16a3 3 0 0 0-2.8 2Z" fill="#F5820B"/>
+          <circle cx="-19.6" cy="13" r="3.6" fill="#F5820B"/>
+          <circle cx="19.6" cy="13" r="3.6" fill="#F5820B"/>
+        </g>
+      </svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600;">A &#183; Flat pin</div>
+        <div style="font-size: 13px; color: #6B7280; line-height: 1.4; text-wrap: pretty;">Same silhouette, glow removed, hard hue split top-to-bottom. Car keeps a real windscreen, so no face.</div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <svg viewBox="0 0 200 200" class="sq" style="width: 100%; height: auto;">
+        <rect width="200" height="200" fill="#031738"/>
+        <path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#FDAE11"/>
+        <circle cx="100" cy="86" r="34" fill="#031738"/>
+        <path d="M100 62v24l16 10" fill="none" stroke="#FBEDC7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M86 55h28" stroke="#FBEDC7" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600;">B &#183; Pin &amp; meter</div>
+        <div style="font-size: 13px; color: #6B7280; line-height: 1.4; text-wrap: pretty;">Drops the car for the timer. One shape, one counter&#8209;form &#8212; the most legible of the three at 29&#8239;pt.</div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <svg viewBox="0 0 200 200" class="sq" style="width: 100%; height: auto;">
+        <rect width="200" height="200" fill="#FDAE11"/>
+        <path d="M100 178c34-39 56-64 56-90a56 56 0 1 0-112 0c0 26 22 51 56 90Z" fill="#031738"/>
+        <circle cx="100" cy="88" r="21" fill="#FDAE11"/>
+        <path d="M100 70v18l12 8" fill="none" stroke="#031738" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600;">C &#183; Inverted</div>
+        <div style="font-size: 13px; color: #6B7280; line-height: 1.4; text-wrap: pretty;">Navy pin on amber. Loudest in a home&#8209;screen grid, furthest from what ships today.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SMALL SIZE TEST -->
+  <div style="background: #F2F2F7; border-radius: 16px; padding: 22px; margin-top: 28px;">
+    <div class="cap" style="margin-bottom: 4px;">The only test that matters</div>
+    <div style="font-size: 14px; color: #4B5563; margin-bottom: 18px; max-width: 620px; text-wrap: pretty;">Home screen is 60&#8239;pt; Settings and Spotlight are 29&#8239;pt. Squint at the right&#8209;hand column &#8212; that is the size most people will ever see this at.</div>
+
+    <div style="display: grid; grid-template-columns: 120px repeat(4, minmax(0, 1fr)); gap: 16px; align-items: center;">
+      <div></div>
+      <div style="font-size: 13px; font-weight: 600; text-align: center;">Today</div>
+      <div style="font-size: 13px; font-weight: 600; text-align: center;">A</div>
+      <div style="font-size: 13px; font-weight: 600; text-align: center;">B</div>
+      <div style="font-size: 13px; font-weight: 600; text-align: center;">C</div>
+
+      <div style="font-size: 13px; color: #6B7280;">60&#8239;pt &#8212; home</div>
+      <div style="display: flex; justify-content: center;"><img src="./current-icon.png" alt="Current icon at 60pt" class="sq" style="width: 60px; height: 60px;"></div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 60px; height: 60px;"><rect width="200" height="200" fill="#031738"/><path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#F5820B"/><path d="M100 176c33-38 55-63 55-89a55 55 0 0 0-55-55v144Z" fill="#EE6605"/><g transform="translate(100 84)"><path d="M-30 6-25.4-6.6A7.4 7.4 0 0 1-18.4-11.6h36.8a7.4 7.4 0 0 1 7 5L30 6v16.4a3 3 0 0 1-3 3h-4.6a3 3 0 0 1-3-3v-2.6h-38.8v2.6a3 3 0 0 1-3 3H-27a3 3 0 0 1-3-3Z" fill="#031738"/><path d="M-23.4 4h46.8L18.8-8.4a3 3 0 0 0-2.8-2H-16a3 3 0 0 0-2.8 2Z" fill="#F5820B"/><circle cx="-19.6" cy="13" r="3.6" fill="#F5820B"/><circle cx="19.6" cy="13" r="3.6" fill="#F5820B"/></g></svg>
+      </div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 60px; height: 60px;"><rect width="200" height="200" fill="#031738"/><path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#FDAE11"/><circle cx="100" cy="86" r="34" fill="#031738"/><path d="M100 62v24l16 10" fill="none" stroke="#FBEDC7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 55h28" stroke="#FBEDC7" stroke-width="7" stroke-linecap="round"/></svg>
+      </div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 60px; height: 60px;"><rect width="200" height="200" fill="#FDAE11"/><path d="M100 178c34-39 56-64 56-90a56 56 0 1 0-112 0c0 26 22 51 56 90Z" fill="#031738"/><circle cx="100" cy="88" r="21" fill="#FDAE11"/><path d="M100 70v18l12 8" fill="none" stroke="#031738" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div style="font-size: 13px; color: #6B7280;">29&#8239;pt &#8212; settings</div>
+      <div style="display: flex; justify-content: center;"><img src="./current-icon.png" alt="Current icon at 29pt" class="sq" style="width: 29px; height: 29px;"></div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 29px; height: 29px;"><rect width="200" height="200" fill="#031738"/><path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#F5820B"/><path d="M100 176c33-38 55-63 55-89a55 55 0 0 0-55-55v144Z" fill="#EE6605"/><g transform="translate(100 84)"><path d="M-30 6-25.4-6.6A7.4 7.4 0 0 1-18.4-11.6h36.8a7.4 7.4 0 0 1 7 5L30 6v16.4a3 3 0 0 1-3 3h-4.6a3 3 0 0 1-3-3v-2.6h-38.8v2.6a3 3 0 0 1-3 3H-27a3 3 0 0 1-3-3Z" fill="#031738"/><path d="M-23.4 4h46.8L18.8-8.4a3 3 0 0 0-2.8-2H-16a3 3 0 0 0-2.8 2Z" fill="#F5820B"/><circle cx="-19.6" cy="13" r="3.6" fill="#F5820B"/><circle cx="19.6" cy="13" r="3.6" fill="#F5820B"/></g></svg>
+      </div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 29px; height: 29px;"><rect width="200" height="200" fill="#031738"/><path d="M100 176c33-38 55-63 55-89a55 55 0 1 0-110 0c0 26 22 51 55 89Z" fill="#FDAE11"/><circle cx="100" cy="86" r="34" fill="#031738"/><path d="M100 62v24l16 10" fill="none" stroke="#FBEDC7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M86 55h28" stroke="#FBEDC7" stroke-width="7" stroke-linecap="round"/></svg>
+      </div>
+      <div style="display: flex; justify-content: center;">
+        <svg viewBox="0 0 200 200" class="sq" style="width: 29px; height: 29px;"><rect width="200" height="200" fill="#FDAE11"/><path d="M100 178c34-39 56-64 56-90a56 56 0 1 0-112 0c0 26 22 51 56 90Z" fill="#031738"/><circle cx="100" cy="88" r="21" fill="#FDAE11"/><path d="M100 70v18l12 8" fill="none" stroke="#031738" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; align-items: flex-start; background: #FEF7ED; border: 1px solid #FBD9AE; border-radius: 10px; padding: 12px 14px; margin-top: 22px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="1.9" stroke-linecap="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.2v.1"/></svg>
+    <div style="font-size: 13px; color: #7C3A05; line-height: 1.45; text-wrap: pretty;">These are vectors on a canvas, not a 1024&#215;1024 export. Nothing replaces <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 12px;">AppIcon-1024.png</span> until you pick one &#8212; the current mark ships unchanged in the meantime.</div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+    .cap { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; }
+  </style>
+</helmet>
+
+<div style="width: 960px; box-sizing: border-box; padding: 40px; background: #FFFFFF; color: #031738;">
+
+  <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+    <div class="cap">Park screen &#183; meter hero</div>
+    <div style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em;">Four states, one tile</div>
+    <div style="font-size: 15px; color: #4B5563; max-width: 660px; text-wrap: pretty;">Today the countdown sits third on the screen, inside the details card, and has only two states. Here it is the hero, and it answers the one question a returning driver actually has.</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 108px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center; margin-bottom: 8px;">
+    <div></div>
+    <div class="cap">Light</div>
+    <div class="cap">Dark</div>
+  </div>
+
+  <!-- RUNNING -->
+  <div style="display: grid; grid-template-columns: 108px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center; margin-bottom: 12px;">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div style="font-size: 14px; font-weight: 600;">running</div>
+      <div style="font-size: 12px; color: #6B7280;">&gt; 15 min</div>
+    </div>
+    <div style="background: #031738; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FDAE11" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.4 1.6"/><path d="M9 2.6h6"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #A8BBD8;">Meter time remaining</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #A8BBD8;">until 4:15 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 600; color: #FFFFFF; letter-spacing: -0.025em; line-height: 1.02;">1:47:12</div>
+      <div style="height: 5px; border-radius: 3px; background: #16305C;"><div style="width: 38%; height: 100%; border-radius: 3px; background: #FDAE11;"></div></div>
+    </div>
+    <div style="background: #0A1F45; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FDAE11" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.4 1.6"/><path d="M9 2.6h6"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #A8BBD8;">Meter time remaining</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #A8BBD8;">until 4:15 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 600; color: #FFFFFF; letter-spacing: -0.025em; line-height: 1.02;">1:47:12</div>
+      <div style="height: 5px; border-radius: 3px; background: #1D3A6B;"><div style="width: 38%; height: 100%; border-radius: 3px; background: #FDAE11;"></div></div>
+    </div>
+  </div>
+
+  <!-- EXPIRING SOON -->
+  <div style="display: grid; grid-template-columns: 108px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center; margin-bottom: 12px;">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div style="font-size: 14px; font-weight: 600;">expiringSoon</div>
+      <div style="font-size: 12px; color: #6B7280;">&#8804; 15 min</div>
+    </div>
+    <div style="background: #FEF3E2; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4v5.2"/><path d="M12 16.4v.1"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #7C3A05;">Meter expires soon</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #92500B;">at 2:41 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 700; color: #B44405; letter-spacing: -0.025em; line-height: 1.02;">11:04</div>
+      <div style="height: 5px; border-radius: 3px; background: #F6DDBB;"><div style="width: 91%; height: 100%; border-radius: 3px; background: #B44405;"></div></div>
+    </div>
+    <div style="background: #3A2708; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FDAE11" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4v5.2"/><path d="M12 16.4v.1"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #F5D9A8;">Meter expires soon</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #D3AC6A;">at 2:41 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 700; color: #FDAE11; letter-spacing: -0.025em; line-height: 1.02;">11:04</div>
+      <div style="height: 5px; border-radius: 3px; background: #5C4212;"><div style="width: 91%; height: 100%; border-radius: 3px; background: #FDAE11;"></div></div>
+    </div>
+  </div>
+
+  <!-- EXPIRED -->
+  <div style="display: grid; grid-template-columns: 108px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center; margin-bottom: 12px;">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div style="font-size: 14px; font-weight: 600;">expired</div>
+      <div style="font-size: 12px; color: #6B7280;">counts up</div>
+    </div>
+    <div style="background: #FDECEA; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#B3261E"><path d="M12 3.4 22 20.6H2Z"/><path d="M11.1 9h1.8v5.4h-1.8z" fill="#FDECEA"/><path d="M11.1 16h1.8v1.8h-1.8z" fill="#FDECEA"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #8C1D18;">Meter expired 12 min ago</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #8C1D18;">at 2:41 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 700; color: #B3261E; letter-spacing: -0.025em; line-height: 1.02;">+12:38</div>
+      <div style="height: 5px; border-radius: 3px; background: #B3261E;"></div>
+    </div>
+    <div style="background: #3B1512; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#FF6B60"><path d="M12 3.4 22 20.6H2Z"/><path d="M11.1 9h1.8v5.4h-1.8z" fill="#3B1512"/><path d="M11.1 16h1.8v1.8h-1.8z" fill="#3B1512"/></svg>
+          <span style="font-size: 13px; font-weight: 600; color: #FFB4AC;">Meter expired 12 min ago</span>
+        </div>
+        <span class="mono" style="font-size: 13px; color: #E08A80;">at 2:41 PM</span>
+      </div>
+      <div class="mono" style="font-size: 44px; font-weight: 700; color: #FF6B60; letter-spacing: -0.025em; line-height: 1.02;">+12:38</div>
+      <div style="height: 5px; border-radius: 3px; background: #FF6B60;"></div>
+    </div>
+  </div>
+
+  <!-- NO METER -->
+  <div style="display: grid; grid-template-columns: 108px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: center; margin-bottom: 34px;">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div style="font-size: 14px; font-weight: 600;">no meter</div>
+      <div style="font-size: 12px; color: #6B7280;">no hero at all</div>
+    </div>
+    <div style="grid-column: span 2; background: #F2F2F7; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6C6C70" stroke-width="1.8" stroke-linecap="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="8.6"/><path d="M12 7V12l3.2 2"/></svg>
+      <div>
+        <div style="font-size: 13px; color: #6C6C70; margin-bottom: 1px;">Parked for</div>
+        <div class="mono" style="font-size: 26px; font-weight: 600; letter-spacing: -0.015em;">1:24:07</div>
+      </div>
+      <div style="flex-grow: 1;"></div>
+      <div style="font-size: 13px; color: #8E8E93; text-align: right; max-width: 240px; text-wrap: pretty;">Elapsed time moves up into the hero slot. Nothing pretends a meter exists.</div>
+    </div>
+  </div>
+
+  <!-- DYNAMIC TYPE -->
+  <div class="cap" style="margin-bottom: 4px;">Accessibility text sizes</div>
+  <div style="font-size: 15px; color: #4B5563; max-width: 660px; text-wrap: pretty; margin-bottom: 14px;">The current tile is a fixed <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; background: #F3F4F6; padding: 1px 5px; border-radius: 4px;">HStack</span> with a <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; background: #F3F4F6; padding: 1px 5px; border-radius: 4px;">Spacer</span>, so the expiry time collides with the label at AX sizes. <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; background: #F3F4F6; padding: 1px 5px; border-radius: 4px;">ViewThatFits</span> falls back to stacked:</div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+    <div>
+      <div style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">AX3 &#8212; horizontal no longer fits</div>
+      <div style="background: #031738; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 9px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FDAE11" stroke-width="1.9" stroke-linecap="round" style="flex-shrink: 0;"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.4 1.6"/><path d="M9 2.6h6"/></svg>
+          <span style="font-size: 21px; font-weight: 600; color: #A8BBD8; line-height: 1.2;">Meter time remaining</span>
+        </div>
+        <div class="mono" style="font-size: 46px; font-weight: 600; color: #FFFFFF; letter-spacing: -0.025em; line-height: 1.05;">1:47:12</div>
+        <span class="mono" style="font-size: 19px; color: #A8BBD8;">until 4:15 PM</span>
+        <div style="height: 6px; border-radius: 3px; background: #16305C;"><div style="width: 38%; height: 100%; border-radius: 3px; background: #FDAE11;"></div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">VoiceOver reads one element, in order</div>
+      <div style="background: #F8F8FA; border: 1px solid #E5E5EA; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 9px; align-items: flex-start;">
+          <div style="width: 22px; height: 22px; border-radius: 11px; background: #031738; color: #FBEDC7; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+          <div style="font-size: 14px; line-height: 1.4;">&#8220;Meter time remaining, 1 hour 47 minutes, expires at 4:15&#8239;PM&#8221;</div>
+        </div>
+        <div style="display: flex; gap: 9px; align-items: flex-start;">
+          <div style="width: 22px; height: 22px; border-radius: 11px; background: #031738; color: #FBEDC7; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+          <div style="font-size: 14px; line-height: 1.4;">&#8220;Map showing your parked car at Union Square Garage&#8221; &#8212; today this map is an unlabeled, untappable element</div>
+        </div>
+        <div style="display: flex; gap: 9px; align-items: flex-start;">
+          <div style="width: 22px; height: 22px; border-radius: 11px; background: #031738; color: #FBEDC7; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+          <div style="font-size: 14px; line-height: 1.4;">&#8220;Union Square Garage, parked for 1 hour 24 minutes&#8221;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

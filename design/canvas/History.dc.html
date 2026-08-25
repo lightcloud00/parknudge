@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  </style>
+</helmet>
+
+<div style="width: 393px; height: 852px; box-sizing: border-box; background: #F2F2F7; color: #000000; display: flex; flex-direction: column; overflow: hidden;">
+
+  <div style="height: 59px; flex-shrink: 0; background: #F2F2F7;"></div>
+
+  <!-- NAV BAR -->
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 0 16px 10px 20px; flex-shrink: 0; background: #F2F2F7;">
+    <div style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em;">History</div>
+    <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#EE6605" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.4V3.6"/><path d="M8.2 7.2 12 3.4l3.8 3.8"/><path d="M5 14.2v4.4c0 1 .8 1.8 1.8 1.8h10.4c1 0 1.8-.8 1.8-1.8v-4.4"/></svg>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div style="flex-grow: 1; padding: 0 16px; display: flex; flex-direction: column; gap: 0; overflow: hidden;">
+
+    <div style="background: #FFFFFF; border-radius: 14px; overflow: hidden;">
+
+      <!-- ROW 1 -->
+      <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px;">
+        <div style="width: 52px; height: 52px; border-radius: 8px; background: #DDD9D0; flex-shrink: 0; overflow: hidden; position: relative;">
+          <svg width="52" height="52" viewBox="0 0 52 52"><rect width="52" height="52" fill="#CFCABE"/><rect x="0" y="34" width="52" height="18" fill="#B9B3A5"/><rect x="7" y="16" width="16" height="20" rx="2" fill="#9C968A"/><rect x="29" y="11" width="17" height="25" rx="2" fill="#8E887C"/><circle cx="41" cy="18" r="3" fill="#E8E3D8"/></svg>
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Union Square Garage</div>
+          <div style="font-size: 13px; color: #6C6C70;">Aug 23, 2026 at 4:15 PM</div>
+          <div style="display: flex; gap: 5px; margin-top: 2px;">
+            <span class="mono" style="font-size: 11px; font-weight: 600; color: #3C3C43; background: #EFEFF4; border-radius: 5px; padding: 2px 6px;">2:31:04</span>
+            <span class="mono" style="font-size: 11px; font-weight: 600; color: #7C3A05; background: #FEF3E2; border-radius: 5px; padding: 2px 6px;">$8.00</span>
+          </div>
+        </div>
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#C6C6C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M1.4 1.4 6.6 7l-5.2 5.6"/></svg>
+      </div>
+      <div style="height: 1px; background: #E5E5EA; margin-left: 78px;"></div>
+
+      <!-- ROW 2 - expired -->
+      <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px;">
+        <div style="width: 52px; height: 52px; border-radius: 8px; background: #EFEFF4; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#B8B8BD"><path d="M5.2 11.4 6.6 7.5c.3-.9 1.1-1.5 2-1.5h6.8c.9 0 1.7.6 2 1.5l1.4 3.9v5.2c0 .5-.4.9-.9.9h-1.4c-.5 0-.9-.4-.9-.9v-.8H7.4v.8c0 .5-.4.9-.9.9H5.1c-.5 0-.9-.4-.9-.9zm2.1-.4h9.4l-1-2.8H8.3zM7.6 14.2a1 1 0 1 0 0-2 1 1 0 0 0 0 2m8.8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Pier 39 Lot C</div>
+          <div style="font-size: 13px; color: #6C6C70;">Aug 21, 2026 at 11:02 AM</div>
+          <div style="display: flex; gap: 5px; margin-top: 2px;">
+            <span class="mono" style="font-size: 11px; font-weight: 600; color: #3C3C43; background: #EFEFF4; border-radius: 5px; padding: 2px 6px;">0:47:19</span>
+            <span style="font-size: 11px; font-weight: 600; color: #8C1D18; background: #FDECEA; border-radius: 5px; padding: 2px 6px; display: flex; align-items: center; gap: 3px;">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="#8C1D18"><path d="M12 3.4 22 20.6H2Z"/><path d="M11.1 9h1.8v5.4h-1.8z" fill="#FDECEA"/><path d="M11.1 16h1.8v1.8h-1.8z" fill="#FDECEA"/></svg>
+              meter ran out
+            </span>
+          </div>
+        </div>
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#C6C6C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M1.4 1.4 6.6 7l-5.2 5.6"/></svg>
+      </div>
+      <div style="height: 1px; background: #E5E5EA; margin-left: 78px;"></div>
+
+      <!-- ROW 3 -->
+      <div style="display: flex; align-items: center; gap: 12px; padding: 11px 14px;">
+        <div style="width: 52px; height: 52px; border-radius: 8px; background: #D6DCCF; flex-shrink: 0; overflow: hidden;">
+          <svg width="52" height="52" viewBox="0 0 52 52"><rect width="52" height="52" fill="#C9D1BF"/><rect x="0" y="30" width="52" height="22" fill="#A8B396"/><rect x="4" y="8" width="20" height="24" rx="2" fill="#8D9A7C"/><rect x="30" y="14" width="18" height="18" rx="2" fill="#7E8B6E"/></svg>
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Parking session</div>
+          <div style="font-size: 13px; color: #6C6C70;">Aug 19, 2026 at 6:40 PM</div>
+          <div style="display: flex; gap: 5px; margin-top: 2px;">
+            <span class="mono" style="font-size: 11px; font-weight: 600; color: #3C3C43; background: #EFEFF4; border-radius: 5px; padding: 2px 6px;">1:12:55</span>
+          </div>
+        </div>
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#C6C6C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M1.4 1.4 6.6 7l-5.2 5.6"/></svg>
+      </div>
+    </div>
+
+    <div style="font-size: 13px; color: #6C6C70; padding: 8px 16px 16px 16px; line-height: 1.4; text-wrap: pretty;">Free shows the three newest finished sessions. Every older one stays stored on this iPhone.</div>
+
+    <!-- LOCKED -->
+    <div style="background: #FFFFFF; border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 11px;">
+      <div style="width: 30px; height: 30px; border-radius: 8px; background: #FEF3E2; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div style="font-size: 16px; font-weight: 500;">Reveal 14 older sessions</div>
+        <div style="font-size: 12px; color: #8E8E93; margin-top: 1px;">Included in Lifetime Pro</div>
+      </div>
+      <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#C6C6C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M1.4 1.4 6.6 7l-5.2 5.6"/></svg>
+    </div>
+
+  </div>
+
+  <!-- TAB BAR -->
+  <div style="flex-shrink: 0; border-top: 1px solid #D6D6DA; background: #F9F9F9; padding-top: 8px; padding-bottom: 26px; display: flex;">
+    <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.7"><circle cx="12" cy="12" r="9.4"/><path d="M10.4 17V7h2.3c1.9 0 3.1 1.1 3.1 2.9s-1.2 2.9-3.1 2.9h-1.4V17z"/></svg>
+      <span style="font-size: 10px; font-weight: 500; color: #8E8E93;">Park</span>
+    </div>
+    <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EE6605" stroke-width="2" stroke-linecap="round"><path d="M3.4 12a8.6 8.6 0 1 0 2.6-6.1"/><path d="M3.2 4.6v4.2h4.2"/><path d="M12 7.8V12l2.9 1.9"/></svg>
+      <span style="font-size: 10px; font-weight: 500; color: #EE6605;">History</span>
+    </div>
+    <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.9"/><path d="M19.1 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5v.2a1.9 1.9 0 1 1-3.8 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1h-.2a1.9 1.9 0 1 1 0-3.8h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5v-.2a1.9 1.9 0 1 1 3.8 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1h.2a1.9 1.9 0 1 1 0 3.8h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+      <span style="font-size: 10px; font-weight: 500; color: #8E8E93;">Settings</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

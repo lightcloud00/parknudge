@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .swatch { border-radius: 10px; height: 64px; display: flex; align-items: flex-end; padding: 8px; box-sizing: border-box; }
+    .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  </style>
+</helmet>
+
+<div style="width: 900px; box-sizing: border-box; padding: 40px; background: #FFFFFF; color: #031738;">
+
+  <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 32px;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280;">ParkNudge</div>
+    <div style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em;">Design tokens</div>
+    <div style="font-size: 15px; color: #4B5563; max-width: 620px; text-wrap: pretty;">Every value below is sampled from the shipped 1024&#215;1024 app icon or derived from it. These map one&#8209;to&#8209;one onto <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; background: #F3F4F6; padding: 1px 5px; border-radius: 4px;">ParkNudgeTheme.swift</span>.</div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-bottom: 12px;">Identity &#8212; sampled from the icon</div>
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 10px;">
+    <div>
+      <div class="swatch" style="background: #031738;"><span style="color: #FBEDC7; font-size: 12px; font-weight: 600;">#031738</span></div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">navy</div>
+      <div style="font-size: 12px; color: #6B7280;">icon ground</div>
+    </div>
+    <div>
+      <div class="swatch" style="background: #FDAE11;"><span style="color: #031738; font-size: 12px; font-weight: 600;">#FDAE11</span></div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">amber</div>
+      <div style="font-size: 12px; color: #6B7280;">pin top</div>
+    </div>
+    <div>
+      <div class="swatch" style="background: #EE6605;"><span style="color: #FFFFFF; font-size: 12px; font-weight: 600;">#EE6605</span></div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">brand</div>
+      <div style="font-size: 12px; color: #6B7280;">pin bottom &#183; app tint</div>
+    </div>
+    <div>
+      <div class="swatch" style="background: #B44405;"><span style="color: #FFFFFF; font-size: 12px; font-weight: 600;">#B44405</span></div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">brandInk</div>
+      <div style="font-size: 12px; color: #6B7280;">orange <em>text</em> on light</div>
+    </div>
+    <div>
+      <div class="swatch" style="background: #FBEDC7;"><span style="color: #031738; font-size: 12px; font-weight: 600;">#FBEDC7</span></div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;">cream</div>
+      <div style="font-size: 12px; color: #6B7280;">on&#8209;navy text</div>
+    </div>
+  </div>
+  <div style="display: flex; gap: 8px; align-items: flex-start; background: #FEF7ED; border: 1px solid #FBD9AE; border-radius: 10px; padding: 12px 14px; margin-bottom: 34px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="1.9" stroke-linecap="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.2v.1"/></svg>
+    <div style="font-size: 13px; color: #7C3A05; line-height: 1.45; text-wrap: pretty;">Two oranges, on purpose, and the split is <strong>measured, not judged</strong>. <strong>brand</strong> is the fill that sits <em>under</em> white text &#8212; white on it is 3.21:1, over the 3:1 non&#8209;text floor &#8212; and is never used for text. <strong>brandInk</strong> carries orange words: 5.57:1 on white, 4.86:1 on a grouped&#8209;list fill, 11.2:1 on black. The app previously shipped one hardcoded <span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 12px;">.orange</span> for both jobs.</div>
+  </div>
+
+  <div style="display: flex; gap: 8px; align-items: flex-start; background: #FDECEA; border: 1px solid #F5C4BF; border-radius: 10px; padding: 12px 14px; margin-bottom: 34px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="#B3261E" style="flex-shrink: 0; margin-top: 1px;"><path d="M12 3.4 22 20.6H2Z"/><path d="M11.1 9h1.8v5.4h-1.8z" fill="#FDECEA"/><path d="M11.1 16h1.8v1.8h-1.8z" fill="#FDECEA"/></svg>
+    <div style="font-size: 13px; color: #8C1D18; line-height: 1.45; text-wrap: pretty;"><strong>brand has one value in both appearances.</strong> An earlier draft gave it a lighter dark variant (<span style="font-family: ui-monospace, 'SF Mono', monospace; font-size: 12px;">#FDAE11</span>), which put the white label of the primary call to action at <strong>1.87:1</strong> in dark mode while reading fine in light. A light&#8209;mode screenshot cannot show that &#8212; only measuring both schemes does.</div>
+  </div>
+
+  <!-- SURFACES -->
+  <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-bottom: 12px;">Semantic surfaces</div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 34px;">
+    <div style="background: #F2F2F7; border-radius: 14px; padding: 16px;">
+      <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px;">Light</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="background: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 8px; padding: 10px 12px; font-size: 13px; display: flex; justify-content: space-between;"><span>surface</span><span style="color: #6B7280;">systemBackground</span></div>
+        <div style="background: #EFEFF4; border-radius: 8px; padding: 10px 12px; font-size: 13px; display: flex; justify-content: space-between;"><span>surfaceRaised</span><span style="color: #6B7280;">secondarySystemBackground</span></div>
+        <div style="background: #031738; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #FBEDC7; display: flex; justify-content: space-between;"><span>meterCalm</span><span style="color: #8FA3C4;">navy tile</span></div>
+      </div>
+    </div>
+    <div style="background: #1C1C1E; border-radius: 14px; padding: 16px;">
+      <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #F2F2F7;">Dark</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="background: #000000; border: 1px solid #38383A; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #F2F2F7; display: flex; justify-content: space-between;"><span>surface</span><span style="color: #8E8E93;">systemBackground</span></div>
+        <div style="background: #1C1C1E; border: 1px solid #38383A; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #F2F2F7; display: flex; justify-content: space-between;"><span>surfaceRaised</span><span style="color: #8E8E93;">secondarySystemBackground</span></div>
+        <div style="background: #0A1F45; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #FBEDC7; display: flex; justify-content: space-between;"><span>meterCalm</span><span style="color: #8FA3C4;">lifted navy</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METER STATES -->
+  <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-bottom: 4px;">Meter states</div>
+  <div style="font-size: 13px; color: #4B5563; margin-bottom: 14px; max-width: 640px; text-wrap: pretty;">The app ships two states today. Three are needed &#8212; and each stays distinguishable in grayscale by its glyph and weight, not by hue alone.</div>
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 34px;">
+    <div style="background: #031738; border-radius: 12px; padding: 14px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FDAE11" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.4 1.6"/><path d="M9 2.6h6"/></svg>
+        <span style="font-size: 13px; font-weight: 600; color: #FBEDC7;">running</span>
+      </div>
+      <div class="mono" style="font-size: 26px; font-weight: 600; color: #FFFFFF; letter-spacing: -0.01em;">1:47:12</div>
+      <div style="font-size: 12px; color: #8FA3C4; margin-top: 4px;">navy &#183; calm, not alarming</div>
+    </div>
+    <div style="background: #FEF3E2; border-radius: 12px; padding: 14px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.4v5.2"/><path d="M12 16.4v.1"/></svg>
+        <span style="font-size: 13px; font-weight: 600; color: #7C3A05;">expiringSoon</span>
+      </div>
+      <div class="mono" style="font-size: 26px; font-weight: 700; color: #B44405; letter-spacing: -0.01em;">11:04</div>
+      <div style="font-size: 12px; color: #92500B; margin-top: 4px;">&#8804; 15 min &#183; amber, heavier</div>
+    </div>
+    <div style="background: #FDECEA; border-radius: 12px; padding: 14px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#B3261E" stroke="none"><path d="M12 3.4 22 20.6H2Z"/><path d="M11.1 9h1.8v5.4h-1.8z" fill="#FDECEA"/><path d="M11.1 16h1.8v1.8h-1.8z" fill="#FDECEA"/></svg>
+        <span style="font-size: 13px; font-weight: 600; color: #8C1D18;">expired</span>
+      </div>
+      <div class="mono" style="font-size: 26px; font-weight: 700; color: #B3261E; letter-spacing: -0.01em;">+12:38</div>
+      <div style="font-size: 12px; color: #8C1D18; margin-top: 4px;">counts <em>up</em>, not a frozen 0:00</div>
+    </div>
+  </div>
+
+  <!-- RADII + TYPE -->
+  <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 40px;">
+    <div>
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-bottom: 14px;">Corner radii</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 56px; height: 44px; background: #EFEFF4; border-radius: 20px;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">card &#183; 20</div><div style="font-size: 12px; color: #6B7280;">map, hero, detail card</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 56px; height: 44px; background: #EFEFF4; border-radius: 14px;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">tile &#183; 14</div><div style="font-size: 12px; color: #6B7280;">photo, inline tiles</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 56px; height: 44px; background: #EFEFF4; border-radius: 8px;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">inline &#183; 8</div><div style="font-size: 12px; color: #6B7280;">chips, thumbnails</div></div>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #6B7280; margin-top: 12px; line-height: 1.45; text-wrap: pretty;">Replaces the four ad&#8209;hoc values (22 / 20 / 16 / 14) scattered across five view files.</div>
+    </div>
+
+    <div>
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280; margin-bottom: 14px;">Type ramp &#8212; stock SF, Dynamic Type native</div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">countdown</div><div class="mono" style="font-size: 46px; font-weight: 600; letter-spacing: -0.02em; line-height: 1;">1:47:12</div></div>
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">largeTitle</div><div style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em;">ParkNudge</div></div>
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">title2 &#183; bold</div><div style="font-size: 22px; font-weight: 700;">Level 3, Bay 14</div></div>
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">headline</div><div style="font-size: 17px; font-weight: 600;">Walking Directions</div></div>
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">subheadline</div><div style="font-size: 15px; color: #3C3C43;">Parked for 1:24:07</div></div>
+        <div style="display: flex; align-items: baseline; gap: 16px;"><div style="width: 130px; font-size: 12px; color: #6B7280; flex-shrink: 0;">footnote</div><div style="font-size: 13px; color: #6B7280;">GPS accuracy &#177;8 m</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
