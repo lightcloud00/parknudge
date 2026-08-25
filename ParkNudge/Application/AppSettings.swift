@@ -26,9 +26,17 @@ final class AppSettings: ObservableObject {
         set { defaults.set(newValue, forKey: Keys.didOfferFirstCompletionPaywall) }
     }
 
+    /// Marketing version the rating prompt was last *attempted* for. Attempted,
+    /// not shown — StoreKit never reports whether it displayed anything.
+    var lastReviewRequestVersion: String? {
+        get { defaults.string(forKey: Keys.lastReviewRequestVersion) }
+        set { defaults.set(newValue, forKey: Keys.lastReviewRequestVersion) }
+    }
+
     private enum Keys {
         static let customReminderOffsets = "customReminderOffsets"
         static let currencyCode = "currencyCode"
         static let didOfferFirstCompletionPaywall = "didOfferFirstCompletionPaywall"
+        static let lastReviewRequestVersion = "lastReviewRequestVersion"
     }
 }

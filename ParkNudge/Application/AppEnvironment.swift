@@ -35,6 +35,7 @@ struct AppEnvironment {
             exporter: LocalCSVExporter(),
             photos: photos,
             settings: AppSettings(),
+            reviews: StoreKitReviewRequester(),
             clock: clock
         )
         return AppEnvironment(container: container, model: model)
@@ -67,10 +68,60 @@ struct AppEnvironment {
             exporter: LocalCSVExporter(rootURL: root.appending(path: "Exports")),
             photos: photos,
             settings: settings,
+            reviews: UITestReviewRequester(),
             clock: clock
         )
+
+        if arguments.contains("-ui-test-active-meter") {
+            try seedActiveMeteredSession(into: repository, clock: clock)
+        }
+
         return AppEnvironment(container: container, model: model)
     }
+
+    /// Seeds one active session with a running meter, for tests about the Park
+    /// screen's *layout* rather than about the editor.
+    ///
+    /// Driving the editor to set a meter means tapping a `Form` `Toggle`, whose
+    /// accessibility element spans the whole row — so the tap point has to be
+    /// derived from the switch geometry, and that shifts between device sizes
+    /// and text sizes. A layout test that fails because a synthetic tap missed
+    /// a switch is telling you nothing about layout. Seeding removes the whole
+    /// question. Only ever reachable under `-ui-testing`, against the in-memory
+    /// container.
+    private static func seedActiveMeteredSession(
+        into repository: ParkingRepository,
+        clock: Clock
+    ) throws {
+        let now = clock.now
+        try repository.create(
+            ParkingSession(
+                id: UUID(),
+                startedAt: now.addingTimeInterval(-1_800),
+                endedAt: nil,
+                coordinate: GeoCoordinate(latitude: 40.741_895, longitude: -73.989_308),
+                horizontalAccuracy: 8,
+                locationLabel: "Union Square Garage",
+                floor: "3",
+                section: "14",
+                note: nil,
+                meterExpiresAt: now.addingTimeInterval(3_600),
+                paidAmountMinor: nil,
+                currencyCode: nil,
+                source: .currentLocation,
+                photoRelativePath: nil,
+                createdAt: now.addingTimeInterval(-1_800),
+                updatedAt: now.addingTimeInterval(-1_800)
+            )
+        )
+    }
+}
+
+/// Swallows the request so a UI-test run can never put the system rating
+/// prompt on screen, where it would steal the tap the test was aiming at.
+@MainActor
+private final class UITestReviewRequester: ReviewRequesting {
+    func requestReview() {}
 }
 
 @MainActor

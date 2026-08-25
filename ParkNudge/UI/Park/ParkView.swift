@@ -117,7 +117,11 @@ struct ParkView: View {
 
     private func activeContent(_ session: ParkingSession) -> some View {
         ScrollView {
-            VStack(spacing: 14) {
+            // Sized so a plain session — hero, map, details, three actions —
+            // rests entirely above the floating tab bar. Anything richer (a
+            // photo, a note, a cost) simply scrolls, which is expected; what is
+            // not acceptable is Finish landing under the bar on arrival.
+            VStack(spacing: 12) {
                 // The meter is the one thing a returning driver is anxious
                 // about, so it leads. Without a meter there is nothing urgent
                 // to hoist and the map keeps the top slot.
@@ -126,7 +130,7 @@ struct ParkView: View {
                 }
 
                 ParkedMap(session: session)
-                    .frame(height: 176)
+                    .frame(height: 148)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
                     .accessibilityElement()
                     .accessibilityLabel(mapAccessibilityLabel(for: session))
@@ -216,13 +220,17 @@ struct ParkView: View {
                     .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget - 16)
             }
             .buttonStyle(.bordered)
-            .tint(Theme.brand)
+            .tint(Theme.brandInk)
 
             Button(role: .destructive) { confirmsFinish = true } label: {
                 Label("Finish", systemImage: "checkmark.circle")
                     .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget - 16)
             }
             .buttonStyle(.bordered)
+            // The destructive role alone loses to the TabView's brand tint,
+            // so Finish rendered in the same orange as Directions and Edit —
+            // three identical-looking buttons, one of which ends the session.
+            .tint(Theme.alertInk)
             .accessibilityIdentifier("finish-parking")
         }
     }

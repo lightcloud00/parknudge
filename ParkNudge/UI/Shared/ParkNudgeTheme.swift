@@ -10,13 +10,21 @@ import SwiftUI
 enum Theme {
     // MARK: - Identity
 
-    /// Fills, tints and glyphs. Reaches 3.2:1 on white — enough for non-text
-    /// elements and large controls, deliberately not used for body text.
+    /// The fill that sits **under white text** — `.borderedProminent` tints,
+    /// filled glyph tiles, the map marker. Deliberately the same value in both
+    /// appearances: a lighter dark-mode variant put white on it at 1.87:1.
+    /// White on this is 3.21:1, above the 3:1 non-text and large-control floor.
+    /// Never use it for text.
     static let brand = Color("BrandOrange", bundle: .main)
 
-    /// The same hue darkened to 5.6:1 so orange *text* on a light background
-    /// stays legible. Use this anywhere the orange carries words.
+    /// Orange **text and labels**. 5.57:1 on white, 4.86:1 on a grouped-list
+    /// fill, 11.2:1 on black — so it clears the 4.5:1 body-text floor in both
+    /// appearances, which `brand` does not.
     static let brandInk = Color("BrandInk", bundle: .main)
+
+    /// Destructive text. The system red fails on a `.bordered` button's fill
+    /// (3.09:1); this reaches 5.70:1 light and 4.99:1 dark.
+    static let alertInk = Color("MeterAlertInk", bundle: .main)
 
     /// The icon's navy, used as the calm meter surface.
     static let navy = Color("BrandNavy", bundle: .main)

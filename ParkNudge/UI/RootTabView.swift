@@ -18,7 +18,7 @@ struct RootTabView: View {
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(2)
         }
-        .tint(Theme.brand)
+        .tint(Theme.brandInk)
         .sheet(isPresented: $model.isPaywallPresented) {
             PaywallView()
                 .environmentObject(model)
