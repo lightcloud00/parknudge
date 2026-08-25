@@ -54,18 +54,25 @@ extension MeterState {
             "Meter time remaining"
         case .expiringSoon:
             "Meter expires soon"
-        case .expired(let since):
+        case let .expired(since):
             "Meter expired \(Self.elapsedPhrase(since)) ago"
         }
     }
 
     /// The countdown itself. Expired counts *up*, marked with a leading `+`.
     var digits: String {
+        digits(showSeconds: true)
+    }
+
+    /// Fine cadence shows seconds during the urgent window. Coarse cadence
+    /// deliberately renders whole minutes so Low Power Mode and long meters
+    /// never present a seconds value that is stale for most of a minute.
+    func digits(showSeconds: Bool) -> String {
         switch self {
-        case .running(let remaining), .expiringSoon(let remaining):
-            ParkNudgeFormatting.duration(remaining)
-        case .expired(let since):
-            "+" + ParkNudgeFormatting.duration(since)
+        case let .running(remaining), let .expiringSoon(remaining):
+            Self.adaptiveDigits(remaining, showSeconds: showSeconds)
+        case let .expired(since):
+            "+" + Self.adaptiveDigits(since, showSeconds: showSeconds)
         }
     }
 
@@ -74,7 +81,7 @@ extension MeterState {
     func accessibilityDescription(expiry: Date) -> String {
         let clock = expiry.formatted(date: .omitted, time: .shortened)
         switch self {
-        case .running(let remaining), .expiringSoon(let remaining):
+        case let .running(remaining), let .expiringSoon(remaining):
             return "\(title), \(Self.spokenDuration(remaining)) left, expires at \(clock)"
         case .expired:
             return "\(title), at \(clock)"
@@ -103,5 +110,15 @@ extension MeterState {
         let hourPart = hours == 1 ? "1 hour" : "\(hours) hours"
         if minutes == 0 { return hourPart }
         return "\(hourPart) \(minutes) \(minutes == 1 ? "minute" : "minutes")"
+    }
+
+    private static func adaptiveDigits(_ interval: TimeInterval, showSeconds: Bool) -> String {
+        if showSeconds { return ParkNudgeFormatting.duration(interval) }
+        let totalMinutes = max(0, Int(interval) / 60)
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+        if hours == 0 { return "\(max(totalMinutes, 1))m" }
+        if minutes == 0 { return "\(hours)h" }
+        return "\(hours)h \(minutes)m"
     }
 }
