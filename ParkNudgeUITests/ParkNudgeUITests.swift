@@ -35,11 +35,41 @@ final class ParkNudgeUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Add Reminder"].exists)
     }
 
+    /// Keeps a real StoreKit-backed capture of the exact paywall shown to App Review.
+    /// This deliberately omits `-ui-testing`, so the app reads the localized price
+    /// from the scheme's StoreKit configuration instead of the UI-test purchase stub.
+    @MainActor
+    func testAppReviewLifetimePaywallScreenshot() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+
+        XCTAssertTrue(app.tabBars.buttons["Settings"].waitForExistence(timeout: 8))
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings-lifetime-pro"].waitForExistence(timeout: 8))
+        app.buttons["settings-lifetime-pro"].tap()
+
+        XCTAssertTrue(app.descendants(matching: .any)["paywall-price"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["purchase-lifetime-pro"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "ParkNudge-IAP-review-paywall-top")
+
+        app.swipeUp()
+        XCTAssertTrue(app.buttons["purchase-lifetime-pro"].isHittable)
+        keepScreenshot(named: "ParkNudge-IAP-review-paywall-purchase")
+    }
+
     @MainActor
     private func launch(extraArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"] + extraArguments
         app.launch()
         return app
+    }
+
+    private func keepScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

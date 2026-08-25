@@ -69,6 +69,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                .accessibilityIdentifier("settings-lifetime-pro")
             }
 
             Button("Restore Purchases") { Task { await model.restorePurchases() } }
