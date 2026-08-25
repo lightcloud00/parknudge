@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+    .shdr { font-size: 13px; color: #6C6C70; padding: 0 16px 6px 16px; }
+    .row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: #FFFFFF; }
+    .sep { height: 1px; background: #E5E5EA; margin-left: 14px; }
+  </style>
+</helmet>
+
+<div style="width: 393px; height: 852px; box-sizing: border-box; background: #2A2A2E; display: flex; flex-direction: column; overflow: hidden;">
+
+  <!-- backdrop peek: the Park screen behind the sheet -->
+  <div style="height: 26px; flex-shrink: 0;"></div>
+
+  <!-- SHEET -->
+  <div style="flex-grow: 1; background: #F2F2F7; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; overflow: hidden; color: #000000;">
+
+    <!-- sheet nav -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px 16px; flex-shrink: 0;">
+      <span style="font-size: 17px; color: #EE6605; min-width: 60px;">Cancel</span>
+      <span style="font-size: 17px; font-weight: 600;">Save Parking Spot</span>
+      <span style="font-size: 17px; font-weight: 600; color: #EE6605; min-width: 60px; text-align: right;">Save</span>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 0; overflow: hidden;">
+
+      <!-- LOCATION -->
+      <div class="shdr">LOCATION</div>
+      <div style="margin: 0 16px; border-radius: 14px; overflow: hidden; background: #FFFFFF;">
+        <div style="height: 168px; position: relative; background: #E9E6DF;">
+          <svg width="361" height="168" viewBox="0 0 361 168" style="display: block;">
+            <rect width="361" height="168" fill="#E9E6DF"/>
+            <rect width="361" height="168" fill="#DCEBD8" opacity="0.45"/>
+            <path d="M-10 110 H371" stroke="#FFFFFF" stroke-width="15"/>
+            <path d="M-10 42 H371" stroke="#FFFFFF" stroke-width="9"/>
+            <path d="M104 -10 V178" stroke="#FFFFFF" stroke-width="12"/>
+            <path d="M256 -10 V178" stroke="#FFFFFF" stroke-width="8"/>
+            <rect x="120" y="54" width="50" height="42" rx="3" fill="#E0DDD5"/>
+            <rect x="186" y="52" width="42" height="46" rx="3" fill="#E0DDD5"/>
+            <rect x="272" y="56" width="58" height="40" rx="3" fill="#E0DDD5"/>
+            <rect x="24" y="124" width="56" height="34" rx="3" fill="#E0DDD5"/>
+          </svg>
+          <!-- pin -->
+          <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 20px; background: #EE6605; border: 3px solid #FFFFFF; box-shadow: 0 2px 7px rgba(3,23,56,0.34); display: flex; align-items: center; justify-content: center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M5.2 11.4 6.6 7.5c.3-.9 1.1-1.5 2-1.5h6.8c.9 0 1.7.6 2 1.5l1.4 3.9v5.2c0 .5-.4.9-.9.9h-1.4c-.5 0-.9-.4-.9-.9v-.8H7.4v.8c0 .5-.4.9-.9.9H5.1c-.5 0-.9-.4-.9-.9zm2.1-.4h9.4l-1-2.8H8.3zM7.6 14.2a1 1 0 1 0 0-2 1 1 0 0 0 0 2m8.8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
+          </div>
+          <!-- accuracy pill, over the map instead of a separate list row -->
+          <div style="position: absolute; left: 10px; bottom: 10px; background: rgba(255,255,255,0.94); border-radius: 8px; padding: 5px 9px; display: flex; align-items: center; gap: 6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6C6C70" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.6"/><path d="M12 1.8v2.6M12 19.6v2.6M22.2 12h-2.6M4.4 12H1.8"/></svg>
+            <span class="mono" style="font-size: 12px; font-weight: 500; color: #3C3C43;">&#177;8 m</span>
+          </div>
+        </div>
+        <div class="row" style="gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M9.4 11.4V5.2a1.7 1.7 0 0 1 3.4 0v6.8"/><path d="M12.8 12.4V9.8a1.6 1.6 0 0 1 3.2 0v2.6"/><path d="M16 12.6v-1.4a1.6 1.6 0 0 1 3.2 0v4.6a5.6 5.6 0 0 1-5.6 5.6h-1.4c-2.4 0-3.6-1-4.8-2.6l-2.6-3.8a1.6 1.6 0 0 1 2.4-2l1.6 1.6"/></svg>
+          <span style="font-size: 15px; color: #6C6C70;">Tap the map to correct the pin</span>
+        </div>
+      </div>
+
+      <!-- FIND A PLACE -->
+      <div class="shdr" style="padding-top: 18px;">FIND A PLACE</div>
+      <div style="margin: 0 16px; border-radius: 14px; overflow: hidden; background: #FFFFFF;">
+        <div class="row" style="gap: 9px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.1" stroke-linecap="round" style="flex-shrink: 0;"><circle cx="10.8" cy="10.8" r="6.8"/><path d="M15.8 15.8 21 21"/></svg>
+          <span style="font-size: 16px; color: #000000;">Union Square Gara</span><span style="width: 1.5px; height: 20px; background: #EE6605; margin-left: -6px;"></span>
+        </div>
+        <div class="sep"></div>
+        <div class="row" style="flex-direction: column; align-items: flex-start; gap: 2px;">
+          <span style="font-size: 16px;">Union Square Garage</span>
+          <span style="font-size: 12px; color: #8E8E93;">333 Post St, San Francisco, CA</span>
+        </div>
+        <div class="sep"></div>
+        <div class="row" style="flex-direction: column; align-items: flex-start; gap: 2px;">
+          <span style="font-size: 16px;">Union Square Park</span>
+          <span style="font-size: 12px; color: #8E8E93;">Geary St &amp; Powell St, San Francisco, CA</span>
+        </div>
+      </div>
+
+      <!-- METER -->
+      <div class="shdr" style="padding-top: 18px;">METER</div>
+      <div style="margin: 0 16px; border-radius: 14px; overflow: hidden; background: #FFFFFF;">
+        <div class="row" style="justify-content: space-between;">
+          <span style="font-size: 16px;">Meter timer</span>
+          <div style="width: 51px; height: 31px; border-radius: 16px; background: #EE6605; display: flex; align-items: center; justify-content: flex-end; padding: 2px; box-sizing: border-box;">
+            <div style="width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.22);"></div>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="row" style="justify-content: space-between;">
+          <span style="font-size: 16px;">Expires</span>
+          <div style="display: flex; gap: 6px;">
+            <span class="mono" style="font-size: 16px; background: #EFEFF4; border-radius: 7px; padding: 5px 9px;">Aug 24, 2026</span>
+            <span class="mono" style="font-size: 16px; background: #EFEFF4; border-radius: 7px; padding: 5px 9px;">4:15 PM</span>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="row" style="gap: 9px; align-items: flex-start; background: #FEF7ED;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="1.9" stroke-linecap="round" style="flex-shrink: 0; margin-top: 2px;"><path d="M18.4 15.6V10a6.4 6.4 0 1 0-12.8 0v5.6L3.8 18.4h16.4z"/><path d="M10.2 21.2h3.6"/></svg>
+          <span style="font-size: 13px; color: #7C3A05; line-height: 1.4;">You&#8217;ll be nudged at <strong>4:00&#8239;PM</strong>, <strong>4:10&#8239;PM</strong>, and <strong>4:15&#8239;PM</strong>.</span>
+        </div>
+      </div>
+
+      <!-- PHOTO + DETAILS teaser -->
+      <div class="shdr" style="padding-top: 18px;">ONE PARKING PHOTO</div>
+      <div style="margin: 0 16px; border-radius: 14px; overflow: hidden; background: #FFFFFF; display: flex; align-items: center; padding: 10px 14px; gap: 12px;">
+        <div style="width: 56px; height: 56px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+          <svg width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" fill="#CFCABE"/><rect x="0" y="36" width="56" height="20" fill="#B9B3A5"/><rect x="8" y="17" width="17" height="21" rx="2" fill="#9C968A"/><rect x="31" y="12" width="18" height="26" rx="2" fill="#8E887C"/></svg>
+        </div>
+        <div style="display: flex; gap: 8px; flex-grow: 1;">
+          <div style="flex-grow: 1; height: 36px; border-radius: 9px; background: #EFEFF4; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EE6605" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="5.4" width="16.8" height="13.2" rx="2.2"/><circle cx="12" cy="12" r="3"/><path d="M8.4 5.4l1.1-2h5l1.1 2"/></svg>
+            <span style="font-size: 14px; font-weight: 500; color: #EE6605;">Replace</span>
+          </div>
+          <div style="flex-grow: 1; height: 36px; border-radius: 9px; background: #EFEFF4; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B3261E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 6.6h14.8"/><path d="M9.2 6.6V4.8h5.6v1.8"/><path d="M6.6 6.6l.9 12.2c0 .9.8 1.6 1.7 1.6h5.6c.9 0 1.7-.7 1.7-1.6l.9-12.2"/></svg>
+            <span style="font-size: 14px; font-weight: 500; color: #B3261E;">Remove</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

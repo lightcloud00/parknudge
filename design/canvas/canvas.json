@@ -1,0 +1,125 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Park \u2014 meter running",
+      "page": "screens",
+      "x": 0,
+      "y": 0,
+      "w": 393,
+      "h": 852
+    },
+    {
+      "file": "ParkEmpty.dc.html",
+      "title": "Park \u2014 empty",
+      "page": "screens",
+      "x": 453,
+      "y": 0,
+      "w": 393,
+      "h": 852
+    },
+    {
+      "file": "History.dc.html",
+      "title": "History",
+      "page": "screens",
+      "x": 906,
+      "y": 0,
+      "w": 393,
+      "h": 852
+    },
+    {
+      "file": "Editor.dc.html",
+      "title": "Save / edit sheet",
+      "page": "screens",
+      "x": 1359,
+      "y": 0,
+      "w": 393,
+      "h": 852
+    },
+    {
+      "file": "SettingsPaywall.dc.html",
+      "title": "Settings & paywall",
+      "page": "screens",
+      "x": 1812,
+      "y": 0,
+      "w": 906,
+      "h": 960
+    },
+    {
+      "file": "MeterStates.dc.html",
+      "title": "Meter hero \u2014 four states",
+      "page": "screens",
+      "x": 0,
+      "y": 940,
+      "w": 960,
+      "h": 974
+    },
+    {
+      "file": "Tokens.dc.html",
+      "title": "Design tokens",
+      "page": "screens",
+      "x": 1020,
+      "y": 1040,
+      "w": 900,
+      "h": 1297
+    },
+    {
+      "file": "AppIcon.dc.html",
+      "title": "App icon",
+      "page": "identity",
+      "x": 0,
+      "y": 0,
+      "w": 940,
+      "h": 894
+    },
+    {
+      "file": "StoreFrames.dc.html",
+      "title": "App Store frames \u2014 6.9\"",
+      "page": "identity",
+      "x": 1000,
+      "y": 0,
+      "w": 1560,
+      "h": 1183
+    }
+  ],
+  "annotations": [
+    {
+      "id": "start-here",
+      "page": "screens",
+      "x": 0,
+      "y": -150,
+      "w": 420,
+      "text": "Start here.\nThe meter countdown becomes the hero \u2014 today it sits third, buried inside the details card. Everything else on this page follows from that move."
+    },
+    {
+      "id": "swiftui-map",
+      "page": "screens",
+      "x": 1020,
+      "y": 890,
+      "w": 380,
+      "text": "These tokens map 1:1 onto a new ParkNudgeTheme.swift and replace the four ad-hoc corner radii and the hardcoded .orange scattered across five view files."
+    },
+    {
+      "id": "icon-hold",
+      "page": "identity",
+      "x": 0,
+      "y": -130,
+      "w": 460,
+      "text": "Nothing here is exported yet. The shipped icon stays in the app until you pick a direction \u2014 these are vectors to choose from, not a replacement asset."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "screens"
+  },
+  "pages": [
+    {
+      "id": "screens",
+      "name": "Screens"
+    },
+    {
+      "id": "identity",
+      "name": "Icon & Store"
+    }
+  ]
+}

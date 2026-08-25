@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: -apple-system, "SF Pro Text", system-ui, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B44405; } a:hover { color: #8A3404; }
+    .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+    .shdr { font-size: 13px; color: #6C6C70; padding: 0 16px 6px 16px; }
+    .row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: #FFFFFF; font-size: 16px; }
+    .sep { height: 1px; background: #E5E5EA; margin-left: 14px; }
+    .grp { margin: 0 16px; border-radius: 14px; overflow: hidden; background: #FFFFFF; }
+    .ftr { font-size: 12px; color: #8E8E93; padding: 6px 16px 0 16px; line-height: 1.4; }
+  </style>
+</helmet>
+
+<div style="display: flex; gap: 40px; padding: 40px; background: #FFFFFF; width: 906px; box-sizing: border-box;">
+
+  <!-- ============ SETTINGS ============ -->
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280;">Settings</div>
+
+    <div style="width: 393px; height: 852px; box-sizing: border-box; background: #F2F2F7; color: #000000; display: flex; flex-direction: column; overflow: hidden; border-radius: 4px;">
+      <div style="height: 59px; flex-shrink: 0;"></div>
+      <div style="padding: 0 20px 12px 20px; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0;">Settings</div>
+
+      <div style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;">
+
+        <div class="shdr">PARKNUDGE PRO</div>
+        <div class="grp">
+          <div class="row" style="gap: 11px;">
+            <div style="width: 29px; height: 29px; border-radius: 7px; background: #EE6605; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 2.6l1.9 5.1 5.5.3-4.3 3.5 1.5 5.3L12 13.8l-4.6 3 1.5-5.3L4.6 8l5.5-.3z"/></svg>
+            </div>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 16px;">Lifetime Pro</div>
+              <div style="font-size: 12px; color: #8E8E93; margin-top: 1px;">One&#8209;time purchase</div>
+            </div>
+            <span class="mono" style="font-size: 16px; color: #6C6C70;">$9.99</span>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#C6C6C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.4 1.4 6.6 7l-5.2 5.6"/></svg>
+          </div>
+          <div class="sep"></div>
+          <div class="row"><span style="color: #EE6605;">Restore Purchases</span></div>
+        </div>
+        <div class="ftr">No subscription. The full free parking workflow always stays available.</div>
+
+        <div class="shdr" style="padding-top: 20px;">METER REMINDERS</div>
+        <div class="grp">
+          <div class="row" style="justify-content: space-between;">
+            <span>Free reminders</span>
+            <span class="mono" style="color: #6C6C70;">15 / 5 / 0 min</span>
+          </div>
+          <div class="sep"></div>
+          <div class="row" style="gap: 10px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B44405" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.4 10.5V7.6a3.6 3.6 0 0 1 7.2 0v2.9"/></svg>
+            <span style="color: #B44405;">Customize with Pro</span>
+          </div>
+        </div>
+        <div class="ftr">Warnings already in the past are skipped when a meter is saved or extended.</div>
+
+        <div class="shdr" style="padding-top: 20px;">LOCAL DATA</div>
+        <div class="grp">
+          <div class="row" style="justify-content: space-between;">
+            <span>Completed sessions</span>
+            <span class="mono" style="color: #6C6C70;">17</span>
+          </div>
+          <div class="sep"></div>
+          <div class="row"><span style="color: #B3261E;">Delete All Parking Data</span></div>
+        </div>
+        <div class="ftr">Everything stays on this iPhone unless you share a CSV export yourself.</div>
+
+        <div class="shdr" style="padding-top: 20px;">ABOUT</div>
+        <div class="grp">
+          <div class="row"><span style="color: #EE6605;">Privacy</span></div>
+          <div class="sep"></div>
+          <div class="row"><span style="color: #EE6605;">Terms</span></div>
+          <div class="sep"></div>
+          <div class="row" style="justify-content: space-between;"><span>Version</span><span class="mono" style="color: #6C6C70;">0.1.0 (1)</span></div>
+        </div>
+      </div>
+
+      <div style="flex-shrink: 0; border-top: 1px solid #D6D6DA; background: #F9F9F9; padding-top: 8px; padding-bottom: 26px; display: flex;">
+        <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.7"><circle cx="12" cy="12" r="9.4"/><path d="M10.4 17V7h2.3c1.9 0 3.1 1.1 3.1 2.9s-1.2 2.9-3.1 2.9h-1.4V17z"/></svg>
+          <span style="font-size: 10px; font-weight: 500; color: #8E8E93;">Park</span>
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"><path d="M3.4 12a8.6 8.6 0 1 0 2.6-6.1"/><path d="M3.2 4.6v4.2h4.2"/><path d="M12 7.8V12l2.9 1.9"/></svg>
+          <span style="font-size: 10px; font-weight: 500; color: #8E8E93;">History</span>
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EE6605" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.9"/><path d="M19.1 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5v.2a1.9 1.9 0 1 1-3.8 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1h-.2a1.9 1.9 0 1 1 0-3.8h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5v-.2a1.9 1.9 0 1 1 3.8 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1h.2a1.9 1.9 0 1 1 0 3.8h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+          <span style="font-size: 10px; font-weight: 500; color: #EE6605;">Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAYWALL ============ -->
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280;">Paywall &#8212; free vs Pro, no serif</div>
+
+    <div style="width: 393px; height: 852px; box-sizing: border-box; background: #FFFFFF; color: #000000; display: flex; flex-direction: column; overflow: hidden; border-radius: 4px;">
+      <div style="height: 26px; flex-shrink: 0;"></div>
+
+      <div style="display: flex; justify-content: flex-start; padding: 6px 12px; flex-shrink: 0;">
+        <div style="width: 30px; height: 30px; border-radius: 15px; background: #EFEFF4; display: flex; align-items: center; justify-content: center;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6C6C70" stroke-width="2.6" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 20px 0 20px; overflow: hidden;">
+
+        <div style="width: 62px; height: 62px; border-radius: 15px; background: #031738; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; flex-shrink: 0;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 22c4.3-4.9 7.2-8.6 7.2-12.4A7.2 7.2 0 0 0 4.8 9.6C4.8 13.4 7.7 17.1 12 22Z" fill="#FDAE11"/><circle cx="12" cy="9.5" r="3.3" fill="#031738"/></svg>
+        </div>
+
+        <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em; text-align: center; line-height: 1.15;">ParkNudge Lifetime Pro</div>
+
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 12px; margin-bottom: 4px;">
+          <span class="mono" style="font-size: 44px; font-weight: 700; letter-spacing: -0.03em;">$9.99</span>
+          <span style="font-size: 15px; color: #6C6C70;">once</span>
+        </div>
+        <div style="font-size: 14px; color: #6C6C70; margin-bottom: 20px;">No subscription, no trial, no account.</div>
+        <div style="font-size: 11px; color: #B0B0B5; margin-top: -16px; margin-bottom: 16px;">price from ParkNudge.storekit &#183; the App&#160;Store storefront price wins at runtime</div>
+
+        <!-- COMPARISON -->
+        <div style="width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #E5E5EA; flex-shrink: 0;">
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; background: #F7F7F9; padding: 9px 14px; align-items: center;">
+            <span style="font-size: 12px; font-weight: 600; color: #6C6C70; letter-spacing: 0.04em;">WHAT YOU GET</span>
+            <span style="font-size: 12px; font-weight: 600; color: #6C6C70; text-align: center;">Free</span>
+            <span style="font-size: 12px; font-weight: 700; color: #B44405; text-align: center;">Pro</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; padding: 10px 14px; align-items: center; border-top: 1px solid #EDEDF0;">
+            <span style="font-size: 14px;">Save a spot, pin, photo, directions</span>
+            <span style="text-align: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg></span>
+            <span style="text-align: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg></span>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; padding: 10px 14px; align-items: center; border-top: 1px solid #EDEDF0;">
+            <span style="font-size: 14px;">Meter timer + reminders</span>
+            <span style="font-size: 12px; color: #6C6C70; text-align: center;">15/5/0</span>
+            <span style="font-size: 12px; font-weight: 600; color: #B44405; text-align: center;">yours</span>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; padding: 10px 14px; align-items: center; border-top: 1px solid #EDEDF0;">
+            <span style="font-size: 14px;">Finished sessions shown</span>
+            <span style="font-size: 12px; color: #6C6C70; text-align: center;">3</span>
+            <span style="font-size: 12px; font-weight: 600; color: #B44405; text-align: center;">all</span>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; padding: 10px 14px; align-items: center; border-top: 1px solid #EDEDF0;">
+            <span style="font-size: 14px;">Parking cost tracking</span>
+            <span style="text-align: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C6C6C8" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h12"/></svg></span>
+            <span style="text-align: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg></span>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 58px 58px; padding: 10px 14px; align-items: center; border-top: 1px solid #EDEDF0;">
+            <span style="font-size: 14px;">CSV export</span>
+            <span style="text-align: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C6C6C8" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h12"/></svg></span>
+            <span style="text-align: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg></span>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; color: #8E8E93; text-align: center; line-height: 1.45; margin-top: 14px; text-wrap: pretty;">Older sessions are never deleted &#8212; free just shows the newest three. Everything stays on this iPhone.</div>
+
+        <div style="flex-grow: 1;"></div>
+
+        <div style="width: 100%; height: 52px; border-radius: 13px; background: #EE6605; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <span style="font-size: 17px; font-weight: 600; color: #FFFFFF;">Unlock Lifetime Pro</span>
+        </div>
+        <div style="width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <span style="font-size: 16px; color: #EE6605;">Restore Purchases</span>
+        </div>
+        <div style="font-size: 11px; color: #8E8E93; text-align: center; line-height: 1.4; text-wrap: pretty; flex-shrink: 0;">One non&#8209;consumable purchase charged to your Apple ID at confirmation. It does not renew. The price shown is your storefront&#8217;s localized App&#160;Store price.</div>
+        <div style="display: flex; gap: 20px; justify-content: center; padding: 10px 0 22px 0; flex-shrink: 0;">
+          <span style="font-size: 13px; color: #EE6605;">Privacy</span>
+          <span style="font-size: 13px; color: #EE6605;">Terms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Build outputs of the design-canvas tooling, not sources:
+#   *.html          — the seeded editor payload (~2 MB) written by seed-canvas.mjs
+#   _measure.html   — the harness measure.mjs writes to render every artboard
+# The .dc.html artboards, canvas.json, current-icon.png and README.md are the source.
+*.html
+!*.dc.html
