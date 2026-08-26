@@ -10,7 +10,8 @@ final class ParkingTimelinePolicyTests: XCTestCase {
             ParkingTimelinePolicy.cadence(
                 now: now,
                 meterExpiry: now.addingTimeInterval(3600),
-                lowPowerMode: false
+                lowPowerMode: false,
+                reduceMotion: false
             ),
             60
         )
@@ -21,7 +22,8 @@ final class ParkingTimelinePolicyTests: XCTestCase {
             ParkingTimelinePolicy.cadence(
                 now: now,
                 meterExpiry: now.addingTimeInterval(600),
-                lowPowerMode: false
+                lowPowerMode: false,
+                reduceMotion: false
             ),
             1
         )
@@ -29,7 +31,8 @@ final class ParkingTimelinePolicyTests: XCTestCase {
             ParkingTimelinePolicy.cadence(
                 now: now,
                 meterExpiry: now.addingTimeInterval(-600),
-                lowPowerMode: false
+                lowPowerMode: false,
+                reduceMotion: false
             ),
             1
         )
@@ -40,7 +43,8 @@ final class ParkingTimelinePolicyTests: XCTestCase {
             ParkingTimelinePolicy.cadence(
                 now: now,
                 meterExpiry: now.addingTimeInterval(10),
-                lowPowerMode: true
+                lowPowerMode: true,
+                reduceMotion: false
             ),
             60
         )
@@ -48,9 +52,40 @@ final class ParkingTimelinePolicyTests: XCTestCase {
 
     func testNoMeterUsesOneMinuteCadence() {
         XCTAssertEqual(
-            ParkingTimelinePolicy.cadence(now: now, meterExpiry: nil, lowPowerMode: false),
+            ParkingTimelinePolicy.cadence(
+                now: now,
+                meterExpiry: nil,
+                lowPowerMode: false,
+                reduceMotion: false
+            ),
             60
         )
+    }
+
+    func testReduceMotionAlwaysUsesOneMinuteCadence() {
+        XCTAssertEqual(
+            ParkingTimelinePolicy.cadence(
+                now: now,
+                meterExpiry: now.addingTimeInterval(10),
+                lowPowerMode: false,
+                reduceMotion: true
+            ),
+            60
+        )
+    }
+
+    func testScheduleCarriesReduceMotionThroughUrgentEntries() {
+        let schedule = ParkingTimelineSchedule(
+            meterExpiry: now.addingTimeInterval(10),
+            lowPowerMode: false,
+            reduceMotion: true
+        )
+        var entries = schedule.entries(from: now, mode: .normal).makeIterator()
+        let first = entries.next()
+        let second = entries.next()
+
+        XCTAssertEqual(first, now)
+        XCTAssertEqual(second, now.addingTimeInterval(60))
     }
 
     func testParkedForDescriptionDoesNotDisplayStaleSeconds() {

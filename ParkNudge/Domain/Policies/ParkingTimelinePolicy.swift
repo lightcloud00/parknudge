@@ -1,6 +1,7 @@
 import Foundation
 
-/// Chooses how often the Park screen needs a new wall-clock sample.
+/// Chooses how often the Park screen needs a new wall-clock sample while
+/// respecting the system's power and motion preferences.
 ///
 /// The countdown is always recomputed from absolute dates. A coarser cadence
 /// can skip unnecessary redraws, but it can never accumulate timer drift.
@@ -12,9 +13,10 @@ enum ParkingTimelinePolicy {
     static func cadence(
         now: Date,
         meterExpiry: Date?,
-        lowPowerMode: Bool
+        lowPowerMode: Bool,
+        reduceMotion: Bool
     ) -> TimeInterval {
-        if lowPowerMode { return coarseCadence }
+        if lowPowerMode || reduceMotion { return coarseCadence }
         guard let meterExpiry else { return coarseCadence }
         let distanceFromExpiry = abs(meterExpiry.timeIntervalSince(now))
         return distanceFromExpiry <= MeterState.warningThreshold ? fineCadence : coarseCadence

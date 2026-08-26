@@ -3,16 +3,19 @@ import SwiftUI
 
 /// One adaptive schedule drives both the meter hero and the parked-for line.
 /// Its iterator recalculates cadence at every entry, so it automatically moves
-/// from minute updates to one-second updates at the warning boundary.
+/// from minute updates to one-second updates at the warning boundary unless a
+/// power or motion preference calls for a coarse schedule.
 struct ParkingTimelineSchedule: TimelineSchedule {
     let meterExpiry: Date?
     let lowPowerMode: Bool
+    let reduceMotion: Bool
 
     func entries(from startDate: Date, mode _: Mode) -> Entries {
         Entries(
             nextDate: startDate,
             meterExpiry: meterExpiry,
-            lowPowerMode: lowPowerMode
+            lowPowerMode: lowPowerMode,
+            reduceMotion: reduceMotion
         )
     }
 
@@ -20,6 +23,7 @@ struct ParkingTimelineSchedule: TimelineSchedule {
         var nextDate: Date
         let meterExpiry: Date?
         let lowPowerMode: Bool
+        let reduceMotion: Bool
 
         mutating func next() -> Date? {
             let entry = nextDate
@@ -27,7 +31,8 @@ struct ParkingTimelineSchedule: TimelineSchedule {
                 ParkingTimelinePolicy.cadence(
                     now: entry,
                     meterExpiry: meterExpiry,
-                    lowPowerMode: lowPowerMode
+                    lowPowerMode: lowPowerMode,
+                    reduceMotion: reduceMotion
                 )
             )
             return entry

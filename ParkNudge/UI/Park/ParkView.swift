@@ -128,7 +128,8 @@ struct ParkView: View {
         TimelineView(
             ParkingTimelineSchedule(
                 meterExpiry: session.meterExpiresAt,
-                lowPowerMode: lowPowerMode
+                lowPowerMode: lowPowerMode,
+                reduceMotion: reduceMotion
             )
         ) { context in
             ScrollView {
@@ -144,7 +145,8 @@ struct ParkView: View {
                         let cadence = ParkingTimelinePolicy.cadence(
                             now: context.date,
                             meterExpiry: expiry,
-                            lowPowerMode: lowPowerMode
+                            lowPowerMode: lowPowerMode,
+                            reduceMotion: reduceMotion
                         )
                         MeterHero(
                             startedAt: session.startedAt,
