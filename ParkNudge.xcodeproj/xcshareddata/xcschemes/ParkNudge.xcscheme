@@ -91,11 +91,11 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <CommandLineArguments>
-      </CommandLineArguments>
       <StoreKitConfigurationFileReference
          identifier = "../../ParkNudge/Resources/ParkNudge.storekit">
       </StoreKitConfigurationFileReference>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

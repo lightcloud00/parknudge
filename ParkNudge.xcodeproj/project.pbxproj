@@ -410,7 +410,6 @@
 						TestTargetID = 75D075E89A658D778366A5AC;
 					};
 					75D075E89A658D778366A5AC = {
-						ProvisioningStyle = Automatic;
 						SystemCapabilities = "[\"com.apple.InAppPurchase\": [\"enabled\": 1]]";
 					};
 				};
