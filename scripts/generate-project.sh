@@ -28,4 +28,6 @@ if [[ "$FIRST_FINGERPRINT" != "$SECOND_FINGERPRINT" ]]; then
   exit 1
 fi
 
+/bin/sh "$SCRIPT_DIR/check_project_source_truth.sh"
+
 echo "Xcode project generation is idempotent: $SECOND_FINGERPRINT"
