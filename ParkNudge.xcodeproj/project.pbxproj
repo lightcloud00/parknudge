@@ -663,7 +663,7 @@
 				PRODUCT_NAME = ParkNudge;
 				PROVISIONING_PROFILE_SPECIFIER = "ParkNudge App Store 2026-08-25";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -764,7 +764,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.gusdigitalsolutions.parknudge;
 				PRODUCT_NAME = ParkNudge;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
