@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.stage { padding: 38px 48px 40px; }
+.wall { flex: 1; display: flex; flex-direction: column; padding: 26px 22px 0; background: linear-gradient(168deg, oklch(0.935 0.012 85) 0%, oklch(0.888 0.020 210) 100%); }
+.hgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 18px; }
+.app { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.app .lb { font-size: 10.5px; color: oklch(0.30 0.012 60); letter-spacing: -0.1px; text-align: center; }
+.dock { margin-top: auto; margin-bottom: 16px; padding: 14px 12px; border-radius: 26px; background: rgba(255,255,255,0.44); display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+.ic {
+  width: 62px; height: 62px; border-radius: 15px;
+  background: var(--bone-rise);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 3px rgba(60,50,40,0.22);
+  position: relative; overflow: hidden; flex: none;
+}
+.ic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(160deg, transparent 55%, var(--a-wash) 100%); }
+.ic > * { position: relative; z-index: 2; }
+.ic.big { width: 78px; height: 78px; border-radius: 18px; }
+.ic.ink { background: var(--dark); }
+.ic.ink::after { background: linear-gradient(160deg, transparent 52%, oklch(0.36 0.060 205) 100%); }
+
+/* ---- direction A: the pin, lifted off the map ---- */
+.m-pin { width: 30px; height: 38px; position: relative; }
+.m-pin i { position: absolute; top: 0; left: 0; width: 30px; height: 30px; border-radius: 50%; border: 4px solid var(--a); }
+.m-pin i::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--a); }
+.m-pin b { position: absolute; left: 50%; top: 27px; transform: translateX(-50%); width: 4px; height: 11px; border-radius: 0 0 2px 2px; background: var(--a); }
+.ic.ink .m-pin i { border-color: var(--bone-rise); }
+.ic.ink .m-pin i::after, .ic.ink .m-pin b { background: var(--bone-rise); }
+
+/* ---- direction B: the meter ring, mid-countdown ---- */
+.m-meter { width: 34px; height: 34px; border-radius: 50%; background: conic-gradient(var(--a) 0turn 0.72turn, var(--a-edge) 0.72turn 1turn); position: relative; }
+.m-meter::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--bone-rise); }
+.ic.ink .m-meter { background: conic-gradient(var(--bone-rise) 0turn 0.72turn, oklch(0.42 0.050 205) 0.72turn 1turn); }
+.ic.ink .m-meter::after { background: var(--dark); }
+
+/* ---- direction C: the nudge — mark over a ground line ---- */
+.m-nudge { width: 34px; height: 34px; position: relative; }
+.m-nudge i { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 22px; height: 22px; background: var(--a); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.m-nudge b { position: absolute; left: 0; bottom: 3px; width: 100%; height: 4px; border-radius: 2px; background: var(--a-edge); }
+.m-nudge b::after { content: ""; position: absolute; left: 26%; top: 0; width: 48%; height: 100%; border-radius: 2px; background: var(--a); }
+.ic.ink .m-nudge i { background: var(--bone-rise); }
+.ic.ink .m-nudge b { background: oklch(0.42 0.050 205); }
+.ic.ink .m-nudge b::after { background: var(--bone-rise); }
+
+/* placeholder plates for the rest of the home screen */
+.ic.ghost { background: rgba(255,255,255,0.5); box-shadow: none; border: 1px dashed var(--rule-firm); }
+.ic.ghost::after { display: none; }
+.ic.ghost u { display: block; width: 22px; height: 22px; border-radius: 5px; background: rgba(120,110,100,0.16); text-decoration: none; }
+
+.specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+.spec2 { display: flex; flex-direction: column; gap: 11px; padding: 15px; background: var(--bone-rise); border: 1px solid var(--rule); border-radius: 5px; }
+.spec2 .pair { display: flex; gap: 10px; align-items: center; }
+.spec2 h3 { margin: 0 0 3px; font-size: 13.5px; font-weight: 700; }
+.spec2 p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-mid); }
+.spec2 .hh { display: block; margin-top: 6px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--ink-soft); }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="icon-home-screen">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="wall">
+                <div class="hgrid">
+                  <div class="app"><div class="ic"><span class="m-pin"><i></i><b></b></span></div><span class="lb">ParkNudge</span></div>
+                  <div class="app"><div class="ic"><span class="m-meter"></span></div><span class="lb">ParkNudge</span></div>
+                  <div class="app"><div class="ic"><span class="m-nudge"><i></i><b></b></span></div><span class="lb">ParkNudge</span></div>
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+
+                  <div class="app"><div class="ic ink"><span class="m-pin"><i></i><b></b></span></div><span class="lb">A &middot; on ink</span></div>
+                  <div class="app"><div class="ic ink"><span class="m-meter"></span></div><span class="lb">B &middot; on ink</span></div>
+                  <div class="app"><div class="ic ink"><span class="m-nudge"><i></i><b></b></span></div><span class="lb">C &middot; on ink</span></div>
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+                  <div class="app"><div class="ic ghost"><u></u></div><span class="lb">&nbsp;</span></div>
+                </div>
+
+                <div class="dock">
+                  <div class="app"><div class="ic"><span class="m-pin"><i></i><b></b></span></div></div>
+                  <div class="app"><div class="ic ghost"><u></u></div></div>
+                  <div class="app"><div class="ic ghost"><u></u></div></div>
+                  <div class="app"><div class="ic ghost"><u></u></div></div>
+                </div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot l" style="top:104px">1</div>
+          <div class="dot r" style="top:104px">2</div>
+          <div class="dot l" style="top:250px">3</div>
+          <div class="dot r" style="top:640px">4</div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 07</div>
+            <h1 class="d2">Three marks, one hand</h1>
+            <p class="lede">Shown at true Home Screen scale, because that is the only size that matters and the size every icon concept is judged at too late. Each mark is an element already on a ParkNudge screen, not a metaphor for one.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Ground</b><span>Bone or ink</span></div>
+            <div class="f"><b>Built from</b><span>CSS geometry</span></div>
+            <div class="f"><b>Export</b><span>1024px, no raster</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+
+          <div class="specs">
+            <div class="spec2">
+              <div class="pair">
+                <div class="ic big"><span class="m-pin"><i></i><b></b></span></div>
+                <div class="ic big ink"><span class="m-pin"><i></i><b></b></span></div>
+              </div>
+              <div>
+                <h3>A &mdash; The saved pin</h3>
+                <p>The exact ring-and-stem that marks the car on the Park screen. The most literal of the three and the only one that survives a 29px settings row unambiguously.</p>
+                <span class="hh">Recommended</span>
+              </div>
+            </div>
+            <div class="spec2">
+              <div class="pair">
+                <div class="ic big"><span class="m-meter"></span></div>
+                <div class="ic big ink"><span class="m-meter"></span></div>
+              </div>
+              <div>
+                <h3>B &mdash; The meter ring</h3>
+                <p>A countdown caught at 72 percent. It says &ldquo;timer&rdquo; before it says &ldquo;parking&rdquo;, which is the right emphasis only if the meter feature leads the listing.</p>
+                <span class="hh">Alternate</span>
+              </div>
+            </div>
+            <div class="spec2">
+              <div class="pair">
+                <div class="ic big"><span class="m-nudge"><i></i><b></b></span></div>
+                <div class="ic big ink"><span class="m-nudge"><i></i><b></b></span></div>
+              </div>
+              <div>
+                <h3>C &mdash; The nudge</h3>
+                <p>A mark above a ground line: the spot and the street it sits on. The most distinctive at thumbnail size and the least readable out of context.</p>
+                <span class="hh">Exploratory</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="items" style="margin-top:16px">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>A pale plate, not a saturated square</h3>
+                <p>Almost every parking utility ships a filled blue or orange gradient tile. A bone plate with one accent mark is the cheapest differentiation in a results grid.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>Both grounds are tested here</h3>
+                <p>Row two is the same three marks on ink. Light plates win on a busy wallpaper; the ink versions hold up better in a dark-mode App Store listing.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>No illustration, no raster</h3>
+                <p>Every mark is a circle, a diamond, a bar and a conic gradient. There is nothing to redraw at 1024px and no illustrator in the loop.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>The hue is the open question</h3>
+                <p>These are drawn at H 205 while the shipping code still tints <span class="mono">.orange</span>. Whichever wins, the mark does not change &mdash; only the accent token does.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

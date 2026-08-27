@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 32px 52px 30px; }
+.hd2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: end; }
+.hd2 .d1 { font-size: 54px; letter-spacing: -1.2px; margin-top: 10px; }
+.quote { border-left: 2px solid var(--a); padding: 4px 0 4px 18px; margin: 0; }
+.quote p { margin: 0; font-family: var(--serif); font-size: 16.5px; line-height: 1.48; color: var(--ink); text-wrap: pretty; }
+.quote cite { display: block; margin-top: 8px; font-style: normal; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; letter-spacing: -0.1px; color: var(--ink-soft); }
+.wrap .facts { margin: 16px 0 0; }
+
+.band { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 20px; }
+.pane { border: 1px solid var(--rule); border-radius: 6px; background: var(--bone-rise); padding: 16px 17px 17px; }
+.pane .cap { font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 11px; }
+.pane p { margin: 9px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-mid); text-wrap: pretty; }
+
+.spec { display: flex; align-items: baseline; gap: 13px; }
+.spec .aa { font-family: var(--serif); font-size: 44px; line-height: 0.9; font-weight: 400; letter-spacing: -1.4px; }
+.spec .aa.sans { font-family: var(--sans); font-size: 36px; font-weight: 600; letter-spacing: -1.5px; }
+.spec .tx b { display: block; font-size: 12.5px; font-weight: 700; }
+.spec .tx span { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; color: var(--ink-soft); margin-top: 3px; }
+.rule-h { height: 1px; background: var(--rule); margin: 12px 0; }
+
+.ramp { display: flex; border-radius: 4px; overflow: hidden; border: 1px solid var(--rule); }
+.ramp i { display: block; height: 40px; flex: 1; }
+.s1 { background: var(--a-wash); }
+.s2 { background: var(--a-edge); }
+.s3 { background: var(--a); }
+.s4 { background: var(--a-deep); }
+.hueline { display: flex; align-items: baseline; justify-content: space-between; margin-top: 9px; }
+.hueline b { font-size: 22px; font-weight: 500; letter-spacing: -0.8px; color: var(--a-deep); font-variant-numeric: tabular-nums; }
+.hueline span { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; color: var(--ink-soft); }
+
+.priceline { display: flex; align-items: baseline; gap: 9px; }
+.priceline b { font-size: 38px; font-weight: 300; letter-spacing: -1.6px; font-variant-numeric: tabular-nums; }
+.priceline span { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--a-deep); }
+.never { margin-top: 11px; display: flex; flex-wrap: wrap; gap: 6px; }
+.never i { font-style: normal; font-size: 11px; font-weight: 600; letter-spacing: 0.2px; padding: 4px 9px; border-radius: 3px; background: var(--bone-sunk); color: var(--ink-mid); }
+
+.vocab { margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.vocab .lead { margin: 4px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-mid); max-width: 88ch; }
+.vgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 15px; align-items: start; }
+.vcell .vh { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; color: var(--ink-soft); margin-bottom: 9px; letter-spacing: -0.1px; }
+.vbtns { display: flex; gap: 9px; }
+.gset { display: flex; gap: 13px; align-items: center; padding: 10px 0 0; }
+        </style>
+      </helmet>
+
+      <div class="wrap">
+
+        <div data-screen-label="direction-header">
+          <div class="hd2">
+            <div>
+              <div class="kicker">ParkNudge &middot; File 00</div>
+              <h1 class="d1">One pin.<br />One deadline.</h1>
+            </div>
+            <blockquote class="quote">
+              <p>&ldquo;ParkNudge helps an iPhone user remember where they parked and when a parking meter expires without an account or background tracking.&rdquo;</p>
+              <cite>Docs/PRODUCT.md &mdash; Promise</cite>
+            </blockquote>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>Free + Lifetime Pro</span></div>
+            <div class="f"><b>Platform</b><span>iOS 17 &middot; SwiftUI</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+        </div>
+
+        <div class="band" data-screen-label="direction-panes">
+
+          <div class="pane">
+            <div class="cap">Type pairing</div>
+            <div class="spec">
+              <span class="aa">Aa</span>
+              <span class="tx"><b>Newsreader</b><span>Headlines, ledes, citations</span></span>
+            </div>
+            <div class="rule-h"></div>
+            <div class="spec">
+              <span class="aa sans">Aa</span>
+              <span class="tx"><b>Helvetica Neue</b><span>Every pixel of product UI</span></span>
+            </div>
+            <p>The serif never enters the phone. Inside the frame ParkNudge is sans and tabular numerals, because a countdown read at a walking pace has to behave like iOS chrome, not like a magazine.</p>
+          </div>
+
+          <div class="pane">
+            <div class="cap">Accent hue</div>
+            <div class="ramp">
+              <i class="s1"></i>
+              <i class="s2"></i>
+              <i class="s3"></i>
+              <i class="s4"></i>
+            </div>
+            <div class="hueline">
+              <b>H 205</b>
+              <span>oklch(0.580 0.130 205)</span>
+            </div>
+            <p>Petrol blue &mdash; the colour of municipal signage and wayfinding, which is what a parking app is. It also leaves meter-expiry red as the only alarm colour on the screen.</p>
+            <p><b>Divergence on record:</b> the shipping code tints <span class="mono">.orange</span> in <span class="mono">RootTabView.swift</span>. This pack fixes H 205 and treats the orange tint as the open question.</p>
+          </div>
+
+          <div class="pane">
+            <div class="cap">Pricing boundary</div>
+            <div class="priceline">
+              <b>$9.99</b>
+              <span>ONE TIME</span>
+            </div>
+            <p>&ldquo;Lifetime Pro is a non-consumable in-app purchase&hellip; The planned U.S. reference price is $9.99; the app always renders StoreKit&rsquo;s localized <span class="mono">displayPrice</span>.&rdquo; &mdash; Docs/MONETIZATION.md</p>
+            <p>The whole parking loop stays free: one active spot, pin correction, search, directions, details and one photo, meter timer, fixed 15/5/0-minute alerts, three newest sessions.</p>
+            <div class="never">
+              <i>No subscription</i>
+              <i>No trial</i>
+              <i>No account</i>
+              <i>No ads</i>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="vocab" data-screen-label="component-vocabulary">
+          <h2 class="d3">Component vocabulary</h2>
+          <p class="lead">Seven pieces carry all seven artboards, and every Pro-gated surface is marked with exactly one lock.</p>
+
+          <div class="vgrid">
+
+            <div class="vcell">
+              <div class="vh">.c-btn &middot; .c-btn.ghost</div>
+              <div class="vbtns">
+                <div class="c-btn sm">Directions</div>
+                <div class="c-btn sm ghost">Finish</div>
+              </div>
+              <div class="vh" style="margin-top:14px">.g &mdash; icon grammar</div>
+              <div class="gset">
+                <span class="g g-pin" style="width:20px;height:20px"></span>
+                <span class="g g-clock" style="width:20px;height:20px"></span>
+                <span class="g g-gear" style="width:20px;height:20px"></span>
+                <span class="lock a"></span>
+              </div>
+            </div>
+
+            <div class="vcell">
+              <div class="vh">.grp &mdash; grouped list</div>
+              <div class="grp">
+                <div class="r"><span class="k">Free reminders</span><span class="v">15 / 5 / 0 min</span></div>
+                <div class="r"><span class="k"><span class="lock"></span>Customize with Pro</span><span class="chev"></span></div>
+              </div>
+              <div class="gft">Footer copy sits outside the card, in soft ink.</div>
+            </div>
+
+            <div class="vcell">
+              <div class="vh">.mapph &mdash; map stand-in</div>
+              <div class="mapph" style="height:104px">
+                <span class="pin"><i></i><b></b></span>
+                <span class="exp">MapKit &middot; saved pin</span>
+              </div>
+            </div>
+
+            <div class="vcell">
+              <div class="vh">.up-row &mdash; the quiet upsell</div>
+              <div class="up-row" style="border-top:0;padding:0 0 12px">
+                <div class="txt">
+                  <b>Unlimited history, costs, CSV</b>
+                  <span>One purchase. The parking loop stays free.</span>
+                </div>
+                <div class="px">$9.99</div>
+              </div>
+              <div class="c-up" style="padding:12px 13px">
+                <div class="k">Lifetime Pro</div>
+                <p style="margin:5px 0 0">Never a modal over a live countdown.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

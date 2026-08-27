@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.stage { padding: 38px 48px 40px; }
+.spot { margin-top: 13px; }
+.spot .nm { font-size: 19.5px; font-weight: 600; letter-spacing: -0.4px; }
+.spot .el { font-size: 13px; color: var(--ink-mid); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+.meter { margin-top: 11px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-radius: 10px; background: var(--a-wash); border: 1px solid var(--a-edge); }
+.meter .lb { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--a-deep); }
+.meter .tm { font-size: 25px; font-weight: 400; letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-top: 1px; }
+.meter .sub { font-size: 11px; color: var(--ink-mid); margin-top: 1px; }
+
+.dets { margin-top: 11px; }
+.dets .r { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; color: var(--ink-mid); border-bottom: 1px solid var(--rule); }
+.dets .r:last-child { border-bottom: 0; }
+.dets .r .g { width: 15px; height: 15px; }
+
+.acts { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; gap: 9px; }
+.acts .pair { display: flex; gap: 9px; }
+.acts .pair .c-btn { flex: 1; padding: 0 8px; font-size: 14.5px; }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="park-active-session">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="body-col">
+                <div class="navb">
+                  <span class="lt">ParkNudge</span>
+                  <span class="act filled"><span class="g g-cross" style="width:14px;height:14px"></span></span>
+                </div>
+
+                <div class="mapph" style="height:204px">
+                  <span class="pin"><i></i><b></b></span>
+                  <span class="exp">MapKit &middot; saved pin</span>
+                  <span class="exp r">&plusmn;8 m</span>
+                </div>
+
+                <div class="spot">
+                  <div class="nm">Sutter&ndash;Stockton Garage</div>
+                  <div class="el">Parked for 1:24:36</div>
+                </div>
+
+                <div class="meter">
+                  <div>
+                    <div class="lb">Meter time remaining</div>
+                    <div class="tm">0:14:52</div>
+                    <div class="sub">Expires 11:06 AM</div>
+                  </div>
+                  <span class="g g-clock" style="width:30px;height:30px"></span>
+                </div>
+
+                <div class="dets">
+                  <div class="r"><span class="g g-sq" style="width:15px;height:15px"></span>Floor 3 &middot; Section B</div>
+                  <div class="r"><span class="g g-bar" style="width:15px;height:15px;position:relative"></span>Blue level, near elevator C</div>
+                  <div class="r"><span class="g g-ring" style="width:15px;height:15px;border-width:2px"></span>GPS accuracy &plusmn;8 m</div>
+                </div>
+
+                <div class="acts">
+                  <div class="c-btn wide">Walking Directions</div>
+                  <div class="pair">
+                    <div class="c-btn sm ghost">Edit or Extend</div>
+                    <div class="c-btn sm ghost">Park Somewhere Else</div>
+                  </div>
+                  <div class="c-btn sm ghost wide" style="border-color:var(--rule-firm);color:var(--ink-mid)">Finish</div>
+                </div>
+              </div>
+
+              <div class="tabs">
+                <div class="tab on"><span class="g g-pin"></span>Park</div>
+                <div class="tab"><span class="g g-clock"></span>History</div>
+                <div class="tab"><span class="g g-gear"></span>Settings</div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot r" style="top:76px">1</div>
+          <div class="dot l" style="top:196px">2</div>
+          <div class="dot r" style="top:346px">3</div>
+          <div class="dot l" style="top:432px">4</div>
+          <div class="dot r" style="top:540px">5</div>
+          <div class="dot l" style="top:664px">6</div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 01</div>
+            <h1 class="d2">The active spot</h1>
+            <p class="lede">The screen the app exists for. A driver opens it in a stairwell with one hand full, so it answers two questions first &mdash; where the car is, and how long is left &mdash; and everything under them is free.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>Free + Lifetime Pro</span></div>
+            <div class="f"><b>Platform</b><span>iOS 17 &middot; SwiftUI</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+
+          <div class="items">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>Exactly one active session</h3>
+                <p>No list, no second pin. Parking somewhere else archives the current spot to History rather than adding another one beside it.</p>
+                <span class="cite">Docs/PRODUCT.md &mdash; &ldquo;Confirm one active session.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>The map is a stand-in</h3>
+                <p>A striped placeholder and a monospace explainer mark where MapKit mounts. The pin, the accuracy and the label are the only real promises.</p>
+                <span class="cite">ParkView.swift &mdash; <span class="mono">active-parking-map</span>.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>The countdown is derived</h3>
+                <p>Remaining time is computed from an absolute expiry date, so backgrounding, a timezone change or a reboot cannot strand a stale number here.</p>
+                <span class="cite">Docs/PRODUCT.md &mdash; absolute expiration date.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>Garage details outrank coordinates</h3>
+                <p>Floor, section and the note sit above GPS accuracy. Indoors, what finds the car is &ldquo;Floor 3, Section B&rdquo; and not eight metres.</p>
+                <span class="cite">ParkView.swift &mdash; floor / section / note rows.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">5</div>
+              <div>
+                <h3>One filled button only</h3>
+                <p>Directions is what a returning driver wants. Edit, replace and finish are ghosts; Finish is quietest because it ends the session.</p>
+                <span class="cite">Free tier &mdash; Apple Maps walking directions.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">6</div>
+              <div>
+                <h3>Nothing here can be gated</h3>
+                <p>No lock appears in the parking loop. If StoreKit fails entirely this screen is unchanged &mdash; which is why the free tier can be stated so plainly.</p>
+                <span class="cite">Docs/PRODUCT.md &mdash; free workflow stays intact.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top:18px">
+            <h4>Meter red is spent once</h4>
+            <p>Petrol blue carries every affordance so the expired-meter state has one unused colour left to claim. An interface already shouting cannot raise its voice.</p>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

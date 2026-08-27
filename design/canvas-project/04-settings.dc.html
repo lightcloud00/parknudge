@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.stage { padding: 38px 48px 40px; }
+.body-col.setg { gap: 9px; }
+.body-col.setg .grp .r { min-height: 44px; padding: 8px 14px; }
+.body-col.setg .ghd { margin-bottom: 5px; }
+.body-col.setg .gft { margin-top: 6px; }
+.prorow .k { font-weight: 600; }
+.prorow .v { font-size: 15px; font-weight: 600; color: var(--ink); }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="settings-free-tier">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="body-col setg">
+                <div class="navb">
+                  <span class="lt">Settings</span>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">ParkNudge Pro</div>
+                  <div class="grp">
+                    <div class="r prorow">
+                      <span class="k"><span class="g g-dia" style="width:13px;height:13px"></span>Lifetime Pro</span>
+                      <span class="v">$9.99</span>
+                    </div>
+                    <div class="r act"><span class="k">Restore Purchases</span><span class="chev"></span></div>
+                  </div>
+                  <div class="gft">One-time purchase, no subscription. The full free parking workflow always remains available.</div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Meter reminders</div>
+                  <div class="grp">
+                    <div class="r"><span class="k">Free reminders</span><span class="v">15 / 5 / 0 min</span></div>
+                    <div class="r"><span class="k"><span class="lock"></span>Customize with Pro</span><span class="chev"></span></div>
+                  </div>
+                  <div class="gft">Warnings already in the past are skipped when a meter is saved or extended.</div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Local data</div>
+                  <div class="grp">
+                    <div class="r"><span class="k">Completed sessions</span><span class="v">12</span></div>
+                    <div class="r warn"><span class="k">Delete All Parking Data</span></div>
+                  </div>
+                  <div class="gft">All data stays on this iPhone unless you explicitly share a CSV export.</div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">About</div>
+                  <div class="grp">
+                    <div class="r act"><span class="k">Privacy</span><span class="chev"></span></div>
+                    <div class="r act"><span class="k">Terms</span><span class="chev"></span></div>
+                    <div class="r"><span class="k">Version</span><span class="v">0.1.0 (1)</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tabs">
+                <div class="tab"><span class="g g-pin"></span>Park</div>
+                <div class="tab"><span class="g g-clock"></span>History</div>
+                <div class="tab on"><span class="g g-gear"></span>Settings</div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot r" style="top:132px">1</div>
+          <div class="dot l" style="top:200px">2</div>
+          <div class="dot r" style="top:330px">3</div>
+          <div class="dot l" style="top:400px">4</div>
+          <div class="dot r" style="top:520px">5</div>
+          <div class="dot l" style="top:620px">6</div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 04</div>
+            <h1 class="d2">Settings, and the receipt</h1>
+            <p class="lede">Four sections and no switches worth hunting for. Settings is where a suspicious user checks whether the app is what it claimed &mdash; so the purchase, the reminder schedule and the data policy are all stated here in full.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>Free + Lifetime Pro</span></div>
+            <div class="f"><b>Platform</b><span>iOS 17 &middot; SwiftUI</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+
+          <div class="items">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>Restore sits next to the price</h3>
+                <p>Anyone reinstalling looks here first. Burying restore is how an app charges an existing customer twice and earns the review that follows.</p>
+                <span class="cite">SettingsView.swift &mdash; Restore Purchases.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>The free promise is under the price</h3>
+                <p>&ldquo;One-time purchase, no subscription. The full free parking workflow always remains available.&rdquo; Verbatim, in the place the doubt occurs.</p>
+                <span class="cite">SettingsView.swift &mdash; Pro section footer.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>The free schedule is a value, not a tease</h3>
+                <p>15 / 5 / 0 min is printed as a real setting with a real value. The Pro row underneath customises it; it does not unlock it.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; fixed 15/5/0-minute alerts.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>Completed sessions are counted here</h3>
+                <p>Twelve stored while three are shown &mdash; the number that proves the History limit is a display rule and not a deletion policy.</p>
+                <span class="cite">SettingsView.swift &mdash; Completed sessions.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">5</div>
+              <div>
+                <h3>Delete is destructive and says so</h3>
+                <p>The only red text in the app, and its confirmation states that the App Store purchase is not affected by wiping local data.</p>
+                <span class="cite">SettingsView.swift &mdash; &ldquo;Your App Store purchase is not affected.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">6</div>
+              <div>
+                <h3>Privacy and Terms open in-app</h3>
+                <p>Both are local documents, not links to a domain. <span class="mono">parknudge.app</span> is still a candidate, so nothing here depends on it resolving.</p>
+                <span class="cite">README.md &mdash; canonical URL is a candidate only.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

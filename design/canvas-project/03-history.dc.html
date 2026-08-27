@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.sess { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.sess:last-child { border-bottom: 0; }
+.sess .ic { width: 38px; height: 38px; border-radius: 50%; background: var(--a-wash); border: 1px solid var(--a-edge); display: flex; align-items: center; justify-content: center; flex: none; }
+.sess .tx { flex: 1; min-width: 0; }
+.sess .tx b { display: block; font-size: 14.5px; font-weight: 600; letter-spacing: -0.2px; }
+.sess .tx span { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.sess .du { font-size: 13px; color: var(--ink-mid); font-variant-numeric: tabular-nums; flex: none; }
+
+.listhd { display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px; }
+.listhd .ghd { margin: 0; }
+.listhd .ct { font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.vault { margin-top: 13px; border: 1px dashed var(--rule-firm); border-radius: 12px; background: var(--bone-sunk); padding: 6px 13px 12px; }
+.stub { display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+.stub i { width: 34px; height: 34px; border-radius: 50%; background: var(--rule); flex: none; }
+.stub .bars { flex: 1; }
+.stub .bars u { display: block; height: 9px; border-radius: 5px; background: var(--rule-firm); width: 52%; text-decoration: none; }
+.stub .bars s { display: block; height: 8px; border-radius: 4px; background: var(--rule); width: 30%; margin-top: 6px; text-decoration: none; }
+.stub.f2 { opacity: 0.66; }
+.stub.f3 { opacity: 0.38; }
+.reveal { display: flex; align-items: center; gap: 11px; min-height: 52px; margin-top: 6px; padding: 0 14px; border-radius: 9px; background: var(--bone-rise); border: 1px solid var(--a-edge); }
+.reveal .tx { flex: 1; }
+.reveal .tx b { display: block; font-size: 14px; font-weight: 600; }
+.reveal .tx span { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 1px; }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="history-free-tier">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="body-col">
+                <div class="navb">
+                  <span class="lt">History</span>
+                  <span class="act"><span class="lock"></span></span>
+                </div>
+
+                <div class="listhd">
+                  <div class="ghd">Completed</div>
+                  <span class="ct">3 of 12 shown</span>
+                </div>
+
+                <div class="grp" style="padding: 0 14px; margin-top: 7px">
+                  <div class="sess">
+                    <span class="ic"><span class="g g-pin" style="width:15px;height:15px"></span></span>
+                    <span class="tx"><b>Sutter&ndash;Stockton Garage</b><span>Yesterday, 9:41 AM &middot; Floor 3 &middot; B</span></span>
+                    <span class="du">3:12</span>
+                  </div>
+                  <div class="sess">
+                    <span class="ic"><span class="g g-pin" style="width:15px;height:15px"></span></span>
+                    <span class="tx"><b>Valencia St &amp; 18th</b><span>Aug 16, 6:02 PM &middot; Street meter</span></span>
+                    <span class="du">1:45</span>
+                  </div>
+                  <div class="sess">
+                    <span class="ic"><span class="g g-pin" style="width:15px;height:15px"></span></span>
+                    <span class="tx"><b>Pier 39 Lot C</b><span>Aug 14, 11:20 AM &middot; Level 2</span></span>
+                    <span class="du">2:38</span>
+                  </div>
+                </div>
+
+                <div class="gft">Free includes the three newest completed sessions. All older sessions remain stored locally.</div>
+
+                <div class="vault">
+                  <div class="stub">
+                    <i></i>
+                    <span class="bars"><u></u><s></s></span>
+                  </div>
+                  <div class="stub f2">
+                    <i></i>
+                    <span class="bars"><u style="width:44%"></u><s style="width:36%"></s></span>
+                  </div>
+                  <div class="stub f3">
+                    <i></i>
+                    <span class="bars"><u style="width:58%"></u><s style="width:26%"></s></span>
+                  </div>
+                  <div class="reveal">
+                    <span class="lock a"></span>
+                    <span class="tx"><b>Reveal 9 older sessions</b><span>Stored on this iPhone right now</span></span>
+                    <span class="chev"></span>
+                  </div>
+                </div>
+
+                <div class="up-row" style="margin-top:auto">
+                  <div class="txt">
+                    <b>Unlimited history, costs, CSV export</b>
+                    <span>One purchase. The parking loop stays free.</span>
+                  </div>
+                  <div class="px">$9.99</div>
+                </div>
+              </div>
+
+              <div class="tabs">
+                <div class="tab"><span class="g g-pin"></span>Park</div>
+                <div class="tab on"><span class="g g-clock"></span>History</div>
+                <div class="tab"><span class="g g-gear"></span>Settings</div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot r" style="top:74px">1</div>
+          <div class="dot l" style="top:180px">2</div>
+          <div class="dot r" style="top:330px">3</div>
+          <div class="dot l" style="top:396px">4</div>
+          <div class="dot r" style="top:530px">5</div>
+          <div class="dot l" style="top:700px">6</div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 03</div>
+            <h1 class="d2">History, and the display limit</h1>
+            <p class="lede">The one screen where the free boundary is visible, so it is also the screen most likely to be read as a hostage note. The design answers that by showing the older sessions still sitting on the device.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>Free + Lifetime Pro</span></div>
+            <div class="f"><b>Platform</b><span>iOS 17 &middot; SwiftUI</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+
+          <div class="items">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>A display limit, not a retention limit</h3>
+                <p>The hidden sessions are drawn as real dimmed rows, not an empty upsell. They exist on the device and the copy under the list says so in as many words.</p>
+                <span class="cite">Docs/PRODUCT.md &mdash; &ldquo;A display limit is not a retention limit.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>Three, and the count is stated</h3>
+                <p>&ldquo;3 of 12 shown&rdquo; sits above the list rather than being discovered at the bottom. The user learns the boundary before they hit it.</p>
+                <span class="cite">Free tier &mdash; three newest completed sessions.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>Nothing is ever deleted</h3>
+                <p>A missing, revoked or refunded entitlement hides locked surfaces and nothing else &mdash; sessions, costs, photos and reminder metadata all survive.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; Data preservation.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>Export is locked, and shows it in the bar</h3>
+                <p>CSV export is Pro, so the toolbar carries a lock rather than a share glyph that fails on tap. A control that cannot act should not look like it can.</p>
+                <span class="cite">HistoryView.swift &mdash; export toolbar item.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">5</div>
+              <div>
+                <h3>The upsell is a row, never a wall</h3>
+                <p>It sits under the content it refers to, states the real price, and cannot cover a session the user is trying to read. Tapping the locked row reaches the same screen.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; reachable from a locked feature.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">6</div>
+              <div>
+                <h3>Export warns before it writes</h3>
+                <p>The confirmation names what the file contains &mdash; dates, coordinates, labels, notes, meter times and costs &mdash; because location history is the sensitive part.</p>
+                <span class="cite">HistoryView.swift &mdash; &ldquo;Export sensitive location history?&rdquo;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>
