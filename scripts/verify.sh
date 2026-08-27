@@ -7,6 +7,9 @@ DERIVED_DATA_PATH="$PROJECT_ROOT/.build/DerivedData"
 RELEASE_DERIVED_DATA_PATH="$PROJECT_ROOT/.build/ReleaseDerivedData"
 SIMULATOR_NAME="ParkNudge-Verify-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 SIMULATOR_ID=""
+REQUESTED_DEVICE_TYPE_ID="${PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID:-}"
+XCRESULT_PATH="${PARKNUDGE_XCRESULT_PATH:-}"
+RESULT_BUNDLE_ARGS=()
 
 cleanup() {
   if [[ -n "$SIMULATOR_ID" ]]; then
@@ -23,7 +26,29 @@ plutil -lint ParkNudge/Resources/PrivacyInfo.xcprivacy >/dev/null
 python3 -m json.tool ParkNudge/Resources/ParkNudge.storekit >/dev/null
 
 RUNTIME_ID="$(xcrun simctl list runtimes --json | python3 -c 'import json,sys; runtimes=[r for r in json.load(sys.stdin)["runtimes"] if r.get("isAvailable") and r["name"].startswith("iOS")]; print(sorted(runtimes,key=lambda r: tuple(int(x) for x in r["version"].split(".")))[-1]["identifier"])')"
-DEVICE_TYPE_ID="$(xcrun simctl list devicetypes --json | python3 -c 'import json,sys; devices=[d for d in json.load(sys.stdin)["devicetypes"] if d["name"].startswith("iPhone")]; print(devices[0]["identifier"])')"
+if [[ -n "$REQUESTED_DEVICE_TYPE_ID" ]]; then
+  if ! xcrun simctl list devicetypes --json | python3 -c 'import json,sys; requested=sys.argv[1]; devices=json.load(sys.stdin)["devicetypes"]; raise SystemExit(0 if any(d["identifier"] == requested for d in devices) else 1)' "$REQUESTED_DEVICE_TYPE_ID"; then
+    echo "Unknown PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID: $REQUESTED_DEVICE_TYPE_ID" >&2
+    exit 64
+  fi
+  DEVICE_TYPE_ID="$REQUESTED_DEVICE_TYPE_ID"
+else
+  DEVICE_TYPE_ID="$(xcrun simctl list devicetypes --json | python3 -c 'import json,sys; devices=[d for d in json.load(sys.stdin)["devicetypes"] if d["name"].startswith("iPhone")]; print(devices[0]["identifier"])')"
+fi
+
+if [[ -n "$XCRESULT_PATH" ]]; then
+  if [[ "$XCRESULT_PATH" != /* ]]; then
+    echo "PARKNUDGE_XCRESULT_PATH must be an absolute path." >&2
+    exit 64
+  fi
+  if [[ -e "$XCRESULT_PATH" ]]; then
+    echo "PARKNUDGE_XCRESULT_PATH already exists: $XCRESULT_PATH" >&2
+    exit 73
+  fi
+  mkdir -p "$(dirname "$XCRESULT_PATH")"
+  RESULT_BUNDLE_ARGS=(-resultBundlePath "$XCRESULT_PATH")
+fi
+
 SIMULATOR_ID="$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE_ID" "$RUNTIME_ID")"
 xcrun simctl boot "$SIMULATOR_ID"
 SIMULATOR_READY=0
@@ -57,6 +82,7 @@ xcodebuild \
   -parallel-testing-enabled NO \
   -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
   -derivedDataPath "$DERIVED_DATA_PATH" \
+  "${RESULT_BUNDLE_ARGS[@]}" \
   test-without-building
 
 xcodebuild \

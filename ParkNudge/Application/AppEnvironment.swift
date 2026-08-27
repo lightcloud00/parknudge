@@ -72,8 +72,12 @@ struct AppEnvironment {
             clock: clock
         )
 
-        if arguments.contains("-ui-test-active-meter") {
-            try seedActiveMeteredSession(into: repository, clock: clock)
+        if let meterOffset = try UITestMeterSeed.offset(arguments: arguments) {
+            try seedActiveMeteredSession(
+                into: repository,
+                clock: clock,
+                meterOffset: meterOffset
+            )
         }
 
         return AppEnvironment(container: container, model: model)
@@ -91,7 +95,8 @@ struct AppEnvironment {
     /// container.
     private static func seedActiveMeteredSession(
         into repository: ParkingRepository,
-        clock: Clock
+        clock: Clock,
+        meterOffset: TimeInterval
     ) throws {
         let now = clock.now
         try repository.create(
@@ -105,7 +110,7 @@ struct AppEnvironment {
                 floor: "3",
                 section: "14",
                 note: nil,
-                meterExpiresAt: now.addingTimeInterval(3_600),
+                meterExpiresAt: now.addingTimeInterval(meterOffset),
                 paidAmountMinor: nil,
                 currencyCode: nil,
                 source: .currentLocation,
