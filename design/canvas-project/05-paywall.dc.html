@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.stage { padding: 38px 48px 40px; }
+
+.closerow { display: flex; padding: 0 0 6px; }
+.x { width: 44px; height: 44px; margin-left: -6px; border-radius: 50%; background: var(--bone-sunk); display: flex; align-items: center; justify-content: center; position: relative; }
+.x::before, .x::after { content: ""; position: absolute; width: 15px; height: 2px; background: var(--ink-mid); border-radius: 1px; }
+.x::before { transform: rotate(45deg); }
+.x::after { transform: rotate(-45deg); }
+
+.pw-h { font-family: var(--serif); font-size: 34px; line-height: 1.06; font-weight: 400; letter-spacing: -0.8px; margin: 2px 0 0; }
+.pw-sub { font-size: 13px; font-weight: 600; color: var(--a-deep); margin-top: 7px; letter-spacing: 0.1px; }
+.pw-free { margin-top: 12px; padding: 12px 14px; border-radius: 7px; background: var(--bone-sunk); font-size: 12.5px; line-height: 1.5; color: var(--ink-mid); }
+.pw-free b { color: var(--ink); font-weight: 600; }
+
+.gets { margin-top: 18px; }
+.gets .cap { font-size: 10.5px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+.gets .r { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; }
+.tick { width: 19px; height: 19px; border-radius: 50%; background: var(--a-wash); border: 1px solid var(--a-edge); flex: none; position: relative; margin-top: 1px; }
+.tick::after { content: ""; position: absolute; left: 5px; top: 4.5px; width: 7px; height: 4px; border-left: 2px solid var(--a-deep); border-bottom: 2px solid var(--a-deep); transform: rotate(-45deg); }
+.gets .r b { display: block; font-size: 14.5px; font-weight: 500; }
+.gets .r span { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+
+.pricebox { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--rule); }
+.pricerow { display: flex; align-items: baseline; gap: 10px; margin-bottom: 13px; }
+.pricerow b { font-size: 42px; line-height: 1; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -1.8px; }
+.pricerow span { font-size: 13px; font-weight: 700; letter-spacing: 1.1px; color: var(--a-deep); }
+.restore { text-align: center; font-size: 13px; color: var(--ink-mid); margin-top: 13px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.legal { text-align: center; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.legrow { display: flex; justify-content: center; gap: 18px; margin-top: 6px; font-size: 12px; color: var(--a-deep); }
+
+.side .facts .f span { letter-spacing: -0.3px; }
+
+.refuse { margin-top: 18px; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; }
+.refuse .rh { display: grid; grid-template-columns: 1fr 1.25fr; gap: 0; background: var(--bone-sunk); }
+.refuse .rh b { padding: 9px 14px; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-soft); }
+.refuse .rr { display: grid; grid-template-columns: 1fr 1.25fr; border-top: 1px solid var(--rule); background: var(--bone-rise); }
+.refuse .rr > div { padding: 9px 14px; font-size: 12.5px; line-height: 1.4; }
+.refuse .rr > div:first-child { font-weight: 600; color: var(--ink); border-right: 1px solid var(--rule); }
+.refuse .rr > div:last-child { color: var(--ink-soft); font-family: var(--serif); font-style: italic; font-size: 12px; }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="paywall-lifetime-pro">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="body-col">
+                <div class="closerow"><div class="x"></div></div>
+
+                <h1 class="pw-h">ParkNudge<br />Lifetime Pro.</h1>
+                <div class="pw-sub">One-time purchase, no subscription</div>
+
+                <div class="pw-free"><b>Free always includes</b> one active spot, GPS and manual pin correction, Apple Maps directions, details and one photo, a meter timer, fixed 15/5/0-minute reminders, and the three newest completed sessions.</div>
+
+                <div class="gets">
+                  <div class="cap">What Pro adds</div>
+                  <div class="r"><span class="tick"></span><div><b>Unlimited parking history</b><span>Every completed session, not the newest three</span></div></div>
+                  <div class="r"><span class="tick"></span><div><b>Custom reminder presets</b><span>Your own offsets, saved and reused</span></div></div>
+                  <div class="r"><span class="tick"></span><div><b>Parking cost records</b><span>What each session actually cost</span></div></div>
+                  <div class="r"><span class="tick"></span><div><b>CSV export</b><span>Dates, places, meter times and costs</span></div></div>
+                </div>
+
+                <div class="pricebox">
+                  <div class="pricerow"><b>$9.99</b><span>ONE TIME</span></div>
+                  <div class="c-btn wide">Unlock Lifetime Pro for $9.99</div>
+                  <div class="restore">Restore Purchases</div>
+                  <div class="legal">One-time purchase &middot; no subscription &middot; no account</div>
+                  <div class="legrow"><span>Privacy</span><span>Terms</span></div>
+                </div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot l" style="top:64px">1</div>
+          <div class="dot r" style="top:150px">2</div>
+          <div class="dot l" style="top:250px">3</div>
+          <div class="dot r" style="top:400px">4</div>
+          <div class="dot l" style="top:620px">5</div>
+          <div class="dot r" style="top:730px">6</div>
+
+          <div class="fcap">
+            <b>Planned reference price</b>
+            <span>$9.99 is the U.S. reference price on record. No IAP is configured yet; the app renders StoreKit displayPrice.</span>
+          </div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 05</div>
+            <h1 class="d2">The one-time purchase</h1>
+            <p class="lede">The screen a suspicious user is bracing for. Its whole job is to be less interesting than they expect &mdash; and to close on demand.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>One-time IAP</span></div>
+            <div class="f"><b>Never</b><span class="hue">Subscription</span></div>
+            <div class="f"><b>Status</b><span>Pre-release</span></div>
+          </div>
+
+          <div class="items">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>It closes, and the close is first</h3>
+                <p>A 44px target in the top-left corner, rendered before anything else. The sheet is always dismissible and free access continues.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; &ldquo;Always dismissible.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>What stays free is stated first</h3>
+                <p>The block above the feature list is the free tier, verbatim from the app. Naming what is not being taken away defuses the suspicion.</p>
+                <span class="cite">PaywallView.swift &mdash; free-tier footnote.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>Four features, and only four</h3>
+                <p>The exact four in the monetization table. No padding, no &ldquo;priority support&rdquo;, no invented extras.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; list the four exact Pro features.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>The number sits above the button</h3>
+                <p>$9.99 at 42px with ONE TIME beside it, and the price repeated in the button label. Nobody taps Unlock unread.</p>
+                <span class="cite">PaywallView.swift &mdash; &ldquo;Unlock Lifetime Pro for {price}&rdquo;.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">5</div>
+              <div>
+                <h3>Restore, Privacy and Terms are here</h3>
+                <p>All three are required on this screen, not buried in Settings. Anyone reinstalling meets this sheet first.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; Restore, Privacy, Terms, Close.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">6</div>
+              <div>
+                <h3>It appears once, and never at launch</h3>
+                <p>Automatic presentation happens a single time, after the first completed session, and only for a free user.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; auto-present only once.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="refuse">
+            <div class="rh"><b>Refused pattern</b><b>Why &mdash; from the repo docs</b></div>
+            <div class="rr"><div>Trial countdown</div><div>Named in the refused list, Docs/MONETIZATION.md.</div></div>
+            <div class="rr"><div>Fake discount or was-price</div><div>Manufactured urgency on a ten-dollar utility.</div></div>
+            <div class="rr"><div>Repeated auto-presentation</div><div>Once, after the first completed session, free users.</div></div>
+            <div class="rr"><div>Any subscription tier</div><div>Launch value depends on no hosted service.</div></div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 1010}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

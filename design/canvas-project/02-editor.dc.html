@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.stage { padding: 38px 48px 40px; }
+.body-col.form { gap: 6px; padding-top: 2px; }
+.body-col.form .grp .r { min-height: 44px; padding: 8px 14px; }
+.body-col.form .ghd { margin-bottom: 4px; }
+.navb.sheet { padding: 2px 0 6px; }
+
+.capline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 5px; font-size: 12px; color: var(--ink-mid); }
+.capline .tap { display: flex; align-items: center; gap: 7px; }
+.capline .acc { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+
+.field { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 12px; border-radius: 10px; background: var(--bone-rise); border: 1px solid var(--rule); }
+.field .ph { font-size: 14.5px; color: var(--ink-soft); }
+.mag { width: 13px; height: 13px; border: 2px solid var(--ink-soft); border-radius: 50%; position: relative; flex: none; }
+.mag::after { content: ""; position: absolute; right: -4px; bottom: -3px; width: 7px; height: 2px; background: var(--ink-soft); transform: rotate(45deg); border-radius: 1px; }
+
+.tog { width: 44px; height: 26px; border-radius: 13px; background: var(--a); position: relative; flex: none; }
+.tog i { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; border-radius: 50%; background: var(--bone-rise); box-shadow: 0 1px 2px rgba(60,50,40,0.3); }
+
+.photorow { display: flex; align-items: center; gap: 12px; }
+.photoph { width: 44px; height: 44px; border-radius: 7px; flex: none; }
+.photoph .exp { left: 4px; bottom: 3px; font-size: 8px; padding: 1px 4px; }
+.photorow .pt { flex: 1; min-width: 0; }
+.photorow .pt b { display: block; font-size: 14px; font-weight: 500; }
+.photorow .pt span { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+.photorow .add { font-size: 14.5px; color: var(--a-deep); font-weight: 500; }
+
+.protag { font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--a-deep); background: var(--a-wash); border: 1px solid var(--a-edge); padding: 3px 7px; border-radius: 3px; }
+        </style>
+      </helmet>
+
+      <div class="stage">
+        <div class="frame">
+          <div class="phone" data-screen-label="parking-editor-sheet">
+            <div class="screen">
+
+              <div class="sbar">
+                <span class="time">9:41</span>
+                <span class="sys">
+                  <span class="sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+                  <span class="batt"><i></i></span>
+                </span>
+              </div>
+
+              <div class="body-col form">
+                <div class="navb sheet">
+                  <span class="txtact">Cancel</span>
+                  <span class="ct">Save Parking Spot</span>
+                  <span class="txtact strong">Save</span>
+                </div>
+
+                <div>
+                  <div class="mapph" style="height:102px">
+                    <span class="pin"><i></i><b></b></span>
+                    <span class="exp">MapKit &middot; draggable pin</span>
+                  </div>
+                  <div class="capline">
+                    <span class="tap"><span class="g g-dia" style="width:11px;height:11px"></span>Tap the map to correct the pin.</span>
+                    <span class="acc">&plusmn;8 m</span>
+                  </div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Find a place</div>
+                  <div class="field">
+                    <span class="mag"></span>
+                    <span class="ph">Garage, address, or landmark</span>
+                  </div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Helpful details</div>
+                  <div class="grp">
+                    <div class="r"><span class="k">Place label</span><span class="v">Sutter&ndash;Stockton</span></div>
+                    <div class="r"><span class="k">Floor</span><span class="v">3</span></div>
+                    <div class="r"><span class="k">Section</span><span class="v">B</span></div>
+                    <div class="r"><span class="k">Note</span><span class="v">Near elevator C</span></div>
+                  </div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Meter</div>
+                  <div class="grp">
+                    <div class="r"><span class="k">Meter timer</span><span class="tog"><i></i></span></div>
+                    <div class="r"><span class="k">Expires</span><span class="v a">11:06 AM</span></div>
+                  </div>
+                  <div class="gft">Free reminders arrive 15 minutes, 5 minutes, and at expiry when those times are still in the future.</div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">One parking photo</div>
+                  <div class="grp">
+                    <div class="r photorow">
+                      <span class="mapph photoph"><span class="exp">photo</span></span>
+                      <span class="pt"><b>Level 3 pillar marking</b><span>Stored on device only</span></span>
+                      <span class="add">Replace</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sect">
+                  <div class="ghd">Cost</div>
+                  <div class="grp">
+                    <div class="r"><span class="k"><span class="lock"></span>Parking cost records</span><span class="protag">Lifetime Pro</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="home"></div>
+            </div>
+          </div>
+
+          <div class="dot r" style="top:66px">1</div>
+          <div class="dot l" style="top:150px">2</div>
+          <div class="dot r" style="top:240px">3</div>
+          <div class="dot l" style="top:430px">4</div>
+          <div class="dot r" style="top:620px">5</div>
+          <div class="dot l" style="top:730px">6</div>
+        </div>
+
+        <div class="side">
+          <div class="hd">
+            <div class="kicker">ParkNudge &middot; File 02</div>
+            <h1 class="d2">Save Parking Spot</h1>
+            <p class="lede">The only sheet in the app, and the only place a session is created or changed. Everything on it is optional except the pin &mdash; the driver is standing in a garage, not filling in a form.</p>
+          </div>
+
+          <div class="facts">
+            <div class="f"><b>Hue</b><span class="hue">H 205</span></div>
+            <div class="f"><b>Price</b><span>$9.99 once</span></div>
+            <div class="f"><b>Model</b><span>Free + Lifetime Pro</span></div>
+            <div class="f"><b>Platform</b><span>iOS 17 &middot; SwiftUI</span></div>
+            <div class="f"><b>Status</b><span>Pre-release MVP</span></div>
+          </div>
+
+          <div class="items">
+            <div class="item">
+              <div class="n">1</div>
+              <div>
+                <h3>Permission asked at the button</h3>
+                <p>No onboarding carousel and no launch-time permission wall. The empty Park screen says so before the driver commits.</p>
+                <span class="cite">ParkView.swift &mdash; &ldquo;requested only after you tap this button.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">2</div>
+              <div>
+                <h3>The GPS fix is a starting point</h3>
+                <p>Accuracy is printed, not hidden, and the caption invites correction. A one-shot fix in a concrete garage is often wrong.</p>
+                <span class="cite">ParkingEditorView.swift &mdash; &ldquo;Tap the map to correct the pin.&rdquo;</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">3</div>
+              <div>
+                <h3>Search sits above manual entry</h3>
+                <p>Naming the garage is faster than typing a floor, and a MapKit result fills the label. Manual fields stay below for what search cannot know.</p>
+                <span class="cite">Free tier &mdash; MapKit place search.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">4</div>
+              <div>
+                <h3>The footer states the real schedule</h3>
+                <p>Fifteen, five, and at expiry &mdash; plus the fact that past warnings are skipped. The free schedule is never dressed up as a teaser.</p>
+                <span class="cite">ParkingEditorView.swift &mdash; meter section footer.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">5</div>
+              <div>
+                <h3>One photo, and it says where it lives</h3>
+                <p>Not a gallery. A single shot of the pillar marking, labelled device-only at the point of capture.</p>
+                <span class="cite">Free tier &mdash; floor, section, note, and one photo.</span>
+              </div>
+            </div>
+            <div class="item">
+              <div class="n">6</div>
+              <div>
+                <h3>The locked row is shown, not hidden</h3>
+                <p>Cost is the only Pro field here. Deleting it would make the paywall&rsquo;s feature list read as an invention.</p>
+                <span class="cite">Docs/MONETIZATION.md &mdash; parking-cost records, locked.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top:18px">
+            <h4>Cancel is safe by construction</h4>
+            <p>The sheet edits a draft, never the live session, so dismissing it cannot lose an active spot &mdash; which is what lets Cancel sit there with no confirmation behind it.</p>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1240, "height": 950}}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>

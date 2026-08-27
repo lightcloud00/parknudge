@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet data-dc-atomics>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&display=swap" rel="stylesheet" />
+        <link href="./system.css" rel="stylesheet" />
+        <style>
+:root { --h: 205; }
+.wrap { max-width: 1230px; margin: 0 auto; padding: 52px 52px 84px; }
+.sec { padding: 38px 0; border-top: 1px solid var(--rule); }
+.sec:first-of-type { border-top: 0; padding-top: 0; }
+.sechd { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+.secno { font-family: ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+
+.frames { display: flex; gap: 22px; margin-top: 26px; align-items: stretch; }
+.sframe { width: 264px; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--bone-rise); flex: none; display: flex; flex-direction: column; }
+.sframe .cap { padding: 22px 20px 18px; background: var(--a-wash); border-bottom: 1px solid var(--a-edge); min-height: 128px; }
+.sframe .cap b { display: block; font-family: var(--serif); font-size: 22px; line-height: 1.16; font-weight: 500; letter-spacing: -0.4px; }
+.sframe .cap span { display: block; font-size: 12px; line-height: 1.45; color: var(--ink-mid); margin-top: 8px; }
+.shot { height: 352px; position: relative; overflow: hidden; background: var(--bone); display: flex; flex-direction: column; }
+.shot .sb { display: flex; justify-content: space-between; padding: 11px 17px 0; font-size: 11px; font-weight: 600; flex: none; }
+.shot .in { padding: 12px 17px 0; flex: 1; min-height: 0; }
+
+/* frame 1 — the pin */
+.f-map { height: 150px; border-radius: 9px; }
+.f-nm { font-size: 15px; font-weight: 600; margin-top: 11px; letter-spacing: -0.3px; }
+.f-el { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.f-det { margin-top: 10px; }
+.f-det i { display: flex; align-items: center; gap: 8px; font-style: normal; font-size: 11.5px; color: var(--ink-mid); padding: 5px 0; border-bottom: 1px solid var(--rule); }
+.f-det i:last-child { border-bottom: 0; }
+
+/* frame 2 — the countdown */
+.f-meter { margin-top: 8px; padding: 15px 15px 16px; border-radius: 10px; background: var(--a-wash); border: 1px solid var(--a-edge); text-align: center; }
+.f-meter .l { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--a-deep); }
+.f-meter .v { font-size: 38px; font-weight: 300; letter-spacing: -1.8px; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.f-sched { margin-top: 14px; display: flex; gap: 7px; }
+.f-sched i { flex: 1; font-style: normal; text-align: center; padding: 9px 0; border-radius: 6px; border: 1px solid var(--rule); background: var(--bone-rise); font-size: 11px; font-weight: 600; }
+.f-sched i.on { border-color: var(--a-edge); background: var(--a-wash); color: var(--a-deep); }
+.f-note { margin-top: 12px; font-size: 11px; line-height: 1.45; color: var(--ink-soft); }
+
+/* frame 3 — privacy */
+.f-priv { margin-top: 6px; }
+.f-priv .rowp { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 12px; }
+.f-priv .rowp:last-child { border-bottom: 0; }
+.f-priv .rowp b { flex: 1; font-weight: 500; }
+.f-priv .rowp span { font-size: 11px; color: var(--ink-soft); }
+.f-claim { margin-top: 12px; padding: 12px 13px; border: 1px dashed var(--rule-firm); border-radius: 7px; font-size: 11px; line-height: 1.5; color: var(--ink-mid); }
+
+/* frame 4 — price */
+.pz { padding-top: 4px; }
+.pz h4 { font-family: var(--serif); font-size: 25px; font-weight: 400; letter-spacing: -0.5px; margin: 0 0 12px; line-height: 1.1; }
+.pz .fr { padding: 11px 12px; background: var(--bone-sunk); border-radius: 5px; font-size: 11px; line-height: 1.45; color: var(--ink-mid); margin-bottom: 14px; }
+.pz .fr b { color: var(--ink); font-weight: 600; }
+.pz .pr { display: flex; align-items: baseline; gap: 9px; }
+.pz .pr b { font-size: 38px; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -1.6px; }
+.pz .pr span { font-size: 11px; font-weight: 700; letter-spacing: 1.1px; color: var(--a-deep); }
+.pz .go { height: 44px; border-radius: 22px; background: var(--a); color: var(--bone-rise); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-top: 14px; }
+.pz .lg { text-align: center; font-size: 10.5px; color: var(--ink-soft); margin-top: 10px; }
+
+/* ---------- ASO ---------- */
+.aso { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 8px; }
+.fieldbox { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--bone-rise); align-self: start; }
+.fieldbox .r { display: grid; grid-template-columns: 96px 1fr; border-bottom: 1px solid var(--rule); }
+.fieldbox .r:last-child { border-bottom: 0; }
+.fieldbox .r > b { padding: 12px 14px; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-soft); background: var(--bone-sunk); }
+.fieldbox .r > div { padding: 12px 14px; font-size: 13px; }
+.fieldbox .r > div .cc { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--ink-soft); margin-top: 4px; }
+.kw { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.65; word-break: normal; overflow-wrap: break-word; }
+
+.tbl2 { width: 100%; border-collapse: collapse; margin-top: 22px; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.tbl2 th { text-align: left; padding: 11px 14px; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-soft); background: var(--bone-sunk); border-bottom: 1px solid var(--rule); }
+.tbl2 td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--rule); background: var(--bone-rise); vertical-align: top; }
+.tbl2 tr:last-child td { border-bottom: 0; }
+.tbl2 td.k { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-mid); }
+        </style>
+      </helmet>
+
+      <div class="wrap">
+
+        <div class="sec" data-screen-label="frames-header">
+          <div class="kicker">ParkNudge &middot; File 06</div>
+          <h1 class="d1">Four frames,<br />one honest claim each.</h1>
+          <p class="stand">The listing has to work at thumbnail size, before a word of the description is read. Every caption below is a claim the shipping app can actually support &mdash; the naming record forbids the ones it cannot.</p>
+        </div>
+
+        <div class="sec" data-screen-label="store-frames">
+          <div class="sechd"><span class="secno">01</span><h2 class="d2">The frame set</h2></div>
+          <p class="body">Caption above the device, one claim per frame, and the largest type in the caption rather than the screenshot. Frames three and four are the positioning: in a category full of trackers and subscriptions, not doing either is the feature.</p>
+
+          <div class="frames">
+
+            <div class="sframe">
+              <div class="cap">
+                <b>Remember where you parked</b>
+                <span>Save the pin, correct it by hand, and add the floor, the section and one photo.</span>
+              </div>
+              <div class="shot">
+                <div class="sb"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+                <div class="in">
+                  <div class="mapph f-map">
+                    <span class="pin"><i></i><b></b></span>
+                    <span class="exp">MapKit &middot; saved pin</span>
+                  </div>
+                  <div class="f-nm">Sutter&ndash;Stockton Garage</div>
+                  <div class="f-el">Parked for 1:24:36</div>
+                  <div class="f-det">
+                    <i><span class="g g-sq" style="width:12px;height:12px;border-width:2px"></span>Floor 3 &middot; Section B</i>
+                    <i><span class="g g-ring" style="width:12px;height:12px;border-width:2px"></span>GPS accuracy &plusmn;8 m</i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sframe">
+              <div class="cap">
+                <b>Meter alerts at 15, 5, and 0 minutes</b>
+                <span>Local notifications scheduled from an absolute expiry time. Free, and fixed.</span>
+              </div>
+              <div class="shot">
+                <div class="sb"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+                <div class="in">
+                  <div class="f-meter">
+                    <div class="l">Meter time remaining</div>
+                    <div class="v">0:14:52</div>
+                  </div>
+                  <div class="f-sched">
+                    <i class="on">15 min</i>
+                    <i class="on">5 min</i>
+                    <i class="on">At expiry</i>
+                  </div>
+                  <div class="f-note">Warnings already in the past are skipped when a meter is saved or extended. Custom offsets are a Pro feature.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sframe">
+              <div class="cap">
+                <b>No account. No background tracking.</b>
+                <span>One location fix, taken only when you tap Save. Nothing is uploaded anywhere.</span>
+              </div>
+              <div class="shot">
+                <div class="sb"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+                <div class="in">
+                  <div class="f-priv">
+                    <div class="rowp"><span class="g g-ring" style="width:13px;height:13px;border-width:2px"></span><b>Account</b><span>None</span></div>
+                    <div class="rowp"><span class="g g-ring" style="width:13px;height:13px;border-width:2px"></span><b>Background location</b><span>None</span></div>
+                    <div class="rowp"><span class="g g-ring" style="width:13px;height:13px;border-width:2px"></span><b>Ads and analytics</b><span>None</span></div>
+                    <div class="rowp"><span class="g g-ring" style="width:13px;height:13px;border-width:2px"></span><b>Location permission</b><span>When&#8209;In&#8209;Use</span></div>
+                  </div>
+                  <div class="f-claim">All data stays on this iPhone unless you explicitly share a CSV export.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sframe">
+              <div class="cap">
+                <b>$9.99 once. Not a subscription.</b>
+                <span>The whole parking loop is free forever. Pro adds history, presets, costs and export.</span>
+              </div>
+              <div class="shot">
+                <div class="sb"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+                <div class="in">
+                  <div class="pz">
+                    <h4>ParkNudge Lifetime Pro.</h4>
+                    <div class="fr"><b>Free always includes</b> one active spot, pin correction, directions, details and one photo, a meter timer and fixed reminders.</div>
+                    <div class="pr"><b>$9.99</b><span>ONE TIME</span></div>
+                    <div class="go">Unlock Lifetime Pro</div>
+                    <div class="lg">No subscription &middot; no trial &middot; no account</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="sec" data-screen-label="aso-fields">
+          <div class="sechd"><span class="secno">02</span><h2 class="d2">The metadata that ships with them</h2></div>
+          <p class="body" style="margin-bottom:22px">Name and subtitle are 30 characters each and both are indexed. The keyword field is 100 characters, comma-separated without spaces, and should not repeat a word already in the name or subtitle. Every value below is the draft on record.</p>
+
+          <div class="aso">
+            <div class="fieldbox">
+              <div class="r"><b>Name</b><div>ParkNudge: Find My Car<span class="cc">22 / 30 characters</span></div></div>
+              <div class="r"><b>Subtitle</b><div>Parking Spot &amp; Meter Timer<span class="cc">26 / 30 characters</span></div></div>
+              <div class="r"><b>Keywords</b><div><span class="kw">garage,<wbr />location,<wbr />saved pin,<wbr />vehicle,<wbr />street,<wbr />reminder,<wbr />where did i park</span><span class="cc">66 / 100 characters &middot; candidates for final testing</span></div></div>
+              <div class="r"><b>Promo</b><div>Save your pin, garage details, and meter deadline without background tracking.<span class="cc">Docs/NAMING-ASO-AEO-SEO.md &mdash; promotional direction</span></div></div>
+            </div>
+            <div class="stack">
+              <div class="note"><h4>Four claims this listing may not make</h4><p>&ldquo;Best&rdquo;, &ldquo;#1&rdquo;, ticket prevention, and automatic detection are all ruled out on the record. The app does no motion or Bluetooth monitoring, so detection would be a false claim as well as a forbidden one.</p></div>
+              <div class="note"><h4>The name is a draft, not a reservation</h4><p>Collision checks on August 18, 2026 returned no exact App Store title match and 404 availability signals for the domains. Those are point-in-time signals &mdash; recheck immediately before creating the App Store record.</p></div>
+              <div class="note"><h4>Frames one and two are the listing</h4><p>Search results show two thumbnails. Frame one has to say what it does; frame two has to say why this one. Everything after frame two is for someone already interested.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" data-screen-label="aso-pages">
+          <div class="sechd"><span class="secno">03</span><h2 class="d2">The three questions the site answers</h2></div>
+          <p class="body">The static site targets human questions with dedicated visible pages rather than one page stuffed with keywords, and the structured data has to match what is actually on screen.</p>
+
+          <table class="tbl2">
+            <tr>
+              <th style="width:44%">Question</th>
+              <th style="width:30%">Page</th>
+              <th style="width:26%">Frame it supports</th>
+            </tr>
+            <tr><td>How do I find my parked car?</td><td class="k">/find-my-parked-car/</td><td>Frame 1</td></tr>
+            <tr><td>How do I set a parking meter reminder?</td><td class="k">/parking-meter-reminder/</td><td>Frame 2</td></tr>
+            <tr><td>How do I remember where I parked in a garage?</td><td class="k">/parking-garage-tips/</td><td>Frame 1</td></tr>
+          </table>
+
+          <div class="note" style="margin-top:22px">
+            <h4>Nothing here is live yet</h4>
+            <p>The repository is an MVP source tree: not on the App Store, no configured in-app purchase, and <span class="mono">parknudge.app</span> is a candidate domain only. These frames are ready to render at 1290&times;2796 the day those gates clear.</p>
+          </div>
+        </div>
+
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{}'>
+      class Component extends DCLogic {
+        renderVals() { return {}; }
+      }
+    </script>
+  </body>
+</html>
