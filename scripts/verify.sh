@@ -9,7 +9,6 @@ SIMULATOR_NAME="ParkNudge-Verify-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 SIMULATOR_ID=""
 REQUESTED_DEVICE_TYPE_ID="${PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID:-}"
 XCRESULT_PATH="${PARKNUDGE_XCRESULT_PATH:-}"
-RESULT_BUNDLE_ARGS=()
 
 cleanup() {
   if [[ -n "$SIMULATOR_ID" ]]; then
@@ -46,7 +45,6 @@ if [[ -n "$XCRESULT_PATH" ]]; then
     exit 73
   fi
   mkdir -p "$(dirname "$XCRESULT_PATH")"
-  RESULT_BUNDLE_ARGS=(-resultBundlePath "$XCRESULT_PATH")
 fi
 
 SIMULATOR_ID="$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE_ID" "$RUNTIME_ID")"
@@ -74,16 +72,21 @@ xcodebuild \
   -derivedDataPath "$DERIVED_DATA_PATH" \
   build-for-testing
 
-xcodebuild \
-  -project ParkNudge.xcodeproj \
-  -scheme ParkNudge \
-  -configuration Debug \
-  -jobs 4 \
-  -parallel-testing-enabled NO \
-  -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-  -derivedDataPath "$DERIVED_DATA_PATH" \
-  "${RESULT_BUNDLE_ARGS[@]}" \
-  test-without-building
+TEST_COMMAND=(
+  xcodebuild
+  -project ParkNudge.xcodeproj
+  -scheme ParkNudge
+  -configuration Debug
+  -jobs 4
+  -parallel-testing-enabled NO
+  -destination "platform=iOS Simulator,id=$SIMULATOR_ID"
+  -derivedDataPath "$DERIVED_DATA_PATH"
+)
+if [[ -n "$XCRESULT_PATH" ]]; then
+  TEST_COMMAND+=(-resultBundlePath "$XCRESULT_PATH")
+fi
+TEST_COMMAND+=(test-without-building)
+"${TEST_COMMAND[@]}"
 
 xcodebuild \
   -project ParkNudge.xcodeproj \
