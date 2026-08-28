@@ -352,6 +352,7 @@ private struct MeterHero: View {
             .background(state.surface, in: RoundedRectangle(cornerRadius: Theme.radiusCard))
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(state.accessibilityDescription(expiry: expiry))
+            .accessibilityValue(state.digits)
             .accessibilityIdentifier("meter-hero")
         }
     }
