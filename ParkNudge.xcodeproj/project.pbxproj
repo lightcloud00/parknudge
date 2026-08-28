@@ -10,6 +10,7 @@
 		0735C9E7FA35A18B5A6EB3FD /* ReviewPromptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B416813A621E5C755EE0C0B0 /* ReviewPromptPolicy.swift */; };
 		0D40C197944341BE5CF4FCEE /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2304928308586BD34F76033E /* AppSettings.swift */; };
 		0F98DAB48CE337DFF9005C37 /* ParkNudgeSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */; };
+		11F183B02811FFC0183E721D /* UITestAppearanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0ABE802E1158F5D05A644CF /* UITestAppearanceTests.swift */; };
 		22663C721723824158F78C70 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1562DDDBE12B6F70CD7EEB74 /* PrivacyInfo.xcprivacy */; };
 		25191EDA923447222CC65A41 /* PhotoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C2678EB2B7CC58A6BEEE3B /* PhotoStore.swift */; };
 		2789B80454AA82036B2CD622 /* ParkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C995C6A5BB423CA24EA756 /* ParkView.swift */; };
@@ -29,6 +30,7 @@
 		64D293ACB513A9880B3DF41B /* PlaceSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A9EA2DFFAFE1AD839104CF /* PlaceSearchService.swift */; };
 		714A4189EE24A448C7C57AB3 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26714F71FEC7D9891537C896 /* RootTabView.swift */; };
 		7311997915FFB32AC3059C98 /* CSVEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2654C6209331BA9D72B71701 /* CSVEncoder.swift */; };
+		73B248705D5B2EE23D7E1DBD /* UITestAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE2FA9EFF39F749270E87B4 /* UITestAppearance.swift */; };
 		7658E0E7521A1829EC7E8C16 /* ParkNudgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1409804DA02D694FEF00A7 /* ParkNudgeApp.swift */; };
 		7A0CF300D09652D3AD753AB3 /* LegalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB9A1475601952858205660 /* LegalView.swift */; };
 		80AAA89A3EC100C7424AD0EB /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C4B183A039F50343B1DD6F /* HistoryView.swift */; };
@@ -110,6 +112,7 @@
 		7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkNudgeSchema.swift; sourceTree = "<group>"; };
 		815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingCoordinator.swift; sourceTree = "<group>"; };
 		8963BD223DB8784863585F73 /* MeterContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterContrastTests.swift; sourceTree = "<group>"; };
+		8BE2FA9EFF39F749270E87B4 /* UITestAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestAppearance.swift; sourceTree = "<group>"; };
 		8F8C61F50D93EDD27A912FA8 /* MeterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterState.swift; sourceTree = "<group>"; };
 		905DE64737FA004246B8E24C /* LayoutReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutReachabilityTests.swift; sourceTree = "<group>"; };
 		94D8FAEF4939019BD10C3A50 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -124,6 +127,7 @@
 		C4F074A9CB5A39DB8665D84B /* ParkNudge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ParkNudge.entitlements; sourceTree = "<group>"; };
 		D5C278146C7DD473E256D402 /* ParkNudge.storekit */ = {isa = PBXFileReference; path = ParkNudge.storekit; sourceTree = "<group>"; };
 		D9C4B183A039F50343B1DD6F /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		E0ABE802E1158F5D05A644CF /* UITestAppearanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestAppearanceTests.swift; sourceTree = "<group>"; };
 		E3ED9EEBA34DB66DD8DF4EA1 /* CSVAndMoneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVAndMoneyTests.swift; sourceTree = "<group>"; };
 		E492E497CAD31CB851443229 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderPlannerTests.swift; sourceTree = "<group>"; };
@@ -241,6 +245,7 @@
 				6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */,
 				6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */,
 				193EF026C7D109DF426DBB98 /* TestFixtures.swift */,
+				E0ABE802E1158F5D05A644CF /* UITestAppearanceTests.swift */,
 				00643E086CC4369E84137D39 /* UITestMeterSeedTests.swift */,
 			);
 			path = ParkNudgeTests;
@@ -322,6 +327,7 @@
 				F6CBBBF0715C815B9FFB4035 /* AppModel.swift */,
 				2304928308586BD34F76033E /* AppSettings.swift */,
 				815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */,
+				8BE2FA9EFF39F749270E87B4 /* UITestAppearance.swift */,
 				405D4A998DE23F660E2F5B98 /* UITestMeterSeed.swift */,
 			);
 			path = Application;
@@ -504,6 +510,7 @@
 				E7A35EC0420000C91123C024 /* SettingsView.swift in Sources */,
 				A03D4056A82F63703833CBD9 /* ShareSheet.swift in Sources */,
 				52C4C22899A37E158CA347A8 /* SwiftDataParkingRepository.swift in Sources */,
+				73B248705D5B2EE23D7E1DBD /* UITestAppearance.swift in Sources */,
 				5E11605D592DCC96F93AA884 /* UITestMeterSeed.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -521,6 +528,7 @@
 				D3672089E80290ADB26AED01 /* ReviewPromptPolicyTests.swift in Sources */,
 				94D33FC8B5250A9B6577053F /* SwiftDataParkingRepositoryTests.swift in Sources */,
 				881712E7C5C982F61EE99A89 /* TestFixtures.swift in Sources */,
+				11F183B02811FFC0183E721D /* UITestAppearanceTests.swift in Sources */,
 				F12699B51D3D4B0DB1FFEC01 /* UITestMeterSeedTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
