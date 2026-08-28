@@ -126,7 +126,7 @@ struct AppEnvironment {
 /// prompt on screen, where it would steal the tap the test was aiming at.
 @MainActor
 private final class UITestReviewRequester: ReviewRequesting {
-    func requestReview() {}
+    func requestReview() -> Bool { false }
 }
 
 @MainActor

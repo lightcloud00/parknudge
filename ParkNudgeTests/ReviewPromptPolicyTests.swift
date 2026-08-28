@@ -5,18 +5,30 @@ final class ReviewPromptPolicyTests: XCTestCase {
     private func context(
         completed: Int = 3,
         lastVersion: String? = nil,
+        lastDate: Date? = nil,
         currentVersion: String = "1.0.0",
+        now: Date = Date(timeIntervalSince1970: 20_000_000),
         alert: Bool = false,
+        confirmation: Bool = false,
         paywall: Bool = false,
-        busy: Bool = false
+        purchase: Bool = false,
+        busy: Bool = false,
+        onboarding: Bool = false,
+        launch: Bool = false
     ) -> ReviewPromptContext {
         ReviewPromptContext(
             completedSessionCount: completed,
             lastRequestedVersion: lastVersion,
+            lastRequestedDate: lastDate,
             currentVersion: currentVersion,
+            now: now,
             hasActiveAlert: alert,
+            hasActiveConfirmation: confirmation,
             isPaywallPresented: paywall,
-            isBusy: busy
+            isPurchasePresented: purchase,
+            isBusy: busy,
+            isOnboardingPresented: onboarding,
+            isLaunchInProgress: launch
         )
     }
 
@@ -35,7 +47,7 @@ final class ReviewPromptPolicyTests: XCTestCase {
     func testNeverAsksOnTheFirstCompletedSession() {
         XCTAssertFalse(
             ReviewPromptPolicy.shouldRequest(context(completed: 1)),
-            "The first completion also raises the paywall; asking there is exactly the pressure to avoid"
+            "One completion is too early for a rating request"
         )
     }
 
@@ -61,6 +73,26 @@ final class ReviewPromptPolicyTests: XCTestCase {
         )
     }
 
+    func testCooldownStillAppliesAfterAVersionBump() {
+        let now = Date(timeIntervalSince1970: 20_000_000)
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(
+            lastVersion: "1.0.0",
+            lastDate: now.addingTimeInterval(-ReviewPromptPolicy.cooldown + 1),
+            currentVersion: "1.1.0",
+            now: now
+        )))
+        XCTAssertTrue(ReviewPromptPolicy.shouldRequest(context(
+            lastVersion: "1.0.0",
+            lastDate: now.addingTimeInterval(-ReviewPromptPolicy.cooldown),
+            currentVersion: "1.1.0",
+            now: now
+        )))
+    }
+
+    func testMissingVersionSuppressesRequest() {
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(currentVersion: "")))
+    }
+
     // MARK: - Pressure and failure states
 
     func testDoesNotAskWhileAnErrorIsOnScreen() {
@@ -79,8 +111,12 @@ final class ReviewPromptPolicyTests: XCTestCase {
     /// session count being comfortably high.
     func testEachBlockerHoldsIndependentlyOfSessionCount() {
         XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, alert: true)))
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, confirmation: true)))
         XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, paywall: true)))
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, purchase: true)))
         XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, busy: true)))
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, onboarding: true)))
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 99, launch: true)))
         XCTAssertFalse(
             ReviewPromptPolicy.shouldRequest(
                 context(completed: 99, lastVersion: "2.0", currentVersion: "2.0")
