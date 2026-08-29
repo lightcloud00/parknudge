@@ -2,7 +2,7 @@ import XCTest
 
 final class ParkNudgeUITests: XCTestCase {
     @MainActor
-    func testFreshLaunchSaveFinishAndFirstCompletionPaywall() throws {
+    func testFreshLaunchCompletesFreeLoopBeforePremiumIntentPaywall() throws {
         let app = launch()
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 3))
@@ -11,10 +11,17 @@ final class ParkNudgeUITests: XCTestCase {
 
         app.buttons["finish-parking"].tap()
         app.buttons["Finish Parking"].tap()
-        XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 3))
-        app.buttons["close-paywall"].tap()
+        XCTAssertFalse(
+            app.buttons["close-paywall"].waitForExistence(timeout: 1),
+            "The first completed parking session is free and must not open a paywall"
+        )
         app.tabBars.buttons["History"].tap()
         XCTAssertTrue(app.staticTexts["Parking session"].waitForExistence(timeout: 3))
+
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.buttons["settings-lifetime-pro"].waitForExistence(timeout: 3))
+        app.buttons["settings-lifetime-pro"].tap()
+        XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 3))
     }
 
     @MainActor

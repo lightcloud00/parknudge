@@ -41,8 +41,17 @@ final class LayoutReachabilityTests: XCTestCase {
         app.buttons["finish-parking"].tap()
         app.buttons["Finish Parking"].tap()
 
+        XCTAssertFalse(
+            app.buttons["close-paywall"].waitForExistence(timeout: 1),
+            "Completing the free parking loop must not open a paywall"
+        )
+
+        app.tabBars.buttons["Settings"].tap()
+        assertReachable(app.buttons["settings-lifetime-pro"], "Settings premium intent")
+        app.buttons["settings-lifetime-pro"].tap()
+
         guard app.buttons["close-paywall"].waitForExistence(timeout: 5) else {
-            return XCTFail("Finishing the first session should raise the paywall")
+            return XCTFail("Choosing the Settings premium intent should raise the paywall")
         }
 
         // The paywall is an obviously scrollable sheet, so only the escape
