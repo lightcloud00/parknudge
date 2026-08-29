@@ -64,10 +64,9 @@ protocol CSVExporting: AnyObject {
 
 /// Asks the system to consider showing its rating prompt.
 ///
-/// Deliberately returns nothing. StoreKit decides whether the prompt appears,
-/// and never tells the app — so there is no outcome here to report, log, or
-/// branch on, and any such signal would be fabricated.
+/// Returns whether the adapter actually invoked StoreKit in a foreground key
+/// window scene. This is not evidence that Apple displayed the prompt.
 @MainActor
 protocol ReviewRequesting: AnyObject {
-    func requestReview()
+    @discardableResult func requestReview() -> Bool
 }

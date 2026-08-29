@@ -165,14 +165,6 @@ final class AppModel: ObservableObject {
         do {
             _ = try await coordinator.finishActive()
             await reload()
-            if !entitlement.isPro,
-               completedSessions.count == 1,
-               !settings.didOfferFirstCompletionPaywall
-            {
-                settings.didOfferFirstCompletionPaywall = true
-                requestedProFeature = nil
-                isPaywallPresented = true
-            }
             considerRequestingReview()
         } catch {
             alertMessage = error.localizedDescription
@@ -182,28 +174,35 @@ final class AppModel: ObservableObject {
     /// Considers asking for an App Store rating, after a session the user
     /// finished successfully.
     ///
-    /// Evaluated *after* the first-completion paywall has had its say, so the
-    /// paywall flag it reads is the current one — asking for a rating while a
-    /// purchase sheet is going up is exactly the pressure the policy forbids.
+    /// This call site follows a completed parking session and cannot overlap
+    /// onboarding, a replacement confirmation, or a purchase operation. Those
+    /// axes still live in the pure policy so future call sites cannot omit them.
     private func considerRequestingReview() {
+        let version = Self.marketingVersion
         let context = ReviewPromptContext(
             completedSessionCount: completedSessions.count,
             lastRequestedVersion: settings.lastReviewRequestVersion,
-            currentVersion: Self.marketingVersion,
+            lastRequestedDate: settings.lastReviewRequestDate,
+            currentVersion: version,
+            now: clock.now,
             hasActiveAlert: alertMessage != nil,
+            hasActiveConfirmation: false,
             isPaywallPresented: isPaywallPresented,
+            isPurchasePresented: false,
             // `finishActive` holds `isBusy` for its whole body, so this is read
             // as "is anything *else* in flight" from the policy's point of view.
-            isBusy: false
+            isBusy: false,
+            isOnboardingPresented: false,
+            isLaunchInProgress: false
         )
         guard ReviewPromptPolicy.shouldRequest(context) else { return }
-
-        settings.lastReviewRequestVersion = Self.marketingVersion
-        reviews.requestReview()
+        guard reviews.requestReview() else { return }
+        settings.lastReviewRequestVersion = version
+        settings.lastReviewRequestDate = clock.now
     }
 
     static var marketingVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
     }
 
     func delete(_ session: ParkingSession) async {

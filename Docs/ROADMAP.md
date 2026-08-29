@@ -12,7 +12,7 @@ This roadmap separates implemented source from evidence that requires a physical
 - [x] Deterministic local meter reminders with past-warning filtering and replacement
 - [x] Apple Maps walking directions, finish, newest-first history, deletion, and Delete All
 - [x] StoreKit 2 product loading, purchase, restore, verified entitlement, update, and revocation handling
-- [x] Free/Pro feature policy and one-time first-completion paywall
+- [x] Free/Pro feature policy with contextual premium-intent paywalls
 - [x] Locale-aware cost input with integer minor-unit persistence
 - [x] Sensitive-location warning and RFC 4180 CSV export without photo data/paths
 - [x] Privacy manifest, contextual permission copy, time-sensitive entitlement, no background modes

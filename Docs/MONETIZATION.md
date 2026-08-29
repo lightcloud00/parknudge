@@ -26,9 +26,8 @@ All completed sessions remain stored locally. Upgrade reveals older sessions. A 
 
 ## Paywall rules
 
-- Automatically present only once, after the first successfully completed session, and only for a free user.
+- Present only after an explicit locked-feature action or from the optional Settings card.
 - Always dismissible; free access continues uninterrupted.
-- Also available from a locked Pro feature and Settings.
 - State “one-time purchase, no subscription.”
 - List the four exact Pro features.
 - Provide Restore Purchases, Privacy, Terms, and Close controls.
