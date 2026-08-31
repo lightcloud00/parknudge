@@ -9,3 +9,4 @@ xcuserdata/
 .swiftpm/
 .site-preview/
 site/.cache/
+artifacts/store-screenshots-*/
