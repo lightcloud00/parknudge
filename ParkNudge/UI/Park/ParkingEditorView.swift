@@ -18,6 +18,7 @@ struct ParkingEditorContext: Identifiable {
 
 struct ParkingEditorView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.dismiss) private var dismiss
     @StateObject private var searchModel = PlaceSearchModel()
     @State private var draft: ParkingDraft
@@ -169,11 +170,15 @@ struct ParkingEditorView: View {
                     .onSubmit { runSearch() }
                     .accessibilityIdentifier("place-search-field")
                 Button { runSearch() } label: {
-                    if searchModel.isSearching {
-                        ProgressView()
-                    } else {
-                        Image(systemName: "magnifyingglass")
+                    Group {
+                        if searchModel.isSearching {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "magnifyingglass")
+                        }
                     }
+                    .frame(width: Theme.minimumHitTarget, height: Theme.minimumHitTarget)
+                    .contentShape(Rectangle())
                 }
                 .disabled(searchModel.isSearching || searchText.trimmingCharacters(in: .whitespaces).isEmpty)
                 .accessibilityLabel("Search places")
@@ -197,7 +202,8 @@ struct ParkingEditorView: View {
                             Text(result.detail)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                                .lineLimit(2)
+                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
