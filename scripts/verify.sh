@@ -9,6 +9,11 @@ SIMULATOR_NAME="ParkNudge-Verify-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 SIMULATOR_ID=""
 REQUESTED_DEVICE_TYPE_ID="${PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID:-}"
 XCRESULT_PATH="${PARKNUDGE_XCRESULT_PATH:-}"
+COORDINATOR="/Users/gus/Desktop/Claudecode/scripts/ios_build_coordinator.py"
+
+run_xcodebuild() {
+  /usr/bin/python3 "$COORDINATOR" -- "$@"
+}
 
 cleanup() {
   if [[ -n "$SIMULATOR_ID" ]]; then
@@ -63,7 +68,7 @@ if [[ "$SIMULATOR_READY" -ne 1 ]]; then
   exit 1
 fi
 
-xcodebuild \
+run_xcodebuild \
   -project ParkNudge.xcodeproj \
   -scheme ParkNudge \
   -configuration Debug \
@@ -73,7 +78,7 @@ xcodebuild \
   build-for-testing
 
 TEST_COMMAND=(
-  xcodebuild
+  run_xcodebuild
   -project ParkNudge.xcodeproj
   -scheme ParkNudge
   -configuration Debug
@@ -88,7 +93,7 @@ fi
 TEST_COMMAND+=(test-without-building)
 "${TEST_COMMAND[@]}"
 
-xcodebuild \
+run_xcodebuild \
   -project ParkNudge.xcodeproj \
   -scheme ParkNudge \
   -configuration Release \
