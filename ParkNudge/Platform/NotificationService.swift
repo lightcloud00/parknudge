@@ -9,12 +9,26 @@ enum ParkingNotificationCopy {
     }
 }
 
+enum ParkingNotificationPresentation {
+    static let foregroundOptions: UNNotificationPresentationOptions = [.banner, .list, .sound]
+}
+
 @MainActor
-final class LocalNotificationScheduler: NotificationScheduling {
+final class LocalNotificationScheduler: NSObject, NotificationScheduling, UNUserNotificationCenterDelegate {
     private let center: UNUserNotificationCenter
 
     init(center: UNUserNotificationCenter = .current()) {
         self.center = center
+        super.init()
+        center.delegate = self
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler(ParkingNotificationPresentation.foregroundOptions)
     }
 
     func requestAuthorizationIfNeeded() async throws -> Bool {
