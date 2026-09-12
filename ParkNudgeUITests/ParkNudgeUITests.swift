@@ -1,6 +1,38 @@
 import XCTest
 
 final class ParkNudgeUITests: XCTestCase {
+    /// Retains the five raw, free-core frames used to assemble the App Store
+    /// product-page story. The test deliberately avoids the paywall so the
+    /// listing leads with the complete parking workflow that everyone gets.
+    @MainActor
+    func testAppStoreFreeCoreScreenshotStory() throws {
+        let fresh = launch()
+        XCTAssertTrue(fresh.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "01-ParkNudge-free-home")
+
+        fresh.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(fresh.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "02-ParkNudge-adjust-and-confirm")
+        fresh.terminate()
+
+        let active = launch(extraArguments: ["-ui-test-active-meter"])
+        XCTAssertTrue(active.otherElements["meter-hero"].waitForExistence(timeout: 5))
+        XCTAssertTrue(active.buttons["walking-directions"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "03-ParkNudge-meter-and-directions")
+
+        active.buttons["finish-parking"].tap()
+        active.buttons["Finish Parking"].tap()
+        active.tabBars.buttons["History"].tap()
+        XCTAssertTrue(active.staticTexts["Union Square Garage"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "04-ParkNudge-private-history")
+
+        active.tabBars.buttons["Settings"].tap()
+        active.swipeUp()
+        XCTAssertTrue(active.buttons["Privacy"].waitForExistence(timeout: 5))
+        XCTAssertTrue(active.buttons["Terms"].waitForExistence(timeout: 5))
+        keepScreenshot(named: "05-ParkNudge-local-data-and-privacy")
+    }
+
     @MainActor
     func testFreshLaunchCompletesFreeLoopBeforePremiumIntentPaywall() throws {
         let app = launch()
