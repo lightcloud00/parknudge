@@ -48,22 +48,10 @@ if [[ -n "$XCRESULT_PATH" ]]; then
 fi
 
 SIMULATOR_ID="$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE_ID" "$RUNTIME_ID")"
-xcrun simctl boot "$SIMULATOR_ID"
-SIMULATOR_READY=0
-for _ in {1..120}; do
-  if xcrun simctl spawn "$SIMULATOR_ID" launchctl print system/com.apple.SpringBoard >/dev/null 2>&1; then
-    SIMULATOR_READY=1
-    break
-  fi
-  sleep 1
-done
+# The admitted Xcode test action boots its destination. Do not boot a device
+# while this job is still waiting for the shared-Mac memory floor.
 
-if [[ "$SIMULATOR_READY" -ne 1 ]]; then
-  echo "Timed out waiting for transient simulator $SIMULATOR_ID to become ready." >&2
-  exit 1
-fi
-
-xcodebuild \
+bash "$SCRIPT_DIR/run-native-command.sh" \
   -project ParkNudge.xcodeproj \
   -scheme ParkNudge \
   -configuration Debug \
@@ -73,7 +61,7 @@ xcodebuild \
   build-for-testing
 
 TEST_COMMAND=(
-  xcodebuild
+  bash "$SCRIPT_DIR/run-native-command.sh"
   -project ParkNudge.xcodeproj
   -scheme ParkNudge
   -configuration Debug
@@ -88,7 +76,7 @@ fi
 TEST_COMMAND+=(test-without-building)
 "${TEST_COMMAND[@]}"
 
-xcodebuild \
+bash "$SCRIPT_DIR/run-native-command.sh" \
   -project ParkNudge.xcodeproj \
   -scheme ParkNudge \
   -configuration Release \

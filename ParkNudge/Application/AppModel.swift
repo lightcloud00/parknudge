@@ -24,6 +24,7 @@ final class AppModel: ObservableObject {
     private let photos: PhotoStoring
     private let reviews: ReviewRequesting
     private let clock: Clock
+    private let marketingVersionProvider: () -> String
     private var entitlementTask: Task<Void, Never>?
     private var hasBootstrapped = false
     private let thumbnailCache = NSCache<NSString, UIImage>()
@@ -42,7 +43,8 @@ final class AppModel: ObservableObject {
         // settings happen to accept, but which makes every caller's dependency
         // implicit and trips any stricter check.
         reviews: ReviewRequesting,
-        clock: Clock
+        clock: Clock,
+        marketingVersionProvider: (() -> String)? = nil
     ) {
         self.repository = repository
         self.coordinator = coordinator
@@ -54,6 +56,7 @@ final class AppModel: ObservableObject {
         self.settings = settings
         self.reviews = reviews
         self.clock = clock
+        self.marketingVersionProvider = marketingVersionProvider ?? { Self.marketingVersion }
     }
 
     deinit {
@@ -178,7 +181,7 @@ final class AppModel: ObservableObject {
     /// onboarding, a replacement confirmation, or a purchase operation. Those
     /// axes still live in the pure policy so future call sites cannot omit them.
     private func considerRequestingReview() {
-        let version = Self.marketingVersion
+        let version = marketingVersionProvider()
         let context = ReviewPromptContext(
             completedSessionCount: completedSessions.count,
             lastRequestedVersion: settings.lastReviewRequestVersion,
