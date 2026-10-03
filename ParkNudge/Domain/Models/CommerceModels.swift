@@ -86,11 +86,11 @@ enum PurchaseServiceError: LocalizedError, Equatable, Sendable {
     var errorDescription: String? {
         switch self {
         case .productUnavailable:
-            "Lifetime Pro is not available from the store right now. The free app remains fully usable."
+            "Lifetime Pro is not available from the store right now. Your saved parking details remain available."
         case .verificationFailed:
             "The purchase could not be verified. Try Restore Purchases or contact support."
         case .storeUnavailable:
-            "The App Store could not be reached. The free app remains fully usable."
+            "The App Store could not be reached. Your saved parking details remain available."
         }
     }
 }
@@ -100,5 +100,19 @@ enum FeatureAccessPolicy {
 
     static func canUse(_ feature: ProFeature, entitlement: EntitlementState) -> Bool {
         entitlement.isPro
+    }
+}
+
+/// Existing App Store customers retain their original parking loop. On iOS,
+/// AppTransaction.originalAppVersion is the original CFBundleVersion, not the
+/// marketing version. Only a verified production app transaction may call this.
+enum LegacyParkingAccessPolicy {
+    static let lastFreeBuild = 2
+
+    nonisolated static func includes(originalBuild: String) -> Bool {
+        guard !originalBuild.isEmpty,
+              originalBuild.allSatisfy({ $0.isASCII && $0.isNumber }),
+              let build = Int(originalBuild) else { return false }
+        return (1...lastFreeBuild).contains(build)
     }
 }

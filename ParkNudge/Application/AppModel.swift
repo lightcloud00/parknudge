@@ -7,6 +7,10 @@ final class AppModel: ObservableObject {
     @Published private(set) var activeSession: ParkingSession?
     @Published private(set) var completedSessions: [ParkingSession] = []
     @Published private(set) var entitlement: EntitlementState = .loading
+    @Published private(set) var hasLegacyParkingAccess = false
+    @Published private(set) var hasCheckedParkingAccess = false
+    @Published var requestedParkingAccess = false
+    @Published private(set) var paywallDismissalCount = 0
     @Published private(set) var lifetimeProduct: PurchaseProduct?
     @Published private(set) var isBusy = false
     @Published var alertMessage: String?
@@ -79,9 +83,11 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
-        lifetimeProduct = await purchases.loadProduct()
         entitlement = await purchases.currentEntitlement()
         observeEntitlementUpdates()
+        hasLegacyParkingAccess = await purchases.hasLegacyParkingAccess()
+        hasCheckedParkingAccess = true
+        lifetimeProduct = await purchases.loadProduct()
     }
 
     func reload() async {
@@ -118,7 +124,27 @@ final class AppModel: ObservableObject {
         }
     }
 
+    var canStartParking: Bool { entitlement.isPro || hasLegacyParkingAccess }
+
+    @discardableResult
+    func requestNewParkingAccess() -> Bool {
+        guard canStartParking else {
+            if !hasCheckedParkingAccess {
+                alertMessage = "Checking App Store access. Please try again in a moment."
+            } else {
+                requestedProFeature = nil
+                requestedParkingAccess = true
+                isPaywallPresented = true
+            }
+            return false
+        }
+        return true
+    }
+
     func saveNew(draft: ParkingDraft, replacingActive: Bool) async -> Bool {
+        // Recheck here as well as in the view: closing a paywall or losing an
+        // entitlement while editing must never create or replace a session.
+        guard requestNewParkingAccess() else { return false }
         var draft = draft
         if !hasAccess(to: .parkingCosts) {
             draft.paidAmountMinor = nil
@@ -246,7 +272,10 @@ final class AppModel: ObservableObject {
         FeatureAccessPolicy.canUse(feature, entitlement: entitlement)
     }
 
+    func paywallDidDismiss() { paywallDismissalCount += 1 }
+
     func requestAccess(to feature: ProFeature) {
+        requestedParkingAccess = false
         requestedProFeature = feature
         isPaywallPresented = true
     }
@@ -260,7 +289,7 @@ final class AppModel: ObservableObject {
         defer { isBusy = false }
         lifetimeProduct = await purchases.loadProduct()
         if lifetimeProduct == nil {
-            alertMessage = "The App Store price is still unavailable. Free parking features are unaffected."
+            alertMessage = "The App Store price is still unavailable. Your saved spot and directions remain available."
         }
     }
 
@@ -278,7 +307,7 @@ final class AppModel: ObservableObject {
             case .cancelled:
                 break
             case .pending:
-                alertMessage = "Your purchase is pending approval. Free features remain available."
+                alertMessage = "Your purchase is pending approval. New parking unlocks after verification. Your saved spot remains available."
             }
         } catch {
             alertMessage = error.localizedDescription
@@ -290,10 +319,18 @@ final class AppModel: ObservableObject {
         defer { isBusy = false }
         do {
             entitlement = try await purchases.restore()
-            alertMessage = entitlement.isPro
-                ? "Lifetime Pro was restored."
-                : "No active Lifetime Pro purchase was found."
-            if entitlement.isPro { isPaywallPresented = false }
+            hasLegacyParkingAccess = await purchases.hasLegacyParkingAccess()
+            hasCheckedParkingAccess = true
+            if entitlement.isPro {
+                alertMessage = "Lifetime Pro was restored."
+            } else if hasLegacyParkingAccess {
+                alertMessage = "Your original parking access was restored. Pro extras remain locked."
+            } else {
+                alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
+            }
+            if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
+                isPaywallPresented = false
+            }
         } catch {
             alertMessage = error.localizedDescription
         }

@@ -46,6 +46,7 @@ struct SettingsView: View {
                     .foregroundStyle(.green)
             } else {
                 Button {
+                    model.requestedParkingAccess = !model.canStartParking
                     model.requestedProFeature = nil
                     model.isPaywallPresented = true
                 } label: {
@@ -77,7 +78,7 @@ struct SettingsView: View {
         } header: {
             Text("ParkNudge Pro")
         } footer: {
-            Text("One-time purchase, no subscription. The full free parking workflow always remains available.")
+            Text("One-time purchase, no subscription. New customers need Pro to save parking spots. Existing customers keep their original parking access.")
         }
     }
 

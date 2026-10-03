@@ -51,6 +51,7 @@ protocol DirectionsOpening: AnyObject {
 protocol PurchaseProviding: AnyObject {
     func loadProduct() async -> PurchaseProduct?
     func currentEntitlement() async -> EntitlementState
+    func hasLegacyParkingAccess() async -> Bool
     func purchase() async throws -> PurchaseOutcome
     func restore() async throws -> EntitlementState
     func entitlementUpdates() -> AsyncStream<EntitlementState>

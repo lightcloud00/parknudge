@@ -38,9 +38,20 @@ struct PaywallView: View {
                             )
                     }
 
-                    comparison
+                    if model.requestedParkingAccess {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Unlock parking before saving your first spot")
+                                .font(.headline)
+                            Label("Save your car location and get directions back", systemImage: "mappin.and.ellipse")
+                            Label("Meter reminders, photos, and parking notes", systemImage: "timer")
+                            Label("Unlimited history, costs, and CSV export", systemImage: "clock.arrow.circlepath")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        comparison
+                    }
 
-                    Text("Older sessions are never deleted — free simply shows the newest \(FeatureAccessPolicy.freeHistoryLimit). Everything stays on this iPhone.")
+                    Text("Closing this screen does not unlock new parking. Existing customers keep their original free parking features. Your saved spot, directions, and data are never deleted.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)

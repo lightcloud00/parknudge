@@ -195,10 +195,14 @@ final class ModelDirectionsFake: DirectionsOpening {
 
 @MainActor
 final class ModelPurchaseFake: PurchaseProviding {
+    var entitlement: EntitlementState = .free
+    var legacyAccess = true
+    var outcome: PurchaseOutcome = .cancelled
+    func hasLegacyParkingAccess() async -> Bool { legacyAccess }
     func loadProduct() async -> PurchaseProduct? { nil }
-    func currentEntitlement() async -> EntitlementState { .free }
-    func purchase() async throws -> PurchaseOutcome { .cancelled }
-    func restore() async throws -> EntitlementState { .free }
+    func currentEntitlement() async -> EntitlementState { entitlement }
+    func purchase() async throws -> PurchaseOutcome { outcome }
+    func restore() async throws -> EntitlementState { entitlement }
     func entitlementUpdates() -> AsyncStream<EntitlementState> { AsyncStream { $0.finish() } }
 }
 
