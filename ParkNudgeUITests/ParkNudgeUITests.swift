@@ -1,6 +1,40 @@
 import XCTest
 
 final class ParkNudgeUITests: XCTestCase {
+    @MainActor
+    func testNewCustomerDismissalKeepsParkingLockedAndPurchaseResumesEditor() {
+        let app = launch(extraArguments: ["--new-customer-paywall"])
+        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+        app.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
+        app.buttons["close-paywall"].tap()
+
+        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
+        app.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(app.buttons["purchase-lifetime-pro"].waitForExistence(timeout: 5))
+        app.buttons["purchase-lifetime-pro"].tap()
+
+        // The deterministic verified-entitlement fixture exercises sheet
+        // dismissal ordering; Apple transaction acceptance is a separate gate.
+        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testNewCustomerCanFinishExistingParkingWithoutPayingAgain() {
+        let app = launch(extraArguments: ["--new-customer-paywall", "-ui-test-active-meter"])
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["close-paywall"].exists)
+        app.buttons["finish-parking"].tap()
+        app.buttons["Finish Parking"].tap()
+        app.tabBars.buttons["History"].tap()
+        XCTAssertTrue(app.staticTexts["Union Square Garage"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["close-paywall"].exists)
+    }
+
     /// Retains the five raw, free-core frames used to assemble the App Store
     /// product-page story. The test deliberately avoids the paywall so the
     /// listing leads with the complete parking workflow that everyone gets.
