@@ -14,7 +14,10 @@ final class ParkNudgeUITests: XCTestCase {
         XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["purchase-lifetime-pro"].waitForExistence(timeout: 5))
-        app.buttons["purchase-lifetime-pro"].tap()
+        let purchase = app.buttons["purchase-lifetime-pro"]
+        for _ in 0..<5 where !purchase.isHittable { app.swipeUp() }
+        XCTAssertTrue(purchase.isHittable)
+        purchase.tap()
 
         // The deterministic verified-entitlement fixture exercises sheet
         // dismissal ordering; Apple transaction acceptance is a separate gate.
