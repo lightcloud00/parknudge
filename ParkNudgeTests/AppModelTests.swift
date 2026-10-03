@@ -149,6 +149,7 @@ final class AppModelTests: XCTestCase {
         await harness.model.purchaseLifetime()
         XCTAssertTrue(harness.model.canStartParking)
         XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertNil(harness.model.alertMessage, "Parking must resume without a competing success alert")
         let draft = await harness.model.newParkingDraft()
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
         XCTAssertTrue(saved)

@@ -302,7 +302,10 @@ final class AppModel: ObservableObject {
                 entitlement = await purchases.currentEntitlement()
                 if entitlement.isPro {
                     isPaywallPresented = false
-                    alertMessage = "Lifetime Pro is unlocked."
+                    // The parking entry intent resumes its editor after the
+                    // offer dismisses. A simultaneous success alert competes
+                    // for the same presentation and can discard that editor.
+                    alertMessage = requestedParkingAccess ? nil : "Lifetime Pro is unlocked."
                 }
             case .cancelled:
                 break
@@ -329,6 +332,7 @@ final class AppModel: ObservableObject {
                 alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
             }
             if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
+                if requestedParkingAccess { alertMessage = nil }
                 isPaywallPresented = false
             }
         } catch {
