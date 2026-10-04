@@ -7,7 +7,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var activeSession: ParkingSession?
     @Published private(set) var completedSessions: [ParkingSession] = []
     @Published private(set) var entitlement: EntitlementState = .loading
-    @Published private(set) var hasLegacyParkingAccess = false
+    @Published private(set) var legacyParkingAccessState: LegacyParkingAccessState = .unknown
     @Published private(set) var hasCheckedParkingAccess = false
     @Published var requestedParkingAccess = false
     @Published private(set) var paywallDismissalCount = 0
@@ -85,7 +85,7 @@ final class AppModel: ObservableObject {
         await reload()
         entitlement = await purchases.currentEntitlement()
         observeEntitlementUpdates()
-        hasLegacyParkingAccess = await purchases.hasLegacyParkingAccess()
+        applyLegacyParkingAccess(await purchases.legacyParkingAccessState(refresh: false))
         hasCheckedParkingAccess = true
         lifetimeProduct = await purchases.loadProduct()
     }
@@ -124,7 +124,9 @@ final class AppModel: ObservableObject {
         }
     }
 
+    var hasLegacyParkingAccess: Bool { legacyParkingAccessState == .eligible }
     var canStartParking: Bool { entitlement.isPro || hasLegacyParkingAccess }
+    var paywallRequiresParkingPurchase: Bool { !hasLegacyParkingAccess }
 
     @discardableResult
     func requestNewParkingAccess() -> Bool {
@@ -272,7 +274,10 @@ final class AppModel: ObservableObject {
         FeatureAccessPolicy.canUse(feature, entitlement: entitlement)
     }
 
-    func paywallDidDismiss() { paywallDismissalCount += 1 }
+    func paywallDidDismiss() {
+        requestedParkingAccess = false
+        paywallDismissalCount += 1
+    }
 
     func requestAccess(to feature: ProFeature) {
         requestedParkingAccess = false
@@ -320,23 +325,31 @@ final class AppModel: ObservableObject {
     func restorePurchases() async {
         isBusy = true
         defer { isBusy = false }
+        var purchaseRestoreFailed = false
         do {
             entitlement = try await purchases.restore()
-            hasLegacyParkingAccess = await purchases.hasLegacyParkingAccess()
-            hasCheckedParkingAccess = true
-            if entitlement.isPro {
-                alertMessage = "Lifetime Pro was restored."
-            } else if hasLegacyParkingAccess {
-                alertMessage = "Your original parking access was restored. Pro extras remain locked."
-            } else {
-                alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
-            }
-            if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
-                if requestedParkingAccess { alertMessage = nil }
-                isPaywallPresented = false
-            }
         } catch {
-            alertMessage = error.localizedDescription
+            purchaseRestoreFailed = true
+        }
+        // Original app ownership has its own recovery path. An IAP sync
+        // failure must not prevent the user from retrying that verification.
+        let legacyResult = await purchases.legacyParkingAccessState(refresh: true)
+        applyLegacyParkingAccess(legacyResult)
+        hasCheckedParkingAccess = true
+        if purchaseRestoreFailed {
+            alertMessage = "The App Store could not complete purchase restoration. Try Restore Purchases again when the store is available. Your saved spot and verified access remain available."
+        } else if entitlement.isPro {
+            alertMessage = "Lifetime Pro was restored."
+        } else if legacyResult == .unknown {
+            alertMessage = "The App Store could not verify your original parking access. Try Restore Purchases again when the store is available. Your saved spot remains available."
+        } else if hasLegacyParkingAccess {
+            alertMessage = "Your original parking access was restored. Pro extras remain locked."
+        } else {
+            alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
+        }
+        if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
+            if requestedParkingAccess { alertMessage = nil }
+            isPaywallPresented = false
         }
     }
 
@@ -401,10 +414,26 @@ final class AppModel: ObservableObject {
     private func observeEntitlementUpdates() {
         entitlementTask?.cancel()
         entitlementTask = Task { [weak self] in
-            guard let self else { return }
-            for await state in purchases.entitlementUpdates() {
-                entitlement = state
+            guard let updates = self?.purchases.entitlementUpdates() else { return }
+            for await state in updates {
+                guard let self else { return }
+                self.entitlement = state
+                if state.isPro && self.isPaywallPresented {
+                    // A verified Ask to Buy update completes the still-open
+                    // offer just like a synchronous purchase. ParkView consumes
+                    // its saved intent once, after the sheet actually dismisses.
+                    self.alertMessage = nil
+                    self.isPaywallPresented = false
+                }
             }
+        }
+    }
+
+    private func applyLegacyParkingAccess(_ state: LegacyParkingAccessState) {
+        // A transient store failure must not revoke an entitlement already
+        // verified in this process. No preference or persisted cache grants it.
+        if state != .unknown || !hasLegacyParkingAccess {
+            legacyParkingAccessState = state
         }
     }
 }

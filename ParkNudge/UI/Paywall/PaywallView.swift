@@ -38,7 +38,7 @@ struct PaywallView: View {
                             )
                     }
 
-                    if model.requestedParkingAccess {
+                    if model.paywallRequiresParkingPurchase {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Unlock parking before saving your first spot")
                                 .font(.headline)
@@ -81,7 +81,7 @@ struct PaywallView: View {
                         .contentShape(Rectangle())
                         .disabled(model.isBusy)
                         .accessibilityIdentifier("restore-purchases")
-                        .accessibilityHint("Restores a previous Lifetime Pro purchase made with this Apple ID.")
+                        .accessibilityHint("Checks original parking access and restores a previous Lifetime Pro purchase made with this Apple ID.")
 
                     if model.lifetimeProduct == nil, !model.isBusy {
                         Button("Retry App Store price") {
@@ -174,14 +174,12 @@ struct PaywallView: View {
         .frame(maxWidth: .infinity)
     }
 
-    /// Free against Pro, side by side. A flat list of Pro features gave no
-    /// sense of how much the free app already does, which for this app is most
-    /// of it — the honest comparison is also the more persuasive one.
+    /// Only verified original customers see the retained free-core comparison.
     private var comparison: some View {
         VStack(spacing: 0) {
             ComparisonRow(
                 title: Text("What you get").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
-                free: Text("Free").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
+                free: Text("Original").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
                 pro: Text("Pro").font(.caption.bold()).foregroundStyle(Theme.brandInk)
             )
             .padding(.vertical, 8)
