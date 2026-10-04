@@ -38,6 +38,25 @@ final class ParkNudgeUITests: XCTestCase {
         XCTAssertFalse(app.buttons["close-paywall"].exists)
     }
 
+    @MainActor
+    func testSettingsReminderUpsellShowsPaidCoreOnlyForNewCustomers() {
+        for newCustomer in [true, false] {
+            let app = launch(extraArguments: newCustomer ? ["--new-customer-paywall"] : [])
+            app.tabBars.buttons["Settings"].tap()
+            app.buttons["Customize with Pro"].tap()
+            XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
+            if newCustomer {
+                XCTAssertTrue(app.staticTexts["Unlock parking before saving your first spot"].exists)
+                XCTAssertFalse(app.staticTexts["Original"].exists)
+            } else {
+                XCTAssertTrue(app.staticTexts["Original"].exists)
+                XCTAssertFalse(app.staticTexts["Unlock parking before saving your first spot"].exists)
+            }
+            keepScreenshot(named: newCustomer ? "ParkNudge-new-customer-settings-offer" : "ParkNudge-original-customer-settings-offer")
+            app.terminate()
+        }
+    }
+
     /// Retains the five raw, free-core frames used to assemble the App Store
     /// product-page story. The test deliberately avoids the paywall so the
     /// listing leads with the complete parking workflow that everyone gets.

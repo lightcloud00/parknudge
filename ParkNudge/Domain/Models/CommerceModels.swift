@@ -66,6 +66,14 @@ enum EntitlementState: Equatable, Sendable {
     var isPro: Bool { self == .pro }
 }
 
+/// An unavailable or unverified app transaction cannot establish that a
+/// customer is ineligible for their original parking features.
+enum LegacyParkingAccessState: Equatable, Sendable {
+    case unknown
+    case eligible
+    case ineligible
+}
+
 struct PurchaseProduct: Equatable, Sendable {
     var identifier: String
     var displayName: String

@@ -197,13 +197,36 @@ final class ModelDirectionsFake: DirectionsOpening {
 final class ModelPurchaseFake: PurchaseProviding {
     var entitlement: EntitlementState = .free
     var legacyAccess = true
+    var legacyVerification: LegacyParkingAccessState?
+    var refreshedLegacyVerification: LegacyParkingAccessState?
+    private(set) var legacyRefreshCalls = 0
     var outcome: PurchaseOutcome = .cancelled
+    var restoreFails = false
+    private let updates: AsyncStream<EntitlementState>
+    private let updatesContinuation: AsyncStream<EntitlementState>.Continuation
+    init() {
+        (updates, updatesContinuation) = AsyncStream.makeStream()
+    }
     func hasLegacyParkingAccess() async -> Bool { legacyAccess }
+    func legacyParkingAccessState(refresh: Bool) async -> LegacyParkingAccessState {
+        if refresh {
+            legacyRefreshCalls += 1
+            if let refreshedLegacyVerification { return refreshedLegacyVerification }
+        }
+        return legacyVerification ?? (legacyAccess ? .eligible : .ineligible)
+    }
     func loadProduct() async -> PurchaseProduct? { nil }
     func currentEntitlement() async -> EntitlementState { entitlement }
     func purchase() async throws -> PurchaseOutcome { outcome }
-    func restore() async throws -> EntitlementState { entitlement }
-    func entitlementUpdates() -> AsyncStream<EntitlementState> { AsyncStream { $0.finish() } }
+    func restore() async throws -> EntitlementState {
+        if restoreFails { throw PurchaseServiceError.storeUnavailable }
+        return entitlement
+    }
+    func entitlementUpdates() -> AsyncStream<EntitlementState> { updates }
+    func sendEntitlementUpdate(_ state: EntitlementState) {
+        entitlement = state
+        updatesContinuation.yield(state)
+    }
 }
 
 @MainActor
