@@ -337,7 +337,17 @@ final class AppModel: ObservableObject {
         applyLegacyParkingAccess(legacyResult)
         hasCheckedParkingAccess = true
         if purchaseRestoreFailed {
-            alertMessage = "The App Store could not complete purchase restoration. Try Restore Purchases again when the store is available. Your saved spot and verified access remain available."
+            let accessMessage: String
+            if legacyResult == .eligible {
+                accessMessage = "Your original parking access was verified. "
+            } else if canStartParking {
+                accessMessage = "Your previously verified access remains available. "
+            } else if legacyResult == .unknown {
+                accessMessage = "The App Store could not verify your original parking access. "
+            } else {
+                accessMessage = ""
+            }
+            alertMessage = accessMessage + "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
         } else if entitlement.isPro {
             alertMessage = "Lifetime Pro was restored."
         } else if legacyResult == .unknown {

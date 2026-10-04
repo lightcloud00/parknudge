@@ -219,6 +219,37 @@ final class AppModelTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not verify"))
     }
 
+    func testFailedPurchaseRestoreConfirmsRecoveredOriginalAccessFromSettings() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyVerification = .unknown
+        harness.purchases.refreshedLegacyVerification = .eligible
+        harness.purchases.restoreFails = true
+        await harness.model.bootstrap()
+        harness.model.requestAccess(to: .customReminders)
+        await harness.model.restorePurchases()
+        XCTAssertTrue(harness.model.canStartParking)
+        XCTAssertFalse(harness.model.entitlement.isPro)
+        XCTAssertTrue(harness.model.isPaywallPresented, "Pro extras still require purchase")
+        let message = try XCTUnwrap(harness.model.alertMessage)
+        XCTAssertTrue(message.contains("original parking access was verified"))
+        XCTAssertTrue(message.contains("could not restore Lifetime Pro"))
+    }
+
+    func testFailedPurchaseRestoreWithUnknownOwnershipDoesNotClaimVerifiedAccess() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyVerification = .unknown
+        harness.purchases.restoreFails = true
+        await harness.model.bootstrap()
+        await harness.model.restorePurchases()
+        XCTAssertFalse(harness.model.canStartParking)
+        let message = try XCTUnwrap(harness.model.alertMessage)
+        XCTAssertTrue(message.contains("could not verify your original parking access"))
+        XCTAssertTrue(message.contains("could not restore Lifetime Pro"))
+        XCTAssertFalse(message.contains("verified access remains available"))
+    }
+
     func testVerifiedIneligibleRestoreCanReportNoPreviousAccess() async throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }
