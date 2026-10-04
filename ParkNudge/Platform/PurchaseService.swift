@@ -33,6 +33,14 @@ final class StoreKitPurchaseService: PurchaseProviding {
         return .free
     }
 
+    func hasLegacyParkingAccess() async -> Bool {
+        guard let result = try? await AppTransaction.shared,
+              case .verified(let transaction) = result,
+              transaction.bundleID == "com.gusdigitalsolutions.parknudge",
+              transaction.environment == .production else { return false }
+        return LegacyParkingAccessPolicy.includes(originalBuild: transaction.originalAppVersion)
+    }
+
     func purchase() async throws -> PurchaseOutcome {
         let product: Product
         if let loaded = self.product {

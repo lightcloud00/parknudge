@@ -99,6 +99,89 @@ final class AppModelTests: XCTestCase {
         XCTAssertNotEqual(original.pngData(), replacement.pngData())
     }
 
+    func testNewCustomerCannotSaveOrReplaceBeforeVerifiedPurchase() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        await harness.model.bootstrap()
+        let draft = await harness.model.newParkingDraft()
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertFalse(saved)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.requestedParkingAccess)
+        XCTAssertTrue(harness.repository.sessions.isEmpty)
+        XCTAssertTrue(harness.notifications.scheduled.isEmpty)
+
+        let original = TestFixtures.session()
+        try harness.repository.create(original)
+        await harness.model.reload()
+        harness.model.isPaywallPresented = false
+        let replaced = await harness.model.saveNew(draft: draft, replacingActive: true)
+        XCTAssertFalse(replaced)
+        XCTAssertEqual(harness.model.activeSession?.id, original.id)
+        XCTAssertEqual(harness.repository.sessions.count, 1)
+        XCTAssertTrue(harness.model.completedSessions.isEmpty)
+    }
+
+    func testCancelledPendingAndUnverifiedPurchaseKeepParkingLocked() async throws {
+        for outcome in [PurchaseOutcome.cancelled, .pending, .purchased] {
+            let harness = try TestFixtures.appModel()
+            defer { harness.cleanup() }
+            harness.purchases.legacyAccess = false
+            harness.purchases.outcome = outcome
+            await harness.model.bootstrap()
+            XCTAssertFalse(harness.model.requestNewParkingAccess())
+            await harness.model.purchaseLifetime()
+            XCTAssertFalse(harness.model.canStartParking)
+            XCTAssertTrue(harness.model.isPaywallPresented)
+            XCTAssertTrue(harness.repository.sessions.isEmpty)
+        }
+    }
+
+    func testVerifiedPurchaseUnlocksAndRevocationBlocksOnlyNewParking() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        await harness.model.bootstrap()
+        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertTrue(harness.model.canStartParking)
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertNil(harness.model.alertMessage, "Parking must resume without a competing success alert")
+        let draft = await harness.model.newParkingDraft()
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertTrue(saved)
+        let id = harness.model.activeSession?.id
+        harness.purchases.entitlement = .free
+        await harness.model.restorePurchases()
+        XCTAssertFalse(harness.model.canStartParking)
+        XCTAssertEqual(harness.model.activeSession?.id, id)
+        harness.model.openDirections()
+        await harness.model.finishActive()
+        XCTAssertNil(harness.model.activeSession)
+        XCTAssertEqual(harness.model.completedSessions.first?.id, id)
+    }
+
+    func testLegacyCustomerKeepsParkingWithoutReceivingPro() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        XCTAssertTrue(harness.model.canStartParking)
+        XCTAssertEqual(harness.model.entitlement, .free)
+        XCTAssertFalse(harness.model.hasAccess(to: .parkingCosts))
+    }
+
+    func testLegacyBuildBoundaryRejectsSandboxAndMalformedVersions() {
+        for value in ["1", "2"] {
+            XCTAssertTrue(LegacyParkingAccessPolicy.includes(originalBuild: value))
+        }
+        for value in ["", "0", "3", "1.0", "-1", " 2", "2 ", "２", "99999999999999999999999"] {
+            XCTAssertFalse(LegacyParkingAccessPolicy.includes(originalBuild: value))
+        }
+    }
+
     private func imageData(color: UIColor) -> Data? {
         UIGraphicsImageRenderer(size: CGSize(width: 8, height: 8)).image { context in
             color.setFill()
