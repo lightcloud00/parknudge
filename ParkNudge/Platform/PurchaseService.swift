@@ -33,6 +33,30 @@ final class StoreKitPurchaseService: PurchaseProviding {
         return .free
     }
 
+    func hasLegacyParkingAccess() async -> Bool {
+        await legacyParkingAccessState(refresh: false) == .eligible
+    }
+
+    func legacyParkingAccessState(refresh: Bool) async -> LegacyParkingAccessState {
+        let result: VerificationResult<AppTransaction>
+        do {
+            // Refresh is reserved for the user's Restore action because it
+            // may ask them to authenticate with the App Store.
+            if refresh {
+                result = try await AppTransaction.refresh()
+            } else {
+                result = try await AppTransaction.shared
+            }
+        } catch {
+            return .unknown
+        }
+        guard case .verified(let transaction) = result,
+              transaction.bundleID == "com.gusdigitalsolutions.parknudge",
+              transaction.environment == .production else { return .unknown }
+        return LegacyParkingAccessPolicy.includes(originalBuild: transaction.originalAppVersion)
+            ? .eligible : .ineligible
+    }
+
     func purchase() async throws -> PurchaseOutcome {
         let product: Product
         if let loaded = self.product {

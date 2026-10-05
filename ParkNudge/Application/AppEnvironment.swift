@@ -7,10 +7,12 @@ struct AppEnvironment {
     let model: AppModel
 
     static func make() throws -> AppEnvironment {
+        #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-ui-testing") {
             return try makeUITesting(arguments: arguments)
         }
+        #endif
         return try makeLive()
     }
 
@@ -174,6 +176,9 @@ private final class UITestPurchaseProvider: PurchaseProviding {
     }
 
     func currentEntitlement() async -> EntitlementState { isPro ? .pro : .free }
+    func hasLegacyParkingAccess() async -> Bool {
+        !ProcessInfo.processInfo.arguments.contains("--new-customer-paywall")
+    }
 
     func purchase() async throws -> PurchaseOutcome {
         isPro = true
