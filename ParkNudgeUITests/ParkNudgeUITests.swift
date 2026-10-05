@@ -97,7 +97,11 @@ final class ParkNudgeUITests: XCTestCase {
         active.swipeUp()
         XCTAssertTrue(active.buttons["Privacy"].waitForExistence(timeout: 5))
         XCTAssertTrue(active.buttons["Terms"].waitForExistence(timeout: 5))
-        XCTAssertTrue(active.staticTexts["Lifetime Pro unlocked"].exists)
+        XCTAssertTrue(
+            active.staticTexts[
+                "All data stays on this iPhone unless you explicitly share a CSV export."
+            ].exists
+        )
         keepScreenshot(named: "06-ParkNudge-local-data-and-privacy")
     }
 
