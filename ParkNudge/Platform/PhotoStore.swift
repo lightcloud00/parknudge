@@ -52,7 +52,9 @@ final class ApplicationSupportPhotoStore: PhotoStoring {
             throw PhotoStoreError.encodingFailed
         }
 
-        let relativePath = "Photos/\(sessionID.uuidString.lowercased()).jpg"
+        // A photo is staged before its session is persisted. A distinct path
+        // keeps the saved photo intact if that later database write fails.
+        let relativePath = "Photos/\(sessionID.uuidString.lowercased())-\(UUID().uuidString.lowercased()).jpg"
         do {
             try jpeg.write(to: rootURL.appending(path: relativePath), options: .atomic)
             return relativePath

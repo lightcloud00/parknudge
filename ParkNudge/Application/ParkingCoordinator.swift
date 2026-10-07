@@ -24,6 +24,11 @@ final class ParkingCoordinator {
         replacingActive: Bool,
         reminderOffsets: [Int]
     ) async throws -> ParkingSaveOutcome {
+        // Resolve failures and replacement consent before creating a photo.
+        let previousActive = try repository.activeSession()
+        guard previousActive == nil || replacingActive else {
+            throw ParkingRepositoryError.activeSessionExists
+        }
         let now = clock.now
         let id = UUID()
         var photoPath: String?
@@ -33,11 +38,8 @@ final class ParkingCoordinator {
         }
 
         let session = makeSession(id: id, draft: draft, photoPath: photoPath, now: now)
-        let previousActive = try repository.activeSession()
-
         do {
             if previousActive != nil {
-                guard replacingActive else { throw ParkingRepositoryError.activeSessionExists }
                 _ = try repository.replaceActive(with: session, at: now)
             } else {
                 try repository.create(session)
