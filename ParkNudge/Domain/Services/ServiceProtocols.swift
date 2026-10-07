@@ -36,6 +36,8 @@ protocol NotificationScheduling: AnyObject {
 
 @MainActor
 protocol PhotoStoring: AnyObject {
+    /// Stages a new photo at a distinct path without overwriting existing photos.
+    /// The caller removes the staged file on failure or retires the old file after persistence.
     func storeJPEG(data: Data, sessionID: UUID) throws -> String
     func load(relativePath: String) -> Data?
     func delete(relativePath: String) throws

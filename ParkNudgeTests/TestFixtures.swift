@@ -100,14 +100,19 @@ final class ModelParkingRepositoryFake: ParkingRepository {
     var sessions: [UUID: ParkingSession] = [:]
     var storedReminders: [UUID: [StoredReminder]] = [:]
     var failsFinishing = false
+    var failsReadingActive = false
+    var failsCreating = false
+    var failsUpdating = false
 
     func activeSession() throws -> ParkingSession? {
-        sessions.values.first { $0.endedAt == nil }
+        if failsReadingActive { throw ModelHarnessError.injectedFailure }
+        return sessions.values.first { $0.endedAt == nil }
     }
     func completedSessions() throws -> [ParkingSession] {
         sessions.values.filter { $0.endedAt != nil }.sorted { ($0.endedAt ?? .distantPast) > ($1.endedAt ?? .distantPast) }
     }
     func create(_ session: ParkingSession) throws {
+        if failsCreating { throw ModelHarnessError.injectedFailure }
         if session.endedAt == nil, try activeSession() != nil {
             throw ParkingRepositoryError.activeSessionExists
         }
@@ -125,6 +130,7 @@ final class ModelParkingRepositoryFake: ParkingRepository {
         return previous
     }
     func update(_ session: ParkingSession) throws {
+        if failsUpdating { throw ModelHarnessError.injectedFailure }
         guard sessions[session.id] != nil else { throw ParkingRepositoryError.sessionNotFound }
         sessions[session.id] = session
     }
@@ -174,7 +180,7 @@ final class ModelPhotoFake: PhotoStoring {
     var images: [String: Data] = [:]
     var loadCount = 0
     func storeJPEG(data: Data, sessionID: UUID) throws -> String {
-        let path = "Photos/\(sessionID.uuidString).jpg"
+        let path = "Photos/\(sessionID.uuidString)-\(UUID().uuidString).jpg"
         images[path] = data
         return path
     }
