@@ -1,4 +1,5 @@
 import XCTest
+import UserNotifications
 @testable import ParkNudge
 
 final class ReminderPlannerTests: XCTestCase {
@@ -41,5 +42,13 @@ final class ReminderPlannerTests: XCTestCase {
             ParkingNotificationCopy.body(offsetMinutes: 0),
             "Your saved parking meter time has ended."
         )
+    }
+
+    func testForegroundNotificationsRequestVisiblePresentation() {
+        let options = ParkingNotificationPresentation.foregroundOptions
+
+        XCTAssertTrue(options.contains(.banner))
+        XCTAssertTrue(options.contains(.list))
+        XCTAssertTrue(options.contains(.sound))
     }
 }
