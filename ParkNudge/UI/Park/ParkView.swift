@@ -18,6 +18,8 @@ struct ParkView: View {
                 }
             }
             .navigationTitle("ParkNudge")
+            // Keep the parked-session actions above the floating tab bar.
+            .navigationBarTitleDisplayMode(model.activeSession == nil ? .large : .inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if model.activeSession == nil {

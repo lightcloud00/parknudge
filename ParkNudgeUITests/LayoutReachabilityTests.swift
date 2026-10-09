@@ -32,6 +32,22 @@ final class LayoutReachabilityTests: XCTestCase {
         assertReachable(app.buttons["walking-directions"], "Walking Directions")
         assertReachable(app.buttons["finish-parking"], "Finish")
         assertReachable(app.buttons["parking-actions-menu"], "overflow menu")
+
+        // isHittable can pass when only part of Finish is above the floating
+        // tab bar. Require its complete frame to remain visible at rest.
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 5))
+        let finishFrame = app.buttons["finish-parking"].frame
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "ParkNudge-active-controls-at-rest"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertTrue(app.frame.contains(finishFrame), "Finish extends outside the window: \(finishFrame)")
+        XCTAssertLessThanOrEqual(
+            finishFrame.maxY,
+            tabBar.frame.minY,
+            "Finish is partly covered by the tab bar: finish \(finishFrame), tab bar \(tabBar.frame)"
+        )
     }
 
     @MainActor
