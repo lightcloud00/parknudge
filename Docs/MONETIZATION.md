@@ -1,12 +1,16 @@
-# Free and paid boundary
+# Version 1.1 parking-access boundary
 
-## Launch model
+## Current candidate model
 
-Lifetime Pro is a non-consumable in-app purchase: bought once and non-expiring while Apple reports a verified current entitlement. The planned U.S. reference price is $9.99; the app always renders StoreKit's localized `displayPrice`.
+A new customer's first parking session is free: save the spot, see the return route and reminder plan, and finish. Starting or replacing a second session needs verified Lifetime Pro (`ParkingStartPolicy.freeSessions = 1`; `AppSettings.hasUsedFreeParkingSession` keeps the free park used after history is deleted). A verified production AppTransaction with original build 1 or 2 retains the original parking workflow without granting Pro extras. Sandbox, missing or unverified ownership is not evidence of legacy access.
+
+The rules below describe the version 1.1 candidate, not proof of public release or successful device transactions.
+
+Lifetime Pro is a non-consumable in-app purchase: bought once and non-expiring while Apple reports a verified current entitlement. The app renders StoreKit's current localized `displayPrice`; this document does not establish current storefront pricing.
 
 Product identifier: `com.gusdigitalsolutions.parknudge.pro.lifetime`
 
-| Capability | Free | Lifetime Pro |
+| Capability | Free park and verified original customers | Lifetime Pro |
 |---|---|---|
 | One active parking spot | Included | Included |
 | GPS capture and manual pin correction | Included | Included |
@@ -26,22 +30,22 @@ All completed sessions remain stored locally. Upgrade reveals older sessions. A 
 
 ## Paywall rules
 
-- Present only after an explicit locked-feature action or from the optional Settings card.
-- Always dismissible; free access continues uninterrupted.
+- Present after a new customer who has used the free park asks to start or replace a session, after a locked-feature action, or from the Settings card. No first-launch interruption.
+- Always dismissible. Dismissal does not unlock another parking session. Existing saved parking, directions and finishing an active session remain available.
 - State “one-time purchase, no subscription.”
-- List the four exact Pro features.
+- Explain that the first park is free and that Lifetime Pro keeps parking going after it. Show the original-access comparison only to verified original customers; list the four Pro extras accurately.
 - Provide Restore Purchases, Privacy, Terms, and Close controls.
 - No trial countdown, fake discount, repeated automatic presentation, or first-launch interruption.
 
 ## Store outcomes
 
 - Successful verified purchase: finish the transaction and unlock Pro.
-- Cancelled: close no workflow and show no error.
-- Pending: keep free access and explain that approval is pending.
+- Cancelled: keep the intended action locked without showing an error or changing saved data.
+- Pending: do not unlock another parking session or Pro extras; explain that approval is pending and preserve saved data.
 - Unverified: do not unlock Pro.
-- Store or product unavailable: keep free access.
-- Restore: call `AppStore.sync()` and recompute current verified entitlement.
-- Revoked or refunded: recompute to free without deleting data.
+- Store or product unavailable: do not infer new access; preserve existing saved parking, directions and active-session completion.
+- Restore: call `AppStore.sync()` and recompute current verified entitlement and original parking ownership. Original parking access does not grant Pro extras.
+- Revoked or refunded: recompute access from verified purchase and original ownership without deleting data. A new customer who has used the free park cannot start or replace another session without verified access.
 
 ## Why not a subscription
 
