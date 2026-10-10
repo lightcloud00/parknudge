@@ -40,8 +40,13 @@ struct PaywallView: View {
 
                     if model.paywallRequiresParkingPurchase {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Unlock parking before saving your first spot")
+                            Text("Keep parking with Lifetime Pro")
                                 .font(.headline)
+                            Text(model.mayStartParking
+                                 ? "Your first park is free. One purchase keeps parking going after it."
+                                 : "You've used your free park. One purchase keeps parking going.")
+                                .font(.subheadline)
+                                .accessibilityIdentifier("paywall-free-park-status")
                             Label("Save your car location and get directions back", systemImage: "mappin.and.ellipse")
                             Label("Meter reminders, photos, and parking notes", systemImage: "timer")
                             Label("Unlimited history, costs, and CSV export", systemImage: "clock.arrow.circlepath")
@@ -51,7 +56,7 @@ struct PaywallView: View {
                         comparison
                     }
 
-                    Text("Closing this screen does not unlock new parking. Existing customers keep their original free parking features. Your saved spot, directions, and data are never deleted.")
+                    Text("Closing this screen keeps your saved spot, directions, and data. Existing customers keep their original free parking features.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)

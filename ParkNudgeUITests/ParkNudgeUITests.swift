@@ -5,6 +5,18 @@ final class ParkNudgeUITests: XCTestCase {
     func testNewCustomerDismissalKeepsParkingLockedAndPurchaseResumesEditor() {
         let app = launch(extraArguments: ["--new-customer-paywall"])
         XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+
+        // The first park is the free result: no paywall before the editor.
+        app.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["close-paywall"].exists)
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+        app.buttons["finish-parking"].tap()
+        app.buttons["Finish Parking"].tap()
+
+        // The second park needs Lifetime Pro, and closing the offer keeps it locked.
+        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
@@ -46,11 +58,11 @@ final class ParkNudgeUITests: XCTestCase {
             app.buttons["Customize with Pro"].tap()
             XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
             if newCustomer {
-                XCTAssertTrue(app.staticTexts["Unlock parking before saving your first spot"].exists)
+                XCTAssertTrue(app.staticTexts["Keep parking with Lifetime Pro"].exists)
                 XCTAssertFalse(app.staticTexts["Original"].exists)
             } else {
                 XCTAssertTrue(app.staticTexts["Original"].exists)
-                XCTAssertFalse(app.staticTexts["Unlock parking before saving your first spot"].exists)
+                XCTAssertFalse(app.staticTexts["Keep parking with Lifetime Pro"].exists)
             }
             keepScreenshot(named: newCustomer ? "ParkNudge-new-customer-settings-offer" : "ParkNudge-original-customer-settings-offer")
             app.terminate()
@@ -66,21 +78,24 @@ final class ParkNudgeUITests: XCTestCase {
     func testAppStorePaidCoreScreenshotStory() throws {
         let fresh = launch(extraArguments: ["--new-customer-paywall"])
         XCTAssertTrue(fresh.buttons["save-parking-spot"].waitForExistence(timeout: 5))
-        XCTAssertTrue(fresh.staticTexts["Lifetime Pro is required for new customers. One purchase, no subscription."].exists)
+        XCTAssertTrue(fresh.staticTexts["Your first park is free. Location is requested only after you tap this button."].exists)
         keepScreenshot(named: "01-ParkNudge-new-customer-home")
 
+        // The first park is the free result: no paywall before the editor.
         fresh.buttons["save-parking-spot"].tap()
-        XCTAssertTrue(fresh.staticTexts["Unlock parking before saving your first spot"].waitForExistence(timeout: 5))
-        XCTAssertTrue(fresh.descendants(matching: .any)["paywall-price"].exists)
-        keepScreenshot(named: "02-ParkNudge-lifetime-one-time")
-
-        let purchase = fresh.buttons["purchase-lifetime-pro"]
-        for _ in 0..<5 where !purchase.isHittable { fresh.swipeUp() }
-        XCTAssertTrue(purchase.isHittable)
-        purchase.tap()
         XCTAssertTrue(fresh.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        XCTAssertFalse(fresh.buttons["close-paywall"].exists)
         keepScreenshot(named: "03-ParkNudge-adjust-and-confirm")
         fresh.terminate()
+
+        // A new customer with the free session in use sees the one-time offer.
+        let returning = launch(extraArguments: ["--new-customer-paywall", "-ui-test-active-meter"])
+        returning.tabBars.buttons["Settings"].tap()
+        returning.buttons["Customize with Pro"].tap()
+        XCTAssertTrue(returning.staticTexts["Keep parking with Lifetime Pro"].waitForExistence(timeout: 5))
+        XCTAssertTrue(returning.descendants(matching: .any)["paywall-price"].exists)
+        keepScreenshot(named: "02-ParkNudge-lifetime-one-time")
+        returning.terminate()
 
         let active = launch(extraArguments: ["-ui-test-pro", "-ui-test-active-meter"])
         XCTAssertTrue(active.otherElements["meter-hero"].waitForExistence(timeout: 5))

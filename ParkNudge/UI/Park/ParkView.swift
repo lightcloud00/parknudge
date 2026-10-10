@@ -18,6 +18,8 @@ struct ParkView: View {
                 }
             }
             .navigationTitle("ParkNudge")
+            // Keep the parked-session actions above the floating tab bar.
+            .navigationBarTitleDisplayMode(model.activeSession == nil ? .large : .inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if model.activeSession == nil {
@@ -50,7 +52,7 @@ struct ParkView: View {
         .onChange(of: model.paywallDismissalCount) { _, _ in
             guard let replacing = pendingParkingReplacement else { return }
             pendingParkingReplacement = nil
-            if model.canStartParking { beginNewParking(replacing: replacing) }
+            if model.mayStartParking { beginNewParking(replacing: replacing) }
         }
         .sheet(item: $editorContext) { context in
             ParkingEditorView(context: context)
@@ -117,7 +119,10 @@ struct ParkView: View {
 
             Text(model.canStartParking
                  ? "Location is requested only after you tap this button."
-                 : "Lifetime Pro is required for new customers. One purchase, no subscription.")
+                 : model.mayStartParking
+                    ? "Your first park is free. Location is requested only after you tap this button."
+                    : "You've used your free park. Lifetime Pro keeps parking going. One purchase, no subscription.")
+                .accessibilityIdentifier("parking-access-note")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

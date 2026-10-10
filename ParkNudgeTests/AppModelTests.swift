@@ -100,33 +100,59 @@ final class AppModelTests: XCTestCase {
         XCTAssertNotEqual(original.pngData(), replacement.pngData())
     }
 
-    func testNewCustomerCannotSaveOrReplaceBeforeVerifiedPurchase() async throws {
+    func testNewCustomerParksOnceFreeThenNeedsVerifiedPurchase() async throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }
         harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
+        XCTAssertFalse(harness.model.canStartParking, "The free park is not paid access.")
+        XCTAssertTrue(harness.model.mayStartParking)
+        XCTAssertEqual(harness.model.freeParkingSessionsRemaining, 1)
+
         let draft = await harness.model.newParkingDraft()
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
-        XCTAssertFalse(saved)
+        XCTAssertTrue(saved, "A new customer's first park needs no purchase.")
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.repository.sessions.count, 1)
+        XCTAssertEqual(harness.model.freeParkingSessionsRemaining, 0)
+        let original = try XCTUnwrap(harness.model.activeSession)
+
+        let replaced = await harness.model.saveNew(draft: draft, replacingActive: true)
+        XCTAssertFalse(replaced, "Replacing the free session is a second park.")
         XCTAssertTrue(harness.model.isPaywallPresented)
         XCTAssertTrue(harness.model.requestedParkingAccess)
-        XCTAssertTrue(harness.repository.sessions.isEmpty)
-        XCTAssertTrue(harness.notifications.scheduled.isEmpty)
-
-        let original = TestFixtures.session()
-        try harness.repository.create(original)
-        await harness.model.reload()
-        harness.model.isPaywallPresented = false
-        let replaced = await harness.model.saveNew(draft: draft, replacingActive: true)
-        XCTAssertFalse(replaced)
         XCTAssertEqual(harness.model.activeSession?.id, original.id)
         XCTAssertEqual(harness.repository.sessions.count, 1)
+
+        harness.model.isPaywallPresented = false
+        await harness.model.finishActive()
+        XCTAssertNil(harness.model.activeSession, "The free session can always be finished.")
+        XCTAssertFalse(harness.model.requestNewParkingAccess(), "The second park needs Lifetime Pro.")
+        XCTAssertTrue(harness.model.isPaywallPresented)
+    }
+
+    func testFreeParkStaysUsedWhenHistoryIsGone() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        harness.settings.hasUsedFreeParkingSession = true
+        await harness.model.bootstrap()
         XCTAssertTrue(harness.model.completedSessions.isEmpty)
+        XCTAssertFalse(harness.model.mayStartParking)
+    }
+
+    func testParkingStartPolicyGivesOneFreeSessionAndNeverGatesPaidAccess() {
+        XCTAssertTrue(ParkingStartPolicy.canStart(hasPaidParkingAccess: false, sessionsStarted: 0))
+        XCTAssertFalse(ParkingStartPolicy.canStart(hasPaidParkingAccess: false, sessionsStarted: 1))
+        XCTAssertTrue(ParkingStartPolicy.canStart(hasPaidParkingAccess: true, sessionsStarted: 40))
+        XCTAssertNil(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: true, sessionsStarted: 0))
+        XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 0), 1)
+        XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 3), 0)
     }
 
     func testCancelledPendingAndUnverifiedPurchaseKeepParkingLocked() async throws {
         for outcome in [PurchaseOutcome.cancelled, .pending, .purchased] {
-            let harness = try TestFixtures.appModel()
+            let harness = try TestFixtures.appModel(completedSessions: 1)
             defer { harness.cleanup() }
             harness.purchases.legacyAccess = false
             harness.purchases.outcome = outcome
@@ -135,12 +161,12 @@ final class AppModelTests: XCTestCase {
             await harness.model.purchaseLifetime()
             XCTAssertFalse(harness.model.canStartParking)
             XCTAssertTrue(harness.model.isPaywallPresented)
-            XCTAssertTrue(harness.repository.sessions.isEmpty)
+            XCTAssertEqual(harness.repository.sessions.count, 1, "Only the used free session exists.")
         }
     }
 
     func testVerifiedPurchaseUnlocksAndRevocationBlocksOnlyNewParking() async throws {
-        let harness = try TestFixtures.appModel()
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
         harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
@@ -162,7 +188,7 @@ final class AppModelTests: XCTestCase {
         harness.model.openDirections()
         await harness.model.finishActive()
         XCTAssertNil(harness.model.activeSession)
-        XCTAssertEqual(harness.model.completedSessions.first?.id, id)
+        XCTAssertTrue(harness.model.completedSessions.contains { $0.id == id })
     }
 
     func testLegacyCustomerKeepsParkingWithoutReceivingPro() async throws {
@@ -175,7 +201,7 @@ final class AppModelTests: XCTestCase {
     }
 
     func testUnknownLegacyOwnershipStaysLockedAndRestoreDoesNotClaimNoPurchase() async throws {
-        let harness = try TestFixtures.appModel()
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
         harness.purchases.legacyVerification = .unknown
         await harness.model.bootstrap()
@@ -191,7 +217,7 @@ final class AppModelTests: XCTestCase {
     }
 
     func testRestoreRecoversOriginalParkingEvenWhenPurchaseSyncFails() async throws {
-        let harness = try TestFixtures.appModel()
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
         harness.purchases.legacyVerification = .unknown
         harness.purchases.refreshedLegacyVerification = .eligible
@@ -261,7 +287,7 @@ final class AppModelTests: XCTestCase {
     }
 
     func testPendingApprovalDismissesActiveParkingOfferAfterVerifiedUpdate() async throws {
-        let harness = try TestFixtures.appModel()
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
         harness.purchases.legacyAccess = false
         harness.purchases.outcome = .pending
@@ -283,7 +309,7 @@ final class AppModelTests: XCTestCase {
     }
 
     func testLaterApprovalDoesNotReopenCancelledParkingIntent() async throws {
-        let harness = try TestFixtures.appModel()
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
         harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
@@ -337,5 +363,39 @@ final class AppModelTests: XCTestCase {
             color.setFill()
             context.fill(CGRect(x: 0, y: 0, width: 8, height: 8))
         }.pngData()
+    }
+}
+
+final class StoreDeadlineTests: XCTestCase {
+    func testStalledStoreCallFailsClosedAtItsDeadline() async {
+        let started = ContinuousClock.now
+        do {
+            // A detached sleep ignores the deadline's cancellation, like a
+            // StoreKit call waiting on an abandoned App Store sign-in.
+            _ = try await withStoreDeadline(seconds: 0.2) {
+                await Task.detached { try? await Task.sleep(for: .seconds(5)) }.value
+                return LegacyParkingAccessState.eligible
+            }
+            XCTFail("A stalled store call must not produce an access decision")
+        } catch {
+            XCTAssertEqual(error as? PurchaseServiceError, .storeUnavailable)
+        }
+        XCTAssertLessThan(started.duration(to: .now), .seconds(3))
+    }
+
+    func testPromptStoreResultPassesThrough() async throws {
+        let state = try await withStoreDeadline(seconds: 5) { LegacyParkingAccessState.ineligible }
+        XCTAssertEqual(state, .ineligible)
+    }
+
+    func testStoreErrorBeforeTheDeadlinePassesThrough() async {
+        do {
+            _ = try await withStoreDeadline(seconds: 5) { () throws -> Int in
+                throw PurchaseServiceError.verificationFailed
+            }
+            XCTFail("The store error must reach the caller")
+        } catch {
+            XCTAssertEqual(error as? PurchaseServiceError, .verificationFailed)
+        }
     }
 }
