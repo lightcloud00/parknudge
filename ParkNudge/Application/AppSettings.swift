@@ -28,6 +28,13 @@ final class AppSettings: ObservableObject {
         set { defaults.set(newValue, forKey: Keys.lastReviewRequestVersion) }
     }
 
+    /// Set once a new customer saves their free parking session, so deleting
+    /// history cannot reopen the free allowance.
+    var hasUsedFreeParkingSession: Bool {
+        get { defaults.bool(forKey: Keys.hasUsedFreeParkingSession) }
+        set { defaults.set(newValue, forKey: Keys.hasUsedFreeParkingSession) }
+    }
+
     var lastReviewRequestDate: Date? {
         get { defaults.object(forKey: Keys.lastReviewRequestDate) as? Date }
         set { defaults.set(newValue, forKey: Keys.lastReviewRequestDate) }
@@ -38,5 +45,6 @@ final class AppSettings: ObservableObject {
         static let currencyCode = "currencyCode"
         static let lastReviewRequestVersion = "lastReviewRequestVersion"
         static let lastReviewRequestDate = "lastReviewRequestDate"
+        static let hasUsedFreeParkingSession = "hasUsedFreeParkingSession"
     }
 }

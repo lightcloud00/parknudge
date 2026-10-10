@@ -125,12 +125,30 @@ final class AppModel: ObservableObject {
     }
 
     var hasLegacyParkingAccess: Bool { legacyParkingAccessState == .eligible }
+    /// Paid parking access: verified Lifetime Pro or verified original-customer access.
     var canStartParking: Bool { entitlement.isPro || hasLegacyParkingAccess }
     var paywallRequiresParkingPurchase: Bool { !hasLegacyParkingAccess }
+    var parkingSessionsStarted: Int {
+        let saved = completedSessions.count + (activeSession == nil ? 0 : 1)
+        return max(saved, settings.hasUsedFreeParkingSession ? ParkingStartPolicy.freeSessions : 0)
+    }
+    /// Paid access, or a new customer who has not used the free first parking session.
+    var mayStartParking: Bool {
+        ParkingStartPolicy.canStart(
+            hasPaidParkingAccess: canStartParking,
+            sessionsStarted: parkingSessionsStarted
+        )
+    }
+    var freeParkingSessionsRemaining: Int? {
+        ParkingStartPolicy.freeSessionsRemaining(
+            hasPaidParkingAccess: canStartParking,
+            sessionsStarted: parkingSessionsStarted
+        )
+    }
 
     @discardableResult
     func requestNewParkingAccess() -> Bool {
-        guard canStartParking else {
+        guard mayStartParking else {
             if !hasCheckedParkingAccess {
                 alertMessage = "Checking App Store access. Please try again in a moment."
             } else {
@@ -159,6 +177,7 @@ final class AppModel: ObservableObject {
                 replacingActive: replacingActive,
                 reminderOffsets: reminderOffsets
             )
+            settings.hasUsedFreeParkingSession = true
             await reload()
             alertMessage = result.notificationWarning
             return true
