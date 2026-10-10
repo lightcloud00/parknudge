@@ -208,6 +208,11 @@ final class ModelPurchaseFake: PurchaseProviding {
     private(set) var legacyRefreshCalls = 0
     var outcome: PurchaseOutcome = .cancelled
     var restoreFails = false
+    /// When set, `currentEntitlement()` suspends until the legacy lookup has
+    /// started, so it only returns if launch runs the two lookups together.
+    var entitlementWaitsForLegacyLookup = false
+    private var legacyLookupStarted = false
+    private var entitlementWaiter: CheckedContinuation<Void, Never>?
     private let updates: AsyncStream<EntitlementState>
     private let updatesContinuation: AsyncStream<EntitlementState>.Continuation
     init() {
@@ -215,6 +220,9 @@ final class ModelPurchaseFake: PurchaseProviding {
     }
     func hasLegacyParkingAccess() async -> Bool { legacyAccess }
     func legacyParkingAccessState(refresh: Bool) async -> LegacyParkingAccessState {
+        legacyLookupStarted = true
+        entitlementWaiter?.resume()
+        entitlementWaiter = nil
         if refresh {
             legacyRefreshCalls += 1
             if let refreshedLegacyVerification { return refreshedLegacyVerification }
@@ -222,7 +230,12 @@ final class ModelPurchaseFake: PurchaseProviding {
         return legacyVerification ?? (legacyAccess ? .eligible : .ineligible)
     }
     func loadProduct() async -> PurchaseProduct? { nil }
-    func currentEntitlement() async -> EntitlementState { entitlement }
+    func currentEntitlement() async -> EntitlementState {
+        if entitlementWaitsForLegacyLookup && !legacyLookupStarted {
+            await withCheckedContinuation { entitlementWaiter = $0 }
+        }
+        return entitlement
+    }
     func purchase() async throws -> PurchaseOutcome { outcome }
     func restore() async throws -> EntitlementState {
         if restoreFails { throw PurchaseServiceError.storeUnavailable }

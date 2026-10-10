@@ -83,9 +83,12 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
+        // Both lookups gate a new customer's first park, so run them together:
+        // a stalled store then costs one deadline before the offer, not two.
+        let legacyLookup = Task { await purchases.legacyParkingAccessState(refresh: false) }
         entitlement = await purchases.currentEntitlement()
         observeEntitlementUpdates()
-        applyLegacyParkingAccess(await purchases.legacyParkingAccessState(refresh: false))
+        applyLegacyParkingAccess(await legacyLookup.value)
         hasCheckedParkingAccess = true
         lifetimeProduct = await purchases.loadProduct()
     }

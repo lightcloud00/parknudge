@@ -76,14 +76,23 @@ final class StoreKitPurchaseService: PurchaseProviding {
         }
     }
 
+    /// `Transaction.currentEntitlements` can stall like any other StoreKit
+    /// call, and launch waits on it before a new customer can park, so it
+    /// gets the same deadline. A stalled lookup reads as free, never as Pro.
     func currentEntitlement() async -> EntitlementState {
-        for await result in Transaction.currentEntitlements {
-            guard case .verified(let transaction) = result,
-                  transaction.productID == Self.productIdentifier,
-                  transaction.revocationDate == nil else { continue }
-            return .pro
+        do {
+            return try await withStoreDeadline(seconds: Self.silentStoreDeadline) {
+                for await result in Transaction.currentEntitlements {
+                    guard case .verified(let transaction) = result,
+                          transaction.productID == Self.productIdentifier,
+                          transaction.revocationDate == nil else { continue }
+                    return EntitlementState.pro
+                }
+                return EntitlementState.free
+            }
+        } catch {
+            return .free
         }
-        return .free
     }
 
     func hasLegacyParkingAccess() async -> Bool {
