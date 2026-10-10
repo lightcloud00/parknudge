@@ -150,6 +150,26 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 3), 0)
     }
 
+    func testLaunchChecksPurchaseAndOriginalAccessTogether() async throws {
+        // On device a stalled entitlement lookup left a new customer at
+        // "Checking App Store access" with no offer (#48). Run sequentially,
+        // the fake's entitlement lookup would wait forever for the legacy one.
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        harness.purchases.entitlementWaitsForLegacyLookup = true
+        let finished = expectation(description: "launch access check finished")
+        Task {
+            await harness.model.bootstrap()
+            finished.fulfill()
+        }
+        await fulfillment(of: [finished], timeout: 5)
+        XCTAssertTrue(harness.model.hasCheckedParkingAccess)
+        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        XCTAssertTrue(harness.model.isPaywallPresented, "The offer opens instead of the checking alert.")
+        XCTAssertNil(harness.model.alertMessage)
+    }
+
     func testCancelledPendingAndUnverifiedPurchaseKeepParkingLocked() async throws {
         for outcome in [PurchaseOutcome.cancelled, .pending, .purchased] {
             let harness = try TestFixtures.appModel(completedSessions: 1)
