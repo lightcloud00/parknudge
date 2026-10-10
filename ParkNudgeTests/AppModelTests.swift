@@ -10,7 +10,10 @@ final class AppModelTests: XCTestCase {
         defer { harness.cleanup() }
         await harness.model.bootstrap()
         for count in 1...4 {
-            try await harness.completeParking()
+            // The first park was over a week ago (review_milestone.minimum_days).
+            try await harness.completeParking(
+                startedAt: count == 1 ? TestFixtures.date.addingTimeInterval(-8 * 24 * 60 * 60) : TestFixtures.date
+            )
             XCTAssertNil(harness.model.activeSession)
             XCTAssertEqual(harness.model.completedSessions.count, count)
             XCTAssertFalse(harness.model.isPaywallPresented)
@@ -18,6 +21,62 @@ final class AppModelTests: XCTestCase {
         }
         XCTAssertEqual(harness.settings.lastReviewRequestVersion, "1.0-test")
         XCTAssertEqual(harness.settings.lastReviewRequestDate, TestFixtures.date)
+    }
+
+    func testNoReviewRequestBeforeAWeekOfUse() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        for _ in 1...4 {
+            try await harness.completeParking()
+        }
+        XCTAssertEqual(harness.model.completedSessions.count, 4)
+        XCTAssertEqual(harness.reviews.calls, 0, "Four parks on day one are not a week of use.")
+        XCTAssertNil(harness.settings.lastReviewRequestVersion)
+    }
+
+    func testNoReviewRequestInTheSameRunAsReachingTheFreeLimit() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 2)
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        await harness.model.bootstrap()
+        XCTAssertFalse(harness.model.requestNewParkingAccess(), "The free park is used up.")
+        harness.model.isPaywallPresented = false
+
+        try await harness.completeParking()
+        XCTAssertEqual(harness.model.completedSessions.count, 3)
+        XCTAssertEqual(harness.reviews.calls, 0)
+        XCTAssertNil(harness.settings.lastReviewRequestVersion, "The skipped attempt must not consume the version.")
+    }
+
+    func testCSVExportPurchaseResumesWithoutACompetingAlert() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        XCTAssertFalse(harness.model.hasAccess(to: .csvExport))
+        XCTAssertNil(harness.model.makeCSVExport())
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.requestedProFeature, .csvExport)
+        XCTAssertTrue(harness.model.resumesIntentAfterUnlock)
+
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.hasAccess(to: .csvExport))
+        XCTAssertNil(harness.model.alertMessage, "History reopens the export; a success alert would compete with it.")
+    }
+
+    func testOtherProFeaturePurchaseStillConfirmsWithAnAlert() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.requestAccess(to: .parkingCosts)
+        XCTAssertFalse(harness.model.resumesIntentAfterUnlock)
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertEqual(harness.model.alertMessage, "Lifetime Pro is unlocked.")
     }
 
     func testPaywallAndAlertEachSuppressWithoutConsumingVersion() async throws {
