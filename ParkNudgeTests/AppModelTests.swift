@@ -286,6 +286,56 @@ final class AppModelTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("No previous"))
     }
 
+    /// App Review and TestFlight run in the sandbox, where the app transaction
+    /// is verified but never production. Restore with nothing to restore must
+    /// say so, not report an App Store verification failure.
+    func testSandboxRestoreWithNothingToRestoreReportsNoPreviousAccess() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyVerification = LegacyParkingAccessPolicy.state(
+            isVerified: true,
+            bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
+            isProduction: false,
+            originalAppVersion: "1.0"
+        )
+        await harness.model.bootstrap()
+        XCTAssertEqual(harness.model.legacyParkingAccessState, .ineligible)
+        XCTAssertTrue(harness.model.mayStartParking, "A new sandbox customer's first park is free")
+        harness.model.requestAccess(to: .customReminders)
+        await harness.model.restorePurchases()
+        XCTAssertEqual(harness.purchases.legacyRefreshCalls, 1)
+        XCTAssertFalse(harness.model.canStartParking)
+        XCTAssertEqual(
+            harness.model.alertMessage,
+            "No previous parking access or active Lifetime Pro purchase was found."
+        )
+        XCTAssertTrue(harness.model.isPaywallPresented, "Nothing was restored, so the offer stays open")
+    }
+
+    /// The reviewer's path with a verified sandbox app transaction: the first
+    /// park is free, and the second start opens the Lifetime Pro offer.
+    func testSandboxCustomerParksFreeOnceThenSeesTheParkingOffer() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.legacyVerification = LegacyParkingAccessPolicy.state(
+            isVerified: true,
+            bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
+            isProduction: false,
+            originalAppVersion: "2"
+        )
+        await harness.model.bootstrap()
+        XCTAssertTrue(harness.model.requestNewParkingAccess())
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        let draft = await harness.model.newParkingDraft()
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertTrue(saved)
+        await harness.model.finishActive()
+        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.requestedParkingAccess)
+        XCTAssertTrue(harness.model.paywallRequiresParkingPurchase)
+    }
+
     func testPendingApprovalDismissesActiveParkingOfferAfterVerifiedUpdate() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
@@ -355,6 +405,68 @@ final class AppModelTests: XCTestCase {
         }
         for value in ["", "0", "3", "1.0", "-1", " 2", "2 ", "２", "99999999999999999999999"] {
             XCTAssertFalse(LegacyParkingAccessPolicy.includes(originalBuild: value))
+        }
+    }
+
+    func testVerifiedSandboxOrXcodeAppTransactionIsNotAnOriginalCustomer() {
+        // Even an original build number cannot make a non-production download
+        // an original App Store customer.
+        for originalBuild in ["1", "2", "3", "1.0", ""] {
+            XCTAssertEqual(
+                LegacyParkingAccessPolicy.state(
+                    isVerified: true,
+                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
+                    isProduction: false,
+                    originalAppVersion: originalBuild
+                ),
+                .ineligible,
+                "original build \(originalBuild)"
+            )
+        }
+    }
+
+    func testUnverifiedOrForeignAppTransactionStaysUnknown() {
+        for isProduction in [true, false] {
+            XCTAssertEqual(
+                LegacyParkingAccessPolicy.state(
+                    isVerified: false,
+                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
+                    isProduction: isProduction,
+                    originalAppVersion: "1"
+                ),
+                .unknown
+            )
+            XCTAssertEqual(
+                LegacyParkingAccessPolicy.state(
+                    isVerified: true,
+                    bundleID: "com.example.other",
+                    isProduction: isProduction,
+                    originalAppVersion: "1"
+                ),
+                .unknown
+            )
+        }
+    }
+
+    func testVerifiedProductionAppTransactionUsesTheOriginalBuild() {
+        let cases: [(String, LegacyParkingAccessState)] = [
+            ("1", .eligible),
+            ("2", .eligible),
+            ("3", .ineligible),
+            ("4", .ineligible),
+            ("1.0", .ineligible),
+        ]
+        for (originalBuild, expected) in cases {
+            XCTAssertEqual(
+                LegacyParkingAccessPolicy.state(
+                    isVerified: true,
+                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
+                    isProduction: true,
+                    originalAppVersion: originalBuild
+                ),
+                expected,
+                "original build \(originalBuild)"
+            )
         }
     }
 
