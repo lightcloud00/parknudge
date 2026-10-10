@@ -78,7 +78,7 @@ struct SettingsView: View {
         } header: {
             Text("ParkNudge Pro")
         } footer: {
-            Text("One-time purchase, no subscription. New customers need Pro to save parking spots. Existing customers keep their original parking access.")
+            Text("One-time purchase, no subscription. Your first park is free; starting another needs Pro. Existing customers keep their original parking access.")
         }
     }
 
