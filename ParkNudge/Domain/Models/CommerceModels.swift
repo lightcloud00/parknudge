@@ -67,7 +67,8 @@ enum EntitlementState: Equatable, Sendable {
 }
 
 /// An unavailable or unverified app transaction cannot establish that a
-/// customer is ineligible for their original parking features.
+/// customer is ineligible for their original parking features. A verified
+/// sandbox or Xcode app transaction can: no original App Store download exists.
 enum LegacyParkingAccessState: Equatable, Sendable {
     case unknown
     case eligible
@@ -113,9 +114,32 @@ enum FeatureAccessPolicy {
 
 /// Existing App Store customers retain their original parking loop. On iOS,
 /// AppTransaction.originalAppVersion is the original CFBundleVersion, not the
-/// marketing version. Only a verified production app transaction may call this.
+/// marketing version. Only a verified production app transaction may call
+/// `includes(originalBuild:)`; `state(...)` applies that rule.
 enum LegacyParkingAccessPolicy {
     static let lastFreeBuild = 2
+    static let bundleIdentifier = "com.gusdigitalsolutions.parknudge"
+
+    /// Classifies the outcome of an App Store app transaction lookup.
+    ///
+    /// - An unverified transaction, or one for another bundle, decides
+    ///   nothing: `.unknown`, so a store problem never revokes access.
+    /// - A verified sandbox or Xcode transaction (TestFlight, App Review, local
+    ///   StoreKit testing) is never an original App Store customer:
+    ///   `.ineligible`. Restore Purchases then reports that nothing was found
+    ///   instead of a store verification failure.
+    /// - A verified production transaction is eligible only for original
+    ///   builds 1 through `lastFreeBuild`.
+    nonisolated static func state(
+        isVerified: Bool,
+        bundleID: String,
+        isProduction: Bool,
+        originalAppVersion: String
+    ) -> LegacyParkingAccessState {
+        guard isVerified, bundleID == bundleIdentifier else { return .unknown }
+        guard isProduction else { return .ineligible }
+        return includes(originalBuild: originalAppVersion) ? .eligible : .ineligible
+    }
 
     nonisolated static func includes(originalBuild: String) -> Bool {
         guard !originalBuild.isEmpty,

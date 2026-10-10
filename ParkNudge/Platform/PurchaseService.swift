@@ -107,11 +107,19 @@ final class StoreKitPurchaseService: PurchaseProviding {
         } catch {
             return .unknown
         }
-        guard case .verified(let transaction) = result,
-              transaction.bundleID == "com.gusdigitalsolutions.parknudge",
-              transaction.environment == .production else { return .unknown }
-        return LegacyParkingAccessPolicy.includes(originalBuild: transaction.originalAppVersion)
-            ? .eligible : .ineligible
+        switch result {
+        case .verified(let transaction):
+            // A verified sandbox or Xcode transaction (App Review, TestFlight)
+            // means "not an original customer", not "could not verify".
+            return LegacyParkingAccessPolicy.state(
+                isVerified: true,
+                bundleID: transaction.bundleID,
+                isProduction: transaction.environment == .production,
+                originalAppVersion: transaction.originalAppVersion
+            )
+        case .unverified:
+            return .unknown
+        }
     }
 
     func purchase() async throws -> PurchaseOutcome {
