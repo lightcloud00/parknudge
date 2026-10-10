@@ -8,6 +8,8 @@ final class ReviewPromptPolicyTests: XCTestCase {
         lastDate: Date? = nil,
         currentVersion: String = "1.0.0",
         now: Date = Date(timeIntervalSince1970: 20_000_000),
+        firstUseDaysAgo: Double? = 8,
+        reachedFreeLimit: Bool = false,
         alert: Bool = false,
         confirmation: Bool = false,
         paywall: Bool = false,
@@ -22,6 +24,8 @@ final class ReviewPromptPolicyTests: XCTestCase {
             lastRequestedDate: lastDate,
             currentVersion: currentVersion,
             now: now,
+            firstUseDate: firstUseDaysAgo.map { now.addingTimeInterval(-$0 * 24 * 60 * 60) },
+            reachedFreeLimitThisSession: reachedFreeLimit,
             hasActiveAlert: alert,
             hasActiveConfirmation: confirmation,
             isPaywallPresented: paywall,
@@ -57,6 +61,19 @@ final class ReviewPromptPolicyTests: XCTestCase {
 
     func testNeverAsksWithNoCompletedSessions() {
         XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 0)))
+    }
+
+    func testWaitsAWeekAfterFirstUse() {
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 5, firstUseDaysAgo: 6.9)))
+        XCTAssertTrue(ReviewPromptPolicy.shouldRequest(context(completed: 5, firstUseDaysAgo: 7)))
+    }
+
+    func testNeverAsksWithoutAFirstUseDate() {
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 5, firstUseDaysAgo: nil)))
+    }
+
+    func testNeverAsksInTheSameSessionAsReachingTheFreeLimit() {
+        XCTAssertFalse(ReviewPromptPolicy.shouldRequest(context(completed: 5, reachedFreeLimit: true)))
     }
 
     // MARK: - Already attempted for this version

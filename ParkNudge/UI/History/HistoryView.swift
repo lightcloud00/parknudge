@@ -5,6 +5,8 @@ struct HistoryView: View {
     @EnvironmentObject private var model: AppModel
     @State private var showExportWarning = false
     @State private var exportItem: ExportItem?
+    /// Export was blocked by the paywall; resume it if the paywall closes unlocked.
+    @State private var resumesExportAfterPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -68,6 +70,7 @@ struct HistoryView: View {
                         if model.hasAccess(to: .csvExport) {
                             showExportWarning = true
                         } else {
+                            resumesExportAfterPaywall = true
                             model.requestAccess(to: .csvExport)
                         }
                     } label: {
@@ -79,6 +82,11 @@ struct HistoryView: View {
                     .disabled(model.completedSessions.isEmpty)
                 }
             }
+        }
+        .onChange(of: model.paywallDismissalCount) { _, _ in
+            guard resumesExportAfterPaywall else { return }
+            resumesExportAfterPaywall = false
+            if model.hasAccess(to: .csvExport) { showExportWarning = true }
         }
         .confirmationDialog(
             "Export sensitive location history?",

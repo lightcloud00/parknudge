@@ -51,6 +51,8 @@ final class AppModel: ObservableObject {
     private var entitlementTask: Task<Void, Never>?
     private var isParkingEditorOpen = false
     private var hasBootstrapped = false
+    /// Not persisted: "this session" for the review policy is this app run.
+    private var reachedFreeLimitThisSession = false
     private let thumbnailCache = NSCache<NSString, UIImage>()
 
     init(
@@ -175,6 +177,7 @@ final class AppModel: ObservableObject {
             if !hasCheckedParkingAccess {
                 alertMessage = "Checking App Store access. Please try again in a moment."
             } else {
+                reachedFreeLimitThisSession = true
                 requestedProFeature = nil
                 requestedParkingAccess = true
                 isPaywallPresented = true
@@ -258,6 +261,10 @@ final class AppModel: ObservableObject {
             lastRequestedDate: settings.lastReviewRequestDate,
             currentVersion: version,
             now: clock.now,
+            firstUseDate: (completedSessions + [activeSession].compactMap { $0 })
+                .map(\.startedAt)
+                .min(),
+            reachedFreeLimitThisSession: reachedFreeLimitThisSession,
             hasActiveAlert: alertMessage != nil,
             hasActiveConfirmation: false,
             isPaywallPresented: isPaywallPresented,
@@ -321,6 +328,12 @@ final class AppModel: ObservableObject {
         paywallDismissalCount += 1
     }
 
+    /// Intents whose screen resumes the blocked action once the paywall
+    /// closes unlocked. A success alert would compete with that presentation.
+    var resumesIntentAfterUnlock: Bool {
+        requestedParkingAccess || requestedProFeature == .csvExport
+    }
+
     func requestAccess(to feature: ProFeature) {
         requestedParkingAccess = false
         requestedProFeature = feature
@@ -355,7 +368,7 @@ final class AppModel: ObservableObject {
                     // The parking entry intent resumes its editor after the
                     // offer dismisses. A simultaneous success alert competes
                     // for the same presentation and can discard that editor.
-                    alertMessage = requestedParkingAccess ? nil : "Lifetime Pro is unlocked."
+                    alertMessage = resumesIntentAfterUnlock ? nil : "Lifetime Pro is unlocked."
                 }
             case .cancelled:
                 break
@@ -403,7 +416,7 @@ final class AppModel: ObservableObject {
             alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
         }
         if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
-            if requestedParkingAccess { alertMessage = nil }
+            if requestedParkingAccess || (entitlement.isPro && resumesIntentAfterUnlock) { alertMessage = nil }
             isPaywallPresented = false
         }
     }

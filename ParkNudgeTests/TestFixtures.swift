@@ -69,7 +69,10 @@ final class AppModelHarness {
         let clock = FixedClock(now: TestFixtures.date)
         for index in 0..<completedSessions {
             let endedAt = TestFixtures.date.addingTimeInterval(Double(-index - 1))
-            try repository.create(TestFixtures.session(endedAt: endedAt))
+            // Seeded history starts over a week ago, past the review policy's
+            // minimum days, so review tests exercise the other axes.
+            let startedAt = TestFixtures.date.addingTimeInterval(-8 * 24 * 60 * 60 - Double(index))
+            try repository.create(TestFixtures.session(startedAt: startedAt, endedAt: endedAt))
         }
         let coordinator = ParkingCoordinator(
             repository: repository, notifications: notifications, photos: photos, clock: clock
@@ -86,8 +89,8 @@ final class AppModelHarness {
         defaults.removePersistentDomain(forName: suiteName)
     }
 
-    func completeParking() async throws {
-        try repository.create(TestFixtures.session())
+    func completeParking(startedAt: Date = TestFixtures.date) async throws {
+        try repository.create(TestFixtures.session(startedAt: startedAt))
         await model.reload()
         await model.finishActive()
     }
