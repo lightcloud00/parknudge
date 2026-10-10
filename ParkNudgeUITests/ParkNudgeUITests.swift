@@ -5,6 +5,18 @@ final class ParkNudgeUITests: XCTestCase {
     func testNewCustomerDismissalKeepsParkingLockedAndPurchaseResumesEditor() {
         let app = launch(extraArguments: ["--new-customer-paywall"])
         XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+
+        // The first park is the free result: no paywall before the editor.
+        app.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["close-paywall"].exists)
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+        app.buttons["finish-parking"].tap()
+        app.buttons["Finish Parking"].tap()
+
+        // The second park needs Lifetime Pro, and closing the offer keeps it locked.
+        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
