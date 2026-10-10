@@ -339,3 +339,37 @@ final class AppModelTests: XCTestCase {
         }.pngData()
     }
 }
+
+final class StoreDeadlineTests: XCTestCase {
+    func testStalledStoreCallFailsClosedAtItsDeadline() async {
+        let started = ContinuousClock.now
+        do {
+            // A detached sleep ignores the deadline's cancellation, like a
+            // StoreKit call waiting on an abandoned App Store sign-in.
+            _ = try await withStoreDeadline(seconds: 0.2) {
+                await Task.detached { try? await Task.sleep(for: .seconds(5)) }.value
+                return LegacyParkingAccessState.eligible
+            }
+            XCTFail("A stalled store call must not produce an access decision")
+        } catch {
+            XCTAssertEqual(error as? PurchaseServiceError, .storeUnavailable)
+        }
+        XCTAssertLessThan(started.duration(to: .now), .seconds(3))
+    }
+
+    func testPromptStoreResultPassesThrough() async throws {
+        let state = try await withStoreDeadline(seconds: 5) { LegacyParkingAccessState.ineligible }
+        XCTAssertEqual(state, .ineligible)
+    }
+
+    func testStoreErrorBeforeTheDeadlinePassesThrough() async {
+        do {
+            _ = try await withStoreDeadline(seconds: 5) { () throws -> Int in
+                throw PurchaseServiceError.verificationFailed
+            }
+            XCTFail("The store error must reach the caller")
+        } catch {
+            XCTAssertEqual(error as? PurchaseServiceError, .verificationFailed)
+        }
+    }
+}
