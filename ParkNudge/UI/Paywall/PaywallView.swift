@@ -1,5 +1,18 @@
 import SwiftUI
 
+extension AppModel {
+    /// Whether the offer is on screen from `host`. Only the host chosen when
+    /// the offer opened presents it; closing it from either side closes it.
+    func paywallPresentation(on host: PaywallHost) -> Binding<Bool> {
+        Binding(
+            get: { self.isPaywallPresented && self.paywallHost == host },
+            set: { presented in
+                if !presented, self.paywallHost == host { self.isPaywallPresented = false }
+            }
+        )
+    }
+}
+
 struct PaywallView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss

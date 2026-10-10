@@ -80,6 +80,8 @@ struct ParkingEditorView: View {
                 }
             }
             .interactiveDismissDisabled(model.isBusy)
+            .onAppear { model.parkingEditorDidAppear() }
+            .onDisappear { model.parkingEditorDidDisappear() }
             .sheet(isPresented: $isCameraPresented) {
                 CameraPicker(imageData: $cameraPhotoData)
                     .ignoresSafeArea()
@@ -120,6 +122,13 @@ struct ParkingEditorView: View {
             } message: {
                 Text(searchModel.errorMessage ?? "")
             }
+        }
+        // The editor is a sheet, so an offer requested here ("Add a parking
+        // cost with Pro", or a save that lost access) is presented by the
+        // editor itself; the tab view cannot present over an open sheet.
+        .sheet(isPresented: model.paywallPresentation(on: .parkingEditor), onDismiss: model.paywallDidDismiss) {
+            PaywallView()
+                .environmentObject(model)
         }
     }
 
@@ -293,6 +302,7 @@ struct ParkingEditorView: View {
                     TextField("0.00", text: $costText)
                         .keyboardType(.decimalPad)
                         .accessibilityLabel("Parking cost")
+                        .accessibilityIdentifier("parking-cost-field")
                     Picker("Currency", selection: $draft.currencyCode) {
                         ForEach(["USD", "CAD", "EUR", "GBP", "AUD"], id: \.self) { code in
                             Text(code).tag(code)
@@ -304,6 +314,7 @@ struct ParkingEditorView: View {
                 Button { model.requestAccess(to: .parkingCosts) } label: {
                     Label("Add a parking cost with Pro", systemImage: "lock.fill")
                 }
+                .accessibilityIdentifier("parking-cost-pro")
             }
         } header: {
             Text("Parking cost")

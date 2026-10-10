@@ -20,6 +20,40 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(harness.settings.lastReviewRequestDate, TestFixtures.date)
     }
 
+    func testOfferRequestedInsideTheParkingEditorIsPresentedByTheEditor() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        harness.model.requestAccess(to: .parkingCosts)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.hasAccess(to: .parkingCosts), "The editor's cost field unlocks in place.")
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor, "The host only changes when an offer opens.")
+        harness.model.parkingEditorDidDisappear()
+
+        harness.model.requestAccess(to: .fullHistory)
+        XCTAssertEqual(harness.model.paywallHost, .root, "Offers outside the editor stay on the tab view.")
+    }
+
+    func testSaveThatLostAccessInsideTheEditorOpensTheOfferThere() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        let draft = await harness.model.newParkingDraft()
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertFalse(saved)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+    }
+
     func testPaywallAndAlertEachSuppressWithoutConsumingVersion() async throws {
         for paywall in [true, false] {
             let harness = try TestFixtures.appModel(completedSessions: 2)
@@ -148,6 +182,26 @@ final class AppModelTests: XCTestCase {
         XCTAssertNil(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: true, sessionsStarted: 0))
         XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 0), 1)
         XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 3), 0)
+    }
+
+    func testLaunchChecksPurchaseAndOriginalAccessTogether() async throws {
+        // On device a stalled entitlement lookup left a new customer at
+        // "Checking App Store access" with no offer (#48). Run sequentially,
+        // the fake's entitlement lookup would wait forever for the legacy one.
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        harness.purchases.entitlementWaitsForLegacyLookup = true
+        let finished = expectation(description: "launch access check finished")
+        Task {
+            await harness.model.bootstrap()
+            finished.fulfill()
+        }
+        await fulfillment(of: [finished], timeout: 5)
+        XCTAssertTrue(harness.model.hasCheckedParkingAccess)
+        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        XCTAssertTrue(harness.model.isPaywallPresented, "The offer opens instead of the checking alert.")
+        XCTAssertNil(harness.model.alertMessage)
     }
 
     func testCancelledPendingAndUnverifiedPurchaseKeepParkingLocked() async throws {

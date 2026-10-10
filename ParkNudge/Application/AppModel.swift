@@ -2,6 +2,14 @@ import Combine
 import Foundation
 import UIKit
 
+/// The view that presents the Lifetime Pro offer.
+enum PaywallHost: Equatable, Sendable {
+    /// The tab view, for offers requested from the Park, History, or Settings tabs.
+    case root
+    /// The parking editor sheet, for offers requested while it is open.
+    case parkingEditor
+}
+
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var activeSession: ParkingSession?
@@ -14,7 +22,18 @@ final class AppModel: ObservableObject {
     @Published private(set) var lifetimeProduct: PurchaseProduct?
     @Published private(set) var isBusy = false
     @Published var alertMessage: String?
-    @Published var isPaywallPresented = false
+    @Published var isPaywallPresented = false {
+        didSet {
+            // Decide the presenter once, when the offer opens. SwiftUI shows one
+            // sheet per presenter: an offer requested from inside the parking
+            // editor (itself a sheet) must be shown by the editor, or it only
+            // appears after the editor has closed.
+            if isPaywallPresented && !oldValue {
+                paywallHost = isParkingEditorOpen ? .parkingEditor : .root
+            }
+        }
+    }
+    @Published private(set) var paywallHost: PaywallHost = .root
     @Published var requestedProFeature: ProFeature?
 
     let settings: AppSettings
@@ -30,6 +49,7 @@ final class AppModel: ObservableObject {
     private let clock: Clock
     private let marketingVersionProvider: () -> String
     private var entitlementTask: Task<Void, Never>?
+    private var isParkingEditorOpen = false
     private var hasBootstrapped = false
     private let thumbnailCache = NSCache<NSString, UIImage>()
 
@@ -83,9 +103,12 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
+        // Both lookups gate a new customer's first park, so run them together:
+        // a stalled store then costs one deadline before the offer, not two.
+        let legacyLookup = Task { await purchases.legacyParkingAccessState(refresh: false) }
         entitlement = await purchases.currentEntitlement()
         observeEntitlementUpdates()
-        applyLegacyParkingAccess(await purchases.legacyParkingAccessState(refresh: false))
+        applyLegacyParkingAccess(await legacyLookup.value)
         hasCheckedParkingAccess = true
         lifetimeProduct = await purchases.loadProduct()
     }
@@ -303,6 +326,9 @@ final class AppModel: ObservableObject {
         requestedProFeature = feature
         isPaywallPresented = true
     }
+
+    func parkingEditorDidAppear() { isParkingEditorOpen = true }
+    func parkingEditorDidDisappear() { isParkingEditorOpen = false }
 
     /// `bootstrap()` loads the product exactly once, so a first launch that
     /// could not reach the App Store left the paywall permanently showing
