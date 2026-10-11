@@ -10,6 +10,11 @@ struct ReviewPromptContext: Equatable, Sendable {
     var lastRequestedDate: Date?
     var currentVersion: String
     var now: Date
+    /// When the user first parked with the app; `nil` when nothing is saved.
+    var firstUseDate: Date?
+    /// The free parking allowance ran out (the paywall blocked a new park)
+    /// earlier in this app run.
+    var reachedFreeLimitThisSession: Bool
     /// An alert is on screen.
     var hasActiveAlert: Bool
     var hasActiveConfirmation: Bool
@@ -30,9 +35,15 @@ enum ReviewPromptPolicy {
     /// The third finished session. One is a trial, two is a coincidence.
     static let minimumCompletedSessions = 3
     static let cooldown: TimeInterval = 120 * 24 * 60 * 60
+    /// Contract 1.1 `review_milestone.minimum_days`: a week of real use first.
+    static let minimumDaysSinceFirstUse = 7
 
     static func shouldRequest(_ context: ReviewPromptContext) -> Bool {
         guard context.completedSessionCount >= minimumCompletedSessions else { return false }
+        guard let firstUseDate = context.firstUseDate,
+              context.now.timeIntervalSince(firstUseDate)
+                >= TimeInterval(minimumDaysSinceFirstUse) * 24 * 60 * 60
+        else { return false }
         guard !context.currentVersion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return false
         }
@@ -47,8 +58,11 @@ enum ReviewPromptPolicy {
         }
 
         // Never on top of pressure or failure: an error the user is reading, a
-        // paywall asking for money, or work still in flight.
-        guard !context.hasActiveAlert,
+        // paywall asking for money, or work still in flight. Hitting the free
+        // limit counts as pressure for the rest of that app run (contract 1.1
+        // `review_never_same_session_as_quota_exhaustion`).
+        guard !context.reachedFreeLimitThisSession,
+              !context.hasActiveAlert,
               !context.hasActiveConfirmation,
               !context.isPaywallPresented,
               !context.isPurchasePresented,
