@@ -6,7 +6,7 @@ ParkNudge helps an iPhone user remember where they parked and when a parking met
 
 The primary loop is:
 
-1. Tap **Save Parking Spot**.
+1. Tap **Save Parking Spot**. A new customer's first parking session is free; starting or replacing another needs verified Lifetime Pro. Verified original customers retain their original parking access.
 2. Capture one location fix, inspect accuracy, search, or correct the pin manually.
 3. Add optional floor, section, note, one photo, meter expiration, and—when Pro—cost.
 4. Confirm one active session.
@@ -17,9 +17,9 @@ The primary loop is:
 
 - No onboarding carousel and no first-launch paywall.
 - Location permission is contextual and When-In-Use only.
-- The free parking workflow stays intact when StoreKit or notifications fail.
+- StoreKit failure never grants paid parking access; it does not block a new customer's free first park. Existing saved spots, directions and finishing an active session remain available. Notification failure does not erase a saved session.
 - All data stays local unless the user explicitly shares a CSV.
-- A display limit is not a retention limit: free users see three completed sessions, but all remain stored.
+- A display limit is not a retention limit: customers without Pro see three completed sessions, but all remain stored.
 - Countdowns derive from an absolute expiration date.
 - Purchase state comes only from verified StoreKit transactions.
 

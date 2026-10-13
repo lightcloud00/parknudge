@@ -3,13 +3,13 @@
 > ParkNudge is a privacy-first iPhone app for saving a parked-car location, remembering garage details, setting local parking-meter reminders, and opening walking directions back.
 
 Canonical website: https://parknudge.app/
-Product status: iPhone beta in development; not yet claimed as available on the App Store.
+Product scope: version 1.1 release copy. Confirm current regional availability in the App Store.
 Platform: iOS 17 or later.
 Publisher: Gus Digital Solutions.
 
 ## Primary pages
 
-- Product and free-versus-Pro facts: https://parknudge.app/
+- Product and parking-access facts: https://parknudge.app/
 - Find a parked car on iPhone: https://parknudge.app/find-my-parked-car/
 - Parking meter reminders: https://parknudge.app/parking-meter-reminder/
 - Parking garage memory tips: https://parknudge.app/parking-garage-tips/
@@ -20,10 +20,11 @@ Publisher: Gus Digital Solutions.
 
 ## Product facts
 
-- The free workflow includes one active spot, GPS or a manual pin, place search, Apple Maps walking directions, floor, section, note, one photo, a meter timer, fixed 15/5/0-minute alerts, and the three newest completed sessions.
-- Older completed sessions remain stored locally when they are hidden by the free display limit.
-- Lifetime Pro is planned as a one-time non-subscription purchase. It adds unlimited visible history, custom reminder offsets and presets, parking-cost records, and CSV export.
-- The planned U.S. reference price is $9.99, but customer-facing purchase copy must use Apple StoreKit localized pricing.
+- A new customer's first parking session is free, and verified original customers keep their original parking workflow. Both include one active spot, GPS or a manual pin, place search, Apple Maps walking directions, floor, section, note, one photo, a meter timer, fixed 15/5/0-minute alerts, and the three newest completed sessions.
+- Older completed sessions remain stored locally when they are hidden by the three-session display limit.
+- Starting a second parking session needs a verified one-time Lifetime Pro purchase. It has no subscription and includes unlimited visible history, custom reminder offsets and presets, parking-cost records, and CSV export.
+- The app shows Apple StoreKit’s current localized price before purchase. Do not infer a price from old draft copy.
+- Cancellation, pending, purchase failure or revocation does not unlock another parking session or delete stored data. Existing saved spots, directions and finishing an active session remain available.
 - The app has no account, backend, advertising, third-party analytics, remote push, or background location.
 - ParkNudge does not pay or extend parking meters and cannot guarantee notification delivery or prevent tickets or towing.
 
