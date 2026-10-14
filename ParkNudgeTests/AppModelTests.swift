@@ -44,6 +44,30 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(harness.model.paywallHost, .root, "Offers outside the editor stay on the tab view.")
     }
 
+    func testPurchaseInsideTheEditorOfferLeavesNoAlertThatWouldDiscardTheEditor() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        harness.model.requestAccess(to: .parkingCosts)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+        XCTAssertTrue(harness.model.resumesIntentAfterUnlock, "The editor resumes in place when its offer closes.")
+
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertNil(
+            harness.model.alertMessage,
+            "The tab view's alert would discard the open editor; the unlocked cost field is the confirmation."
+        )
+
+        // Once the editor has closed, offers elsewhere confirm with the alert again.
+        harness.model.parkingEditorDidDisappear()
+        harness.model.requestAccess(to: .fullHistory)
+        XCTAssertFalse(harness.model.resumesIntentAfterUnlock, "A stale editor host must not hide later confirmations.")
+    }
+
     func testSaveThatLostAccessInsideTheEditorOpensTheOfferThere() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }

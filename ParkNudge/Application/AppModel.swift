@@ -330,8 +330,13 @@ final class AppModel: ObservableObject {
 
     /// Intents whose screen resumes the blocked action once the paywall
     /// closes unlocked. A success alert would compete with that presentation.
+    /// The open parking editor resumes in place the same way: the tab view's
+    /// alert cannot appear over that sheet without discarding it, and the
+    /// unlocked cost field is the confirmation. (This reads whether the editor
+    /// is open now, not `paywallHost`, which keeps its last value after an
+    /// offer closes.)
     var resumesIntentAfterUnlock: Bool {
-        requestedParkingAccess || requestedProFeature == .csvExport
+        requestedParkingAccess || requestedProFeature == .csvExport || isParkingEditorOpen
     }
 
     func requestAccess(to feature: ProFeature) {
