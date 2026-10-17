@@ -38,6 +38,45 @@ final class ParkNudgeUITests: XCTestCase {
         XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
     }
 
+    /// The cost upsell lives inside the parking editor, which is itself a
+    /// sheet. The offer must open over the editor, and buying must return to
+    /// the same editor with the cost field unlocked.
+    @MainActor
+    func testCostOfferOpensOverTheEditorAndPurchaseReturnsToIt() {
+        let app = launch(extraArguments: ["--new-customer-paywall"])
+        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+        app.buttons["save-parking-spot"].tap()
+        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+
+        let costOffer = app.buttons["parking-cost-pro"]
+        for _ in 0..<8 where !(costOffer.exists && costOffer.isHittable) {
+            scrollEditor(app)
+        }
+        XCTAssertTrue(costOffer.isHittable, "The cost upsell is reachable in the editor")
+        costOffer.tap()
+        XCTAssertTrue(
+            app.buttons["close-paywall"].waitForExistence(timeout: 5),
+            "The offer opens while the editor is open"
+        )
+
+        let purchase = app.buttons["purchase-lifetime-pro"]
+        for _ in 0..<5 where !purchase.isHittable { app.swipeUp() }
+        XCTAssertTrue(purchase.isHittable)
+        purchase.tap()
+
+        XCTAssertTrue(
+            app.textFields["parking-cost-field"].waitForExistence(timeout: 5),
+            "The editor stays open with the cost field unlocked"
+        )
+        XCTAssertFalse(app.buttons["close-paywall"].exists)
+        // The purchase confirmation, when shown, is acknowledged before saving.
+        if app.alerts.firstMatch.waitForExistence(timeout: 2) {
+            app.alerts.firstMatch.buttons["OK"].tap()
+        }
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+    }
+
     @MainActor
     func testNewCustomerCanFinishExistingParkingWithoutPayingAgain() {
         let app = launch(extraArguments: ["--new-customer-paywall", "-ui-test-active-meter"])
@@ -190,6 +229,15 @@ final class ParkNudgeUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"] + extraArguments
         app.launch()
         return app
+    }
+
+    /// Drags the editor form upward from its lower part, away from the map,
+    /// so the gesture scrolls the form instead of panning the map.
+    @MainActor
+    private func scrollEditor(_ app: XCUIApplication) {
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+        start.press(forDuration: 0.05, thenDragTo: end)
     }
 
     private func keepScreenshot(named name: String) {

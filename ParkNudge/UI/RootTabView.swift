@@ -19,7 +19,7 @@ struct RootTabView: View {
                 .tag(2)
         }
         .tint(Theme.brandInk)
-        .sheet(isPresented: $model.isPaywallPresented, onDismiss: model.paywallDidDismiss) {
+        .sheet(isPresented: model.paywallPresentation(on: .root), onDismiss: model.paywallDidDismiss) {
             PaywallView()
                 .environmentObject(model)
         }
