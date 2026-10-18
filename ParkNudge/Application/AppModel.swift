@@ -334,6 +334,13 @@ final class AppModel: ObservableObject {
         requestedParkingAccess || requestedProFeature == .csvExport
     }
 
+    /// The offer is open over the parking editor. The tab view owns the alert,
+    /// and presenting it while the editor sheet is up discards the editor, so
+    /// the unlocked cost field is the confirmation instead.
+    private var offerIsOverParkingEditor: Bool {
+        isPaywallPresented && paywallHost == .parkingEditor
+    }
+
     func requestAccess(to feature: ProFeature) {
         requestedParkingAccess = false
         requestedProFeature = feature
@@ -364,11 +371,14 @@ final class AppModel: ObservableObject {
             case .purchased:
                 entitlement = await purchases.currentEntitlement()
                 if entitlement.isPro {
+                    // Read before the offer closes: `offerIsOverParkingEditor`
+                    // is false once `isPaywallPresented` is cleared.
+                    let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
                     isPaywallPresented = false
                     // The parking entry intent resumes its editor after the
                     // offer dismisses. A simultaneous success alert competes
                     // for the same presentation and can discard that editor.
-                    alertMessage = resumesIntentAfterUnlock ? nil : "Lifetime Pro is unlocked."
+                    alertMessage = confirmsInPlace ? nil : "Lifetime Pro is unlocked."
                 }
             case .cancelled:
                 break
@@ -416,7 +426,10 @@ final class AppModel: ObservableObject {
             alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
         }
         if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
-            if requestedParkingAccess || (entitlement.isPro && resumesIntentAfterUnlock) { alertMessage = nil }
+            if requestedParkingAccess
+                || (entitlement.isPro && (resumesIntentAfterUnlock || offerIsOverParkingEditor)) {
+                alertMessage = nil
+            }
             isPaywallPresented = false
         }
     }
