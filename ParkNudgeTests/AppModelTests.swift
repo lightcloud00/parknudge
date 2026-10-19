@@ -79,6 +79,59 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(harness.model.alertMessage, "Lifetime Pro is unlocked.")
     }
 
+    func testOfferRequestedInsideTheParkingEditorIsPresentedByTheEditor() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        harness.model.requestAccess(to: .parkingCosts)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+
+        harness.purchases.entitlement = .pro
+        harness.purchases.outcome = .purchased
+        await harness.model.purchaseLifetime()
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.hasAccess(to: .parkingCosts), "The editor's cost field unlocks in place.")
+        XCTAssertNil(
+            harness.model.alertMessage,
+            "The tab view's success alert would discard the open editor; the unlocked field confirms the purchase."
+        )
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor, "The host only changes when an offer opens.")
+        harness.model.parkingEditorDidDisappear()
+
+        harness.model.requestAccess(to: .fullHistory)
+        XCTAssertEqual(harness.model.paywallHost, .root, "Offers outside the editor stay on the tab view.")
+    }
+
+    func testRestoreFromTheOfferOverTheEditorLeavesTheEditorWithoutAnAlert() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        harness.model.requestAccess(to: .parkingCosts)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+
+        harness.purchases.entitlement = .pro
+        await harness.model.restorePurchases()
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.hasAccess(to: .parkingCosts))
+        XCTAssertNil(harness.model.alertMessage, "A root alert would discard the open editor.")
+    }
+
+    func testSaveThatLostAccessInsideTheEditorOpensTheOfferThere() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        harness.purchases.legacyAccess = false
+        await harness.model.bootstrap()
+        harness.model.parkingEditorDidAppear()
+        let draft = await harness.model.newParkingDraft()
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertFalse(saved)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+    }
+
     func testPaywallAndAlertEachSuppressWithoutConsumingVersion() async throws {
         for paywall in [true, false] {
             let harness = try TestFixtures.appModel(completedSessions: 2)

@@ -2,7 +2,12 @@
 
 from: Claude; time_utc: 2026-10-10; requested_by: Gus, "pay after first result" (portfolio conversion contract 1.1, `earned_unlock`); supersedes the 2026-10-03 pay-before-use draft by Codex; before_state: new customers needed Lifetime Pro before saving any spot; after_state: local source candidate only; next: native and StoreKit acceptance; stop_gate: no release acceptance without exact candidate proof.
 
-Candidate: **1.1 (5)**. Build 5 adds the sandbox Restore fix below and the UserDefaults required-reason declaration (CA92.1) in `PrivacyInfo.xcprivacy`.
+Candidate: **1.1 (5)**. App Store Connect has the 1.1 version record with builds 1.1 (3) and (4) uploaded; build 5 is the next unused number. Build 5 adds, on top of build 4:
+
+- the sandbox Restore fix below and the UserDefaults required-reason declaration (CA92.1) in `PrivacyInfo.xcprivacy` (#60);
+- a 15 s deadline on the launch entitlement lookup, run alongside the original-ownership lookup, so a stalled store can no longer leave a new customer at "Checking App Store access" (#61, #48);
+- the "Add a parking cost with Pro" offer is presented by the parking editor itself, so it opens over the editor (not only after the editor closes) and a purchase returns to the unlocked cost field (#62);
+- the rating request waits for seven days since the first park and never shares an app run with the free-limit offer, and buying Pro from the History export lock continues the CSV export (#63, contract `review_milestone` and `resume_intended_action_after_purchase`).
 
 - **The first parking session is free for new customers:** save the spot, see the return route and reminder plan, and finish.
 - Starting or replacing a second session needs verified Lifetime Pro. Directions and Finish for a saved spot always stay usable.
