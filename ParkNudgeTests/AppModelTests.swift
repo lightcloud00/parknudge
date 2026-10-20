@@ -38,9 +38,8 @@ final class AppModelTests: XCTestCase {
     func testNoReviewRequestInTheSameRunAsReachingTheFreeLimit() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 2)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.requestNewParkingAccess(), "The free park is used up.")
+        XCTAssertNil(harness.model.makeCSVExport(), "CSV export is a Pro extra.")
         harness.model.isPaywallPresented = false
 
         try await harness.completeParking()
@@ -119,17 +118,17 @@ final class AppModelTests: XCTestCase {
         XCTAssertNil(harness.model.alertMessage, "A root alert would discard the open editor.")
     }
 
-    func testSaveThatLostAccessInsideTheEditorOpensTheOfferThere() async throws {
+    func testFreeSaveFromTheEditorDropsTheCostWithoutOpeningTheOffer() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
         harness.model.parkingEditorDidAppear()
-        let draft = await harness.model.newParkingDraft()
+        var draft = await harness.model.newParkingDraft()
+        draft.paidAmountMinor = 450
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
-        XCTAssertFalse(saved)
-        XCTAssertTrue(harness.model.isPaywallPresented)
-        XCTAssertEqual(harness.model.paywallHost, .parkingEditor)
+        XCTAssertTrue(saved)
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertNil(harness.model.activeSession?.paidAmountMinor, "Cost records are a Pro extra.")
     }
 
     func testPaywallAndAlertEachSuppressWithoutConsumingVersion() async throws {
@@ -212,311 +211,129 @@ final class AppModelTests: XCTestCase {
         XCTAssertNotEqual(original.pngData(), replacement.pngData())
     }
 
-    func testNewCustomerParksOnceFreeThenNeedsVerifiedPurchase() async throws {
-        let harness = try TestFixtures.appModel()
+    func testParkingIsFreeAndUnlimitedWithoutPro() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 5)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.canStartParking, "The free park is not paid access.")
-        XCTAssertTrue(harness.model.mayStartParking)
-        XCTAssertEqual(harness.model.freeParkingSessionsRemaining, 1)
+        XCTAssertEqual(harness.model.entitlement, .free)
 
         let draft = await harness.model.newParkingDraft()
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
-        XCTAssertTrue(saved, "A new customer's first park needs no purchase.")
-        XCTAssertFalse(harness.model.isPaywallPresented)
-        XCTAssertEqual(harness.repository.sessions.count, 1)
-        XCTAssertEqual(harness.model.freeParkingSessionsRemaining, 0)
-        let original = try XCTUnwrap(harness.model.activeSession)
-
+        XCTAssertTrue(saved, "Saving a spot never needs a purchase.")
+        let first = try XCTUnwrap(harness.model.activeSession)
         let replaced = await harness.model.saveNew(draft: draft, replacingActive: true)
-        XCTAssertFalse(replaced, "Replacing the free session is a second park.")
-        XCTAssertTrue(harness.model.isPaywallPresented)
-        XCTAssertTrue(harness.model.requestedParkingAccess)
-        XCTAssertEqual(harness.model.activeSession?.id, original.id)
-        XCTAssertEqual(harness.repository.sessions.count, 1)
+        XCTAssertTrue(replaced, "Parking somewhere else is free too.")
+        XCTAssertNotEqual(harness.model.activeSession?.id, first.id)
+        XCTAssertFalse(harness.model.isPaywallPresented)
 
-        harness.model.isPaywallPresented = false
         await harness.model.finishActive()
-        XCTAssertNil(harness.model.activeSession, "The free session can always be finished.")
-        XCTAssertFalse(harness.model.requestNewParkingAccess(), "The second park needs Lifetime Pro.")
-        XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertEqual(harness.model.completedSessions.count, 7)
+        XCTAssertEqual(harness.model.visibleHistory.count, FeatureAccessPolicy.freeHistoryLimit)
+        XCTAssertEqual(harness.model.hiddenHistoryCount, 7 - FeatureAccessPolicy.freeHistoryLimit)
+        XCTAssertEqual(harness.model.reminderOffsets, ReminderPlanner.freeOffsets)
+        XCTAssertFalse(harness.model.hasAccess(to: .customReminders))
     }
 
-    func testFreeParkStaysUsedWhenHistoryIsGone() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
-        harness.settings.hasUsedFreeParkingSession = true
-        await harness.model.bootstrap()
-        XCTAssertTrue(harness.model.completedSessions.isEmpty)
-        XCTAssertFalse(harness.model.mayStartParking)
-    }
-
-    func testParkingStartPolicyGivesOneFreeSessionAndNeverGatesPaidAccess() {
-        XCTAssertTrue(ParkingStartPolicy.canStart(hasPaidParkingAccess: false, sessionsStarted: 0))
-        XCTAssertFalse(ParkingStartPolicy.canStart(hasPaidParkingAccess: false, sessionsStarted: 1))
-        XCTAssertTrue(ParkingStartPolicy.canStart(hasPaidParkingAccess: true, sessionsStarted: 40))
-        XCTAssertNil(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: true, sessionsStarted: 0))
-        XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 0), 1)
-        XCTAssertEqual(ParkingStartPolicy.freeSessionsRemaining(hasPaidParkingAccess: false, sessionsStarted: 3), 0)
-    }
-
-    func testLaunchChecksPurchaseAndOriginalAccessTogether() async throws {
-        // On device a stalled entitlement lookup left a new customer at
-        // "Checking App Store access" with no offer (#48). Run sequentially,
-        // the fake's entitlement lookup would wait forever for the legacy one.
-        let harness = try TestFixtures.appModel(completedSessions: 1)
-        defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
-        harness.purchases.entitlementWaitsForLegacyLookup = true
-        let finished = expectation(description: "launch access check finished")
-        Task {
-            await harness.model.bootstrap()
-            finished.fulfill()
-        }
-        await fulfillment(of: [finished], timeout: 5)
-        XCTAssertTrue(harness.model.hasCheckedParkingAccess)
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
-        XCTAssertTrue(harness.model.isPaywallPresented, "The offer opens instead of the checking alert.")
-        XCTAssertNil(harness.model.alertMessage)
-    }
-
-    func testCancelledPendingAndUnverifiedPurchaseKeepParkingLocked() async throws {
+    func testCancelledPendingAndUnverifiedPurchaseKeepProExtrasLocked() async throws {
         for outcome in [PurchaseOutcome.cancelled, .pending, .purchased] {
             let harness = try TestFixtures.appModel(completedSessions: 1)
             defer { harness.cleanup() }
-            harness.purchases.legacyAccess = false
             harness.purchases.outcome = outcome
             await harness.model.bootstrap()
-            XCTAssertFalse(harness.model.requestNewParkingAccess())
+            harness.model.requestAccess(to: .fullHistory)
             await harness.model.purchaseLifetime()
-            XCTAssertFalse(harness.model.canStartParking)
+            XCTAssertFalse(harness.model.hasAccess(to: .fullHistory))
             XCTAssertTrue(harness.model.isPaywallPresented)
-            XCTAssertEqual(harness.repository.sessions.count, 1, "Only the used free session exists.")
         }
     }
 
-    func testVerifiedPurchaseUnlocksAndRevocationBlocksOnlyNewParking() async throws {
-        let harness = try TestFixtures.appModel(completedSessions: 1)
+    func testVerifiedPurchaseUnlocksAndRevocationLocksOnlyProExtras() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 5)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        harness.model.requestAccess(to: .fullHistory)
         harness.purchases.entitlement = .pro
         harness.purchases.outcome = .purchased
         await harness.model.purchaseLifetime()
-        XCTAssertTrue(harness.model.canStartParking)
+        XCTAssertTrue(harness.model.hasAccess(to: .fullHistory))
+        XCTAssertEqual(harness.model.visibleHistory.count, 5)
         XCTAssertFalse(harness.model.isPaywallPresented)
-        XCTAssertNil(harness.model.alertMessage, "Parking must resume without a competing success alert")
         let draft = await harness.model.newParkingDraft()
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
         XCTAssertTrue(saved)
         let id = harness.model.activeSession?.id
+
         harness.purchases.entitlement = .free
         await harness.model.restorePurchases()
-        XCTAssertFalse(harness.model.canStartParking)
-        XCTAssertEqual(harness.model.activeSession?.id, id)
+        XCTAssertFalse(harness.model.hasAccess(to: .fullHistory))
+        XCTAssertEqual(harness.model.activeSession?.id, id, "Losing Pro never touches the saved spot.")
         harness.model.openDirections()
         await harness.model.finishActive()
         XCTAssertNil(harness.model.activeSession)
         XCTAssertTrue(harness.model.completedSessions.contains { $0.id == id })
     }
 
-    func testLegacyCustomerKeepsParkingWithoutReceivingPro() async throws {
+    func testRestoreWithNothingToRestoreSaysSoAndKeepsTheOfferOpen() async throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }
-        await harness.model.bootstrap()
-        XCTAssertTrue(harness.model.canStartParking)
-        XCTAssertEqual(harness.model.entitlement, .free)
-        XCTAssertFalse(harness.model.hasAccess(to: .parkingCosts))
-    }
-
-    func testUnknownLegacyOwnershipStaysLockedAndRestoreDoesNotClaimNoPurchase() async throws {
-        let harness = try TestFixtures.appModel(completedSessions: 1)
-        defer { harness.cleanup() }
-        harness.purchases.legacyVerification = .unknown
-        await harness.model.bootstrap()
-        XCTAssertEqual(harness.model.legacyParkingAccessState, .unknown)
-        XCTAssertFalse(harness.model.canStartParking)
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
-        await harness.model.restorePurchases()
-        XCTAssertEqual(harness.purchases.legacyRefreshCalls, 1)
-        XCTAssertFalse(harness.model.canStartParking)
-        XCTAssertTrue(harness.model.isPaywallPresented)
-        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not verify"))
-        XCTAssertFalse(try XCTUnwrap(harness.model.alertMessage).contains("No previous"))
-    }
-
-    func testRestoreRecoversOriginalParkingEvenWhenPurchaseSyncFails() async throws {
-        let harness = try TestFixtures.appModel(completedSessions: 1)
-        defer { harness.cleanup() }
-        harness.purchases.legacyVerification = .unknown
-        harness.purchases.refreshedLegacyVerification = .eligible
-        harness.purchases.restoreFails = true
-        await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
-        await harness.model.restorePurchases()
-        XCTAssertEqual(harness.purchases.legacyRefreshCalls, 1)
-        XCTAssertTrue(harness.model.hasLegacyParkingAccess)
-        XCTAssertTrue(harness.model.canStartParking)
-        XCTAssertFalse(harness.model.entitlement.isPro)
-        XCTAssertFalse(harness.model.hasAccess(to: .csvExport))
-        XCTAssertFalse(harness.model.isPaywallPresented)
-        XCTAssertNil(harness.model.alertMessage)
-    }
-
-    func testTemporaryLegacyVerificationFailurePreservesVerifiedOriginalAccess() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        await harness.model.bootstrap()
-        harness.purchases.refreshedLegacyVerification = .unknown
-        await harness.model.restorePurchases()
-        XCTAssertTrue(harness.model.canStartParking)
-        XCTAssertFalse(harness.model.entitlement.isPro)
-        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not verify"))
-    }
-
-    func testFailedPurchaseRestoreConfirmsRecoveredOriginalAccessFromSettings() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        harness.purchases.legacyVerification = .unknown
-        harness.purchases.refreshedLegacyVerification = .eligible
-        harness.purchases.restoreFails = true
         await harness.model.bootstrap()
         harness.model.requestAccess(to: .customReminders)
         await harness.model.restorePurchases()
-        XCTAssertTrue(harness.model.canStartParking)
-        XCTAssertFalse(harness.model.entitlement.isPro)
-        XCTAssertTrue(harness.model.isPaywallPresented, "Pro extras still require purchase")
-        let message = try XCTUnwrap(harness.model.alertMessage)
-        XCTAssertTrue(message.contains("original parking access was verified"))
-        XCTAssertTrue(message.contains("could not restore Lifetime Pro"))
-    }
-
-    func testFailedPurchaseRestoreWithUnknownOwnershipDoesNotClaimVerifiedAccess() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        harness.purchases.legacyVerification = .unknown
-        harness.purchases.restoreFails = true
-        await harness.model.bootstrap()
-        await harness.model.restorePurchases()
-        XCTAssertFalse(harness.model.canStartParking)
-        let message = try XCTUnwrap(harness.model.alertMessage)
-        XCTAssertTrue(message.contains("could not verify your original parking access"))
-        XCTAssertTrue(message.contains("could not restore Lifetime Pro"))
-        XCTAssertFalse(message.contains("verified access remains available"))
-    }
-
-    func testVerifiedIneligibleRestoreCanReportNoPreviousAccess() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
-        await harness.model.bootstrap()
-        await harness.model.restorePurchases()
-        XCTAssertFalse(harness.model.canStartParking)
-        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("No previous"))
-    }
-
-    /// App Review and TestFlight run in the sandbox, where the app transaction
-    /// is verified but never production. Restore with nothing to restore must
-    /// say so, not report an App Store verification failure.
-    func testSandboxRestoreWithNothingToRestoreReportsNoPreviousAccess() async throws {
-        let harness = try TestFixtures.appModel()
-        defer { harness.cleanup() }
-        harness.purchases.legacyVerification = LegacyParkingAccessPolicy.state(
-            isVerified: true,
-            bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
-            isProduction: false,
-            originalAppVersion: "1.0"
-        )
-        await harness.model.bootstrap()
-        XCTAssertEqual(harness.model.legacyParkingAccessState, .ineligible)
-        XCTAssertTrue(harness.model.mayStartParking, "A new sandbox customer's first park is free")
-        harness.model.requestAccess(to: .customReminders)
-        await harness.model.restorePurchases()
-        XCTAssertEqual(harness.purchases.legacyRefreshCalls, 1)
-        XCTAssertFalse(harness.model.canStartParking)
-        XCTAssertEqual(
-            harness.model.alertMessage,
-            "No previous parking access or active Lifetime Pro purchase was found."
-        )
+        XCTAssertEqual(harness.model.alertMessage, "No Lifetime Pro purchase was found for this Apple ID.")
         XCTAssertTrue(harness.model.isPaywallPresented, "Nothing was restored, so the offer stays open")
     }
 
-    /// The reviewer's path with a verified sandbox app transaction: the first
-    /// park is free, and the second start opens the Lifetime Pro offer.
-    func testSandboxCustomerParksFreeOnceThenSeesTheParkingOffer() async throws {
-        let harness = try TestFixtures.appModel()
+    func testFailedRestoreReportsTheStoreAndKeepsParking() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
-        harness.purchases.legacyVerification = LegacyParkingAccessPolicy.state(
-            isVerified: true,
-            bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
-            isProduction: false,
-            originalAppVersion: "2"
-        )
+        harness.purchases.restoreFails = true
         await harness.model.bootstrap()
-        XCTAssertTrue(harness.model.requestNewParkingAccess())
-        XCTAssertFalse(harness.model.isPaywallPresented)
+        await harness.model.restorePurchases()
+        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not restore Lifetime Pro"))
         let draft = await harness.model.newParkingDraft()
         let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
         XCTAssertTrue(saved)
-        await harness.model.finishActive()
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
-        XCTAssertTrue(harness.model.isPaywallPresented)
-        XCTAssertTrue(harness.model.requestedParkingAccess)
-        XCTAssertTrue(harness.model.paywallRequiresParkingPurchase)
     }
 
-    func testPendingApprovalDismissesActiveParkingOfferAfterVerifiedUpdate() async throws {
+    func testRestoreFromSettingsConfirmsWithAnAlert() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.purchases.entitlement = .pro
+        await harness.model.restorePurchases()
+        XCTAssertEqual(harness.model.alertMessage, "Lifetime Pro was restored.")
+        XCTAssertTrue(harness.model.hasAccess(to: .csvExport))
+    }
+
+    func testPendingApprovalDismissesTheOfferAfterVerifiedUpdate() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         harness.purchases.outcome = .pending
         await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        harness.model.requestAccess(to: .parkingCosts)
         await harness.model.purchaseLifetime()
-        XCTAssertFalse(harness.model.canStartParking)
+        XCTAssertFalse(harness.model.hasAccess(to: .parkingCosts))
         XCTAssertTrue(harness.model.isPaywallPresented)
         await sendEntitlementUpdate(.pro, in: harness)
-        XCTAssertTrue(harness.model.canStartParking)
+        XCTAssertTrue(harness.model.hasAccess(to: .parkingCosts))
         XCTAssertFalse(harness.model.isPaywallPresented)
-        XCTAssertTrue(harness.model.requestedParkingAccess)
         XCTAssertNil(harness.model.alertMessage)
         harness.model.paywallDidDismiss()
-        XCTAssertFalse(harness.model.requestedParkingAccess)
         XCTAssertEqual(harness.model.paywallDismissalCount, 1)
         await sendEntitlementUpdate(.pro, in: harness)
         XCTAssertEqual(harness.model.paywallDismissalCount, 1)
     }
 
-    func testLaterApprovalDoesNotReopenCancelledParkingIntent() async throws {
+    func testLaterApprovalDoesNotReopenAClosedOffer() async throws {
         let harness = try TestFixtures.appModel(completedSessions: 1)
         defer { harness.cleanup() }
-        harness.purchases.legacyAccess = false
         await harness.model.bootstrap()
-        XCTAssertFalse(harness.model.requestNewParkingAccess())
+        harness.model.requestAccess(to: .customReminders)
         harness.model.isPaywallPresented = false
         harness.model.paywallDidDismiss()
         await sendEntitlementUpdate(.pro, in: harness)
         XCTAssertFalse(harness.model.isPaywallPresented)
-        XCTAssertFalse(harness.model.requestedParkingAccess)
         XCTAssertEqual(harness.model.paywallDismissalCount, 1)
-    }
-
-    func testSettingsUpsellUsesPaidCoreForNewCustomersAndOriginalComparisonForLegacy() async throws {
-        for legacy in [false, true] {
-            let harness = try TestFixtures.appModel()
-            defer { harness.cleanup() }
-            harness.purchases.legacyAccess = legacy
-            await harness.model.bootstrap()
-            harness.model.requestAccess(to: .customReminders)
-            XCTAssertEqual(harness.model.paywallRequiresParkingPurchase, !legacy)
-            XCTAssertFalse(harness.model.requestedParkingAccess)
-            await sendEntitlementUpdate(.pro, in: harness)
-            XCTAssertFalse(harness.model.requestedParkingAccess)
-            XCTAssertFalse(harness.model.isPaywallPresented)
-        }
     }
 
     private func sendEntitlementUpdate(_ state: EntitlementState, in harness: AppModelHarness) async {
@@ -529,77 +346,6 @@ final class AppModelTests: XCTestCase {
         let result = await XCTWaiter.fulfillment(of: [updated], timeout: 2)
         XCTAssertEqual(result, .completed)
         withExtendedLifetime(subscription) {}
-    }
-
-    func testLegacyBuildBoundaryRejectsSandboxAndMalformedVersions() {
-        for value in ["1", "2"] {
-            XCTAssertTrue(LegacyParkingAccessPolicy.includes(originalBuild: value))
-        }
-        for value in ["", "0", "3", "1.0", "-1", " 2", "2 ", "２", "99999999999999999999999"] {
-            XCTAssertFalse(LegacyParkingAccessPolicy.includes(originalBuild: value))
-        }
-    }
-
-    func testVerifiedSandboxOrXcodeAppTransactionIsNotAnOriginalCustomer() {
-        // Even an original build number cannot make a non-production download
-        // an original App Store customer.
-        for originalBuild in ["1", "2", "3", "1.0", ""] {
-            XCTAssertEqual(
-                LegacyParkingAccessPolicy.state(
-                    isVerified: true,
-                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
-                    isProduction: false,
-                    originalAppVersion: originalBuild
-                ),
-                .ineligible,
-                "original build \(originalBuild)"
-            )
-        }
-    }
-
-    func testUnverifiedOrForeignAppTransactionStaysUnknown() {
-        for isProduction in [true, false] {
-            XCTAssertEqual(
-                LegacyParkingAccessPolicy.state(
-                    isVerified: false,
-                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
-                    isProduction: isProduction,
-                    originalAppVersion: "1"
-                ),
-                .unknown
-            )
-            XCTAssertEqual(
-                LegacyParkingAccessPolicy.state(
-                    isVerified: true,
-                    bundleID: "com.example.other",
-                    isProduction: isProduction,
-                    originalAppVersion: "1"
-                ),
-                .unknown
-            )
-        }
-    }
-
-    func testVerifiedProductionAppTransactionUsesTheOriginalBuild() {
-        let cases: [(String, LegacyParkingAccessState)] = [
-            ("1", .eligible),
-            ("2", .eligible),
-            ("3", .ineligible),
-            ("4", .ineligible),
-            ("1.0", .ineligible),
-        ]
-        for (originalBuild, expected) in cases {
-            XCTAssertEqual(
-                LegacyParkingAccessPolicy.state(
-                    isVerified: true,
-                    bundleID: LegacyParkingAccessPolicy.bundleIdentifier,
-                    isProduction: true,
-                    originalAppVersion: originalBuild
-                ),
-                expected,
-                "original build \(originalBuild)"
-            )
-        }
     }
 
     private func imageData(color: UIColor) -> Data? {
@@ -618,9 +364,9 @@ final class StoreDeadlineTests: XCTestCase {
             // StoreKit call waiting on an abandoned App Store sign-in.
             _ = try await withStoreDeadline(seconds: 0.2) {
                 await Task.detached { try? await Task.sleep(for: .seconds(5)) }.value
-                return LegacyParkingAccessState.eligible
+                return EntitlementState.pro
             }
-            XCTFail("A stalled store call must not produce an access decision")
+            XCTFail("A stalled store call must not produce an entitlement")
         } catch {
             XCTAssertEqual(error as? PurchaseServiceError, .storeUnavailable)
         }
@@ -628,8 +374,8 @@ final class StoreDeadlineTests: XCTestCase {
     }
 
     func testPromptStoreResultPassesThrough() async throws {
-        let state = try await withStoreDeadline(seconds: 5) { LegacyParkingAccessState.ineligible }
-        XCTAssertEqual(state, .ineligible)
+        let state = try await withStoreDeadline(seconds: 5) { EntitlementState.free }
+        XCTAssertEqual(state, .free)
     }
 
     func testStoreErrorBeforeTheDeadlinePassesThrough() async {

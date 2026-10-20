@@ -51,25 +51,9 @@ struct PaywallView: View {
                             )
                     }
 
-                    if model.paywallRequiresParkingPurchase {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Keep parking with Lifetime Pro")
-                                .font(.headline)
-                            Text(model.mayStartParking
-                                 ? "Your first park is free. One purchase keeps parking going after it."
-                                 : "You've used your free park. One purchase keeps parking going.")
-                                .font(.subheadline)
-                                .accessibilityIdentifier("paywall-free-park-status")
-                            Label("Save your car location and get directions back", systemImage: "mappin.and.ellipse")
-                            Label("Meter reminders, photos, and parking notes", systemImage: "timer")
-                            Label("Unlimited history, costs, and CSV export", systemImage: "clock.arrow.circlepath")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    } else {
-                        comparison
-                    }
+                    comparison
 
-                    Text("Closing this screen keeps your saved spot, directions, and data. Existing customers keep their original free parking features.")
+                    Text("Parking stays free. Closing this screen keeps your saved spot, directions, and data.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -99,7 +83,7 @@ struct PaywallView: View {
                         .contentShape(Rectangle())
                         .disabled(model.isBusy)
                         .accessibilityIdentifier("restore-purchases")
-                        .accessibilityHint("Checks original parking access and restores a previous Lifetime Pro purchase made with this Apple ID.")
+                        .accessibilityHint("Restores a previous Lifetime Pro purchase made with this Apple ID.")
 
                     if model.lifetimeProduct == nil, !model.isBusy {
                         Button("Retry App Store price") {
@@ -192,12 +176,12 @@ struct PaywallView: View {
         .frame(maxWidth: .infinity)
     }
 
-    /// Only verified original customers see the retained free-core comparison.
+    /// What stays free beside what Lifetime Pro adds.
     private var comparison: some View {
         VStack(spacing: 0) {
             ComparisonRow(
                 title: Text("What you get").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
-                free: Text("Original").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
+                free: Text("Free").font(.caption.weight(.semibold)).foregroundStyle(.secondary),
                 pro: Text("Pro").font(.caption.bold()).foregroundStyle(Theme.brandInk)
             )
             .padding(.vertical, 8)

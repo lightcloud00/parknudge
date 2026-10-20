@@ -52,10 +52,6 @@ final class StoreKitPurchaseService: PurchaseProviding {
     static let interactiveStoreDeadline: Double = 120
 
     private var product: Product?
-    /// Set when `AppStore.sync()` hit its deadline. A second interactive call
-    /// would most likely hang the same way, so the following legacy check falls
-    /// back to the cached app transaction instead.
-    private var lastSyncTimedOut = false
 
     func loadProduct() async -> PurchaseProduct? {
         do {
@@ -77,8 +73,7 @@ final class StoreKitPurchaseService: PurchaseProviding {
     }
 
     /// `Transaction.currentEntitlements` can stall like any other StoreKit
-    /// call, and launch waits on it before a new customer can park, so it
-    /// gets the same deadline. A stalled lookup reads as free, never as Pro.
+    /// call, so it gets the same deadline. A stalled lookup reads as free, never as Pro.
     func currentEntitlement() async -> EntitlementState {
         let productID = Self.productIdentifier
         do {
@@ -93,42 +88,6 @@ final class StoreKitPurchaseService: PurchaseProviding {
             }
         } catch {
             return .free
-        }
-    }
-
-    func hasLegacyParkingAccess() async -> Bool {
-        await legacyParkingAccessState(refresh: false) == .eligible
-    }
-
-    func legacyParkingAccessState(refresh: Bool) async -> LegacyParkingAccessState {
-        let result: VerificationResult<AppTransaction>
-        do {
-            // Refresh is reserved for the user's Restore action because it
-            // may ask them to authenticate with the App Store.
-            if refresh && !lastSyncTimedOut {
-                result = try await withStoreDeadline(seconds: Self.interactiveStoreDeadline) {
-                    try await AppTransaction.refresh()
-                }
-            } else {
-                result = try await withStoreDeadline(seconds: Self.silentStoreDeadline) {
-                    try await AppTransaction.shared
-                }
-            }
-        } catch {
-            return .unknown
-        }
-        switch result {
-        case .verified(let transaction):
-            // A verified sandbox or Xcode transaction (App Review, TestFlight)
-            // means "not an original customer", not "could not verify".
-            return LegacyParkingAccessPolicy.state(
-                isVerified: true,
-                bundleID: transaction.bundleID,
-                isProduction: transaction.environment == .production,
-                originalAppVersion: transaction.originalAppVersion
-            )
-        case .unverified:
-            return .unknown
         }
     }
 
@@ -171,15 +130,12 @@ final class StoreKitPurchaseService: PurchaseProviding {
     }
 
     func restore() async throws -> EntitlementState {
-        lastSyncTimedOut = false
-        let started = ContinuousClock.now
         do {
             try await withStoreDeadline(seconds: Self.interactiveStoreDeadline) {
                 try await AppStore.sync()
             }
             return await currentEntitlement()
         } catch {
-            lastSyncTimedOut = started.duration(to: .now) >= .seconds(Self.interactiveStoreDeadline)
             throw PurchaseServiceError.storeUnavailable
         }
     }

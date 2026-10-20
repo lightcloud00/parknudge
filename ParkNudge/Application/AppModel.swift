@@ -15,9 +15,6 @@ final class AppModel: ObservableObject {
     @Published private(set) var activeSession: ParkingSession?
     @Published private(set) var completedSessions: [ParkingSession] = []
     @Published private(set) var entitlement: EntitlementState = .loading
-    @Published private(set) var legacyParkingAccessState: LegacyParkingAccessState = .unknown
-    @Published private(set) var hasCheckedParkingAccess = false
-    @Published var requestedParkingAccess = false
     @Published private(set) var paywallDismissalCount = 0
     @Published private(set) var lifetimeProduct: PurchaseProduct?
     @Published private(set) var isBusy = false
@@ -105,13 +102,8 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
-        // Both lookups gate a new customer's first park, so run them together:
-        // a stalled store then costs one deadline before the offer, not two.
-        let legacyLookup = Task { await purchases.legacyParkingAccessState(refresh: false) }
         entitlement = await purchases.currentEntitlement()
         observeEntitlementUpdates()
-        applyLegacyParkingAccess(await legacyLookup.value)
-        hasCheckedParkingAccess = true
         lifetimeProduct = await purchases.loadProduct()
     }
 
@@ -149,48 +141,8 @@ final class AppModel: ObservableObject {
         }
     }
 
-    var hasLegacyParkingAccess: Bool { legacyParkingAccessState == .eligible }
-    /// Paid parking access: verified Lifetime Pro or verified original-customer access.
-    var canStartParking: Bool { entitlement.isPro || hasLegacyParkingAccess }
-    var paywallRequiresParkingPurchase: Bool { !hasLegacyParkingAccess }
-    var parkingSessionsStarted: Int {
-        let saved = completedSessions.count + (activeSession == nil ? 0 : 1)
-        return max(saved, settings.hasUsedFreeParkingSession ? ParkingStartPolicy.freeSessions : 0)
-    }
-    /// Paid access, or a new customer who has not used the free first parking session.
-    var mayStartParking: Bool {
-        ParkingStartPolicy.canStart(
-            hasPaidParkingAccess: canStartParking,
-            sessionsStarted: parkingSessionsStarted
-        )
-    }
-    var freeParkingSessionsRemaining: Int? {
-        ParkingStartPolicy.freeSessionsRemaining(
-            hasPaidParkingAccess: canStartParking,
-            sessionsStarted: parkingSessionsStarted
-        )
-    }
-
-    @discardableResult
-    func requestNewParkingAccess() -> Bool {
-        guard mayStartParking else {
-            if !hasCheckedParkingAccess {
-                alertMessage = "Checking App Store access. Please try again in a moment."
-            } else {
-                reachedFreeLimitThisSession = true
-                requestedProFeature = nil
-                requestedParkingAccess = true
-                isPaywallPresented = true
-            }
-            return false
-        }
-        return true
-    }
-
     func saveNew(draft: ParkingDraft, replacingActive: Bool) async -> Bool {
-        // Recheck here as well as in the view: closing a paywall or losing an
-        // entitlement while editing must never create or replace a session.
-        guard requestNewParkingAccess() else { return false }
+        // Parking itself is free for everyone; only Pro extras are dropped.
         var draft = draft
         if !hasAccess(to: .parkingCosts) {
             draft.paidAmountMinor = nil
@@ -203,7 +155,6 @@ final class AppModel: ObservableObject {
                 replacingActive: replacingActive,
                 reminderOffsets: reminderOffsets
             )
-            settings.hasUsedFreeParkingSession = true
             await reload()
             alertMessage = result.notificationWarning
             return true
@@ -324,14 +275,13 @@ final class AppModel: ObservableObject {
     }
 
     func paywallDidDismiss() {
-        requestedParkingAccess = false
         paywallDismissalCount += 1
     }
 
     /// Intents whose screen resumes the blocked action once the paywall
     /// closes unlocked. A success alert would compete with that presentation.
     var resumesIntentAfterUnlock: Bool {
-        requestedParkingAccess || requestedProFeature == .csvExport
+        requestedProFeature == .csvExport
     }
 
     /// The offer is open over the parking editor. The tab view owns the alert,
@@ -342,7 +292,7 @@ final class AppModel: ObservableObject {
     }
 
     func requestAccess(to feature: ProFeature) {
-        requestedParkingAccess = false
+        reachedFreeLimitThisSession = true
         requestedProFeature = feature
         isPaywallPresented = true
     }
@@ -375,15 +325,15 @@ final class AppModel: ObservableObject {
                     // is false once `isPaywallPresented` is cleared.
                     let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
                     isPaywallPresented = false
-                    // The parking entry intent resumes its editor after the
-                    // offer dismisses. A simultaneous success alert competes
-                    // for the same presentation and can discard that editor.
+                    // An export intent resumes after the offer dismisses. A
+                    // simultaneous success alert competes for the same
+                    // presentation and can discard it.
                     alertMessage = confirmsInPlace ? nil : "Lifetime Pro is unlocked."
                 }
             case .cancelled:
                 break
             case .pending:
-                alertMessage = "Your purchase is pending approval. New parking unlocks after verification. Your saved spot remains available."
+                alertMessage = "Your purchase is pending approval. Pro unlocks after verification. Your saved spot remains available."
             }
         } catch {
             alertMessage = error.localizedDescription
@@ -393,45 +343,21 @@ final class AppModel: ObservableObject {
     func restorePurchases() async {
         isBusy = true
         defer { isBusy = false }
-        var purchaseRestoreFailed = false
         do {
             entitlement = try await purchases.restore()
         } catch {
-            purchaseRestoreFailed = true
+            alertMessage = "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
+            return
         }
-        // Original app ownership has its own recovery path. An IAP sync
-        // failure must not prevent the user from retrying that verification.
-        let legacyResult = await purchases.legacyParkingAccessState(refresh: true)
-        applyLegacyParkingAccess(legacyResult)
-        hasCheckedParkingAccess = true
-        if purchaseRestoreFailed {
-            let accessMessage: String
-            if legacyResult == .eligible {
-                accessMessage = "Your original parking access was verified. "
-            } else if canStartParking {
-                accessMessage = "Your previously verified access remains available. "
-            } else if legacyResult == .unknown {
-                accessMessage = "The App Store could not verify your original parking access. "
-            } else {
-                accessMessage = ""
-            }
-            alertMessage = accessMessage + "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
-        } else if entitlement.isPro {
-            alertMessage = "Lifetime Pro was restored."
-        } else if legacyResult == .unknown {
-            alertMessage = "The App Store could not verify your original parking access. Try Restore Purchases again when the store is available. Your saved spot remains available."
-        } else if hasLegacyParkingAccess {
-            alertMessage = "Your original parking access was restored. Pro extras remain locked."
-        } else {
-            alertMessage = "No previous parking access or active Lifetime Pro purchase was found."
+        guard entitlement.isPro else {
+            alertMessage = "No Lifetime Pro purchase was found for this Apple ID."
+            return
         }
-        if entitlement.isPro || (requestedParkingAccess && hasLegacyParkingAccess) {
-            if requestedParkingAccess
-                || (entitlement.isPro && (resumesIntentAfterUnlock || offerIsOverParkingEditor)) {
-                alertMessage = nil
-            }
-            isPaywallPresented = false
-        }
+        // Read before the offer closes: `offerIsOverParkingEditor` is false
+        // once `isPaywallPresented` is cleared.
+        let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
+        alertMessage = confirmsInPlace ? nil : "Lifetime Pro was restored."
+        isPaywallPresented = false
     }
 
     func makeCSVExport() -> URL? {
@@ -507,14 +433,6 @@ final class AppModel: ObservableObject {
                     self.isPaywallPresented = false
                 }
             }
-        }
-    }
-
-    private func applyLegacyParkingAccess(_ state: LegacyParkingAccessState) {
-        // A transient store failure must not revoke an entitlement already
-        // verified in this process. No preference or persisted cache grants it.
-        if state != .unknown || !hasLegacyParkingAccess {
-            legacyParkingAccessState = state
         }
     }
 }

@@ -12,8 +12,8 @@ struct ReviewPromptContext: Equatable, Sendable {
     var now: Date
     /// When the user first parked with the app; `nil` when nothing is saved.
     var firstUseDate: Date?
-    /// The free parking allowance ran out (the paywall blocked a new park)
-    /// earlier in this app run.
+    /// A free-tier limit sent the user to the Pro offer earlier in this app
+    /// run (a locked history row, cost field, reminder preset, or export).
     var reachedFreeLimitThisSession: Bool
     /// An alert is on screen.
     var hasActiveAlert: Bool
