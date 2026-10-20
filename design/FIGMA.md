@@ -29,7 +29,7 @@ layout references only. The Swift on `main` is the source of truth for every str
 | Proposed · Mascot · Claude (2026-10-20) | `25:2` | Section `25:7`: two mascot concepts, 5 states each in Light and Dark (below) |
 | Proposed · Onboarding · Claude (2026-10-20) | `27:2` | Section `27:7`: 6 onboarding screens at 393×852, the Mascot Slot component, flow rules |
 | Proposed · Paywall v2 (freemium) · Claude (2026-10-20) | `29:2` | Section `29:7`: 3 paywall frames (2 triggers, plus Dark) and a Free vs Pro spec |
-| Decisions · open (2026-10-14) | `2:7` | Board `14:2` with 6 open decision cards and 9 source defects |
+| Decisions · open (2026-10-14) | `2:7` | Board `14:2` with 6 decision cards (D6 partly decided) and 9 source defects |
 
 ## Tokens
 
@@ -107,15 +107,25 @@ Frame 4 is rewritten for the 1.1 earned-unlock model, using the draft copy in `H
 The retired canvas caption, "$9.99 once … The whole parking loop is free forever.", is not reused.
 The listing-metadata panel is `13:572`.
 
-## Proposed · Mascot, Onboarding, Paywall v2 (2026-10-20). Not approved.
+## Proposed · Mascot, Onboarding, Paywall v2 (2026-10-20). Gate change approved; the rest is proposed.
 
-These pages wait for decision D6. Every shape is bound to `ParkNudge / Color` and `ParkNudge / Metrics`, and
-the mascots are editable vectors with no people in them.
+Every shape is bound to `ParkNudge / Color` and `ParkNudge / Metrics`, and the mascots are editable vectors with
+no people in them.
 
-PR #66 merged to `main` as `d3bb9b2` on 2026-10-20. It made parking free and removed the "first park free, then pay"
-gate. Shipped screens 01, 02, 11, 12 and 13 and store frame 4 record `a87a6b2`, before that change, so they are the
-pre-freemium baseline. The paywall frames use the copy that is now on `main`: the "Free / Pro" header and
-"Parking stays free. …". Release status was not checked.
+Gus approved the freemium gate change on 2026-10-20 ("go ahead"). PR #66 merged it to `main` as `d3bb9b2`:
+- **Free:** parking with unlimited saves, directions, notes, photos and the 15/5/0-minute reminders.
+- **Lifetime Pro ($9.99 once):** full history (Free shows the last 3), custom reminder times, cost records and CSV export.
+
+**It is not shipped.** App Store version 1.1 is still `PENDING_DEVELOPER_RELEASE`, with the old "first park free" gate.
+Shipped screens 01, 02, 11, 12 and 13 and store frame 4 record `a87a6b2`, so they are the pre-freemium baseline.
+The paywall frames use the copy that is now on `main`: the "Free / Pro" header and "Parking stays free. …".
+
+Still proposed and waiting on D6 or later approval:
+- the mascot pick
+- the onboarding
+- more than one saved spot
+- the Live Activity
+- the automatic 4th-session paywall
 
 **Mascot (page `25:2`):** two concepts, side by side.
 
@@ -154,15 +164,17 @@ The spec column `30:170` has the Free vs Pro table, the trigger rules, the price
 2026-10-20) and how it matches PR #66. Multiple saved spots, the Live Activity and the automatic 4th-session
 trigger are not built.
 
-## Open decisions (page `2:7`). None is ticked.
+## Open decisions (page `2:7`). Only D6's gate change is decided.
 
 - **D1 `14:6`:** what frame 4 claims under the earned-unlock model.
 - **D2 `14:27`:** whether the store art shows a price, given that StoreKit `displayPrice` varies by storefront.
 - **D3 `14:48`:** app icon direction. The two canvases propose different sets (issue #31).
 - **D4 `14:69`:** frame 3 privacy wording. Should "Nothing is uploaded anywhere." stay, given that MapKit search and directions send data to Apple?
 - **D5 `14:90`:** which listing localizations get the 1.1 frames.
-- **D6 `30:230`:** which mascot ParkNudge uses (Pip the Pin, Tock or none), and whether the freemium split
-  drawn on Paywall v2 replaces the "first park free, then pay" gate. Added 2026-10-20.
+- **D6 `30:230`** (added 2026-10-20, partly decided):
+  - **Gate: approved.** Option D replaces the "first park free, then pay" gate with freemium. Gus approved it on
+    2026-10-20, and it is on `main` through PR #66.
+  - **Mascot: open.** Gus still needs to pick Pip the Pin, Tock or no mascot.
 
 ## Defects noticed while recording (fix candidates)
 
