@@ -176,9 +176,6 @@ private final class UITestPurchaseProvider: PurchaseProviding {
     }
 
     func currentEntitlement() async -> EntitlementState { isPro ? .pro : .free }
-    func hasLegacyParkingAccess() async -> Bool {
-        !ProcessInfo.processInfo.arguments.contains("--new-customer-paywall")
-    }
 
     func purchase() async throws -> PurchaseOutcome {
         isPro = true

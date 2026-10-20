@@ -41,7 +41,7 @@ struct LegalView: View {
         Group {
             Text("ParkNudge is a parking memory aid. It does not pay parking fees, verify parking rules, guarantee a legal space, or prevent tickets, towing, or other losses.")
             Text("Meter reminders depend on the date you enter, device settings, notification permission, Focus modes, and iOS delivery. Always follow posted signs and check the meter directly.")
-            Text("Lifetime Pro is a one-time, non-consumable in-app purchase tied to the Apple ID used for purchase. A new customer's first parking session is free; starting another session needs Pro. Customers who originally downloaded an earlier free version keep their original parking access. Existing parking data is not deleted when access changes. Availability and transaction handling are provided by Apple.")
+            Text("Lifetime Pro is a one-time, non-consumable in-app purchase tied to the Apple ID used for purchase. Saving a parking spot, directions, notes, photos, and standard meter reminders are free. Pro adds unlimited history, custom reminder times, parking cost records, and CSV export. Existing parking data is not deleted when access changes. Availability and transaction handling are provided by Apple.")
         }
     }
 }

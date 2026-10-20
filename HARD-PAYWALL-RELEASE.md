@@ -1,3 +1,5 @@
+> **Superseded 2026-10-20.** Gus approved replacing "first park free, then Lifetime Pro" with a free tier. Saving a spot, directions, notes, photos and the standard 15/5/0-minute meter reminders are free and unlimited. Lifetime Pro ($9.99, one-time) adds unlimited history (free shows the last 3), custom reminder times, parking cost records and CSV export. `ParkingStartPolicy`, the free-session marker and the original-customer (`AppTransaction`) lookup are removed. The notes below describe the 1.1 (5) candidate only.
+
 # ParkNudge earned-unlock candidate
 
 from: Claude; time_utc: 2026-10-10; requested_by: Gus, "pay after first result" (portfolio conversion contract 1.1, `earned_unlock`); supersedes the 2026-10-03 pay-before-use draft by Codex; before_state: new customers needed Lifetime Pro before saving any spot; after_state: local source candidate only; next: native and StoreKit acceptance; stop_gate: no release acceptance without exact candidate proof.

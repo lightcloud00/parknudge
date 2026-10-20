@@ -6,7 +6,6 @@ struct ParkView: View {
     @State private var editorContext: ParkingEditorContext?
     @State private var confirmsReplacement = false
     @State private var confirmsFinish = false
-    @State private var pendingParkingReplacement: Bool?
 
     var body: some View {
         NavigationStack {
@@ -48,11 +47,6 @@ struct ParkView: View {
                     }
                 }
             }
-        }
-        .onChange(of: model.paywallDismissalCount) { _, _ in
-            guard let replacing = pendingParkingReplacement else { return }
-            pendingParkingReplacement = nil
-            if model.mayStartParking { beginNewParking(replacing: replacing) }
         }
         .sheet(item: $editorContext) { context in
             ParkingEditorView(context: context)
@@ -117,11 +111,7 @@ struct ParkView: View {
             .disabled(model.isBusy)
             .accessibilityIdentifier("save-parking-spot")
 
-            Text(model.canStartParking
-                 ? "Location is requested only after you tap this button."
-                 : model.mayStartParking
-                    ? "Your first park is free. Location is requested only after you tap this button."
-                    : "You've used your free park. Lifetime Pro keeps parking going. One purchase, no subscription.")
+            Text("Parking is free. Location is requested only after you tap this button.")
                 .accessibilityIdentifier("parking-access-note")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
@@ -249,10 +239,6 @@ struct ParkView: View {
     }
 
     private func beginNewParking(replacing: Bool) {
-        guard model.requestNewParkingAccess() else {
-            if model.isPaywallPresented { pendingParkingReplacement = replacing }
-            return
-        }
         Task {
             let draft = await model.newParkingDraft()
             editorContext = ParkingEditorContext(

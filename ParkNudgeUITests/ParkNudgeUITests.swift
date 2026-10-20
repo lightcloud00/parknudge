@@ -2,40 +2,20 @@ import XCTest
 
 final class ParkNudgeUITests: XCTestCase {
     @MainActor
-    func testNewCustomerDismissalKeepsParkingLockedAndPurchaseResumesEditor() {
-        let app = launch(extraArguments: ["--new-customer-paywall"])
+    func testParkingStaysFreeAfterTheFirstPark() {
+        let app = launch()
         XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
-
-        // The first park is the free result: no paywall before the editor.
-        app.buttons["save-parking-spot"].tap()
-        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+        for _ in 0..<2 {
+            app.buttons["save-parking-spot"].tap()
+            XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.buttons["close-paywall"].exists, "Saving a spot never opens the offer")
+            app.buttons["confirm-save-parking"].tap()
+            XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
+            app.buttons["finish-parking"].tap()
+            app.buttons["Finish Parking"].tap()
+            XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
+        }
         XCTAssertFalse(app.buttons["close-paywall"].exists)
-        app.buttons["confirm-save-parking"].tap()
-        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
-        app.buttons["finish-parking"].tap()
-        app.buttons["Finish Parking"].tap()
-
-        // The second park needs Lifetime Pro, and closing the offer keeps it locked.
-        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
-        app.buttons["save-parking-spot"].tap()
-        XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
-        app.buttons["close-paywall"].tap()
-
-        XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["confirm-save-parking"].exists)
-        app.buttons["save-parking-spot"].tap()
-        XCTAssertTrue(app.buttons["purchase-lifetime-pro"].waitForExistence(timeout: 5))
-        let purchase = app.buttons["purchase-lifetime-pro"]
-        for _ in 0..<5 where !purchase.isHittable { app.swipeUp() }
-        XCTAssertTrue(purchase.isHittable)
-        purchase.tap()
-
-        // The deterministic verified-entitlement fixture exercises sheet
-        // dismissal ordering; Apple transaction acceptance is a separate gate.
-        XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
-        app.buttons["confirm-save-parking"].tap()
-        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
     }
 
     /// The cost upsell lives inside the parking editor, which is itself a
@@ -43,7 +23,7 @@ final class ParkNudgeUITests: XCTestCase {
     /// the same editor with the cost field unlocked.
     @MainActor
     func testCostOfferOpensOverTheEditorAndPurchaseReturnsToIt() {
-        let app = launch(extraArguments: ["--new-customer-paywall"])
+        let app = launch()
         XCTAssertTrue(app.buttons["save-parking-spot"].waitForExistence(timeout: 5))
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
@@ -78,8 +58,8 @@ final class ParkNudgeUITests: XCTestCase {
     }
 
     @MainActor
-    func testNewCustomerCanFinishExistingParkingWithoutPayingAgain() {
-        let app = launch(extraArguments: ["--new-customer-paywall", "-ui-test-active-meter"])
+    func testActiveParkingFinishesWithoutAnOffer() {
+        let app = launch(extraArguments: ["-ui-test-active-meter"])
         XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["close-paywall"].exists)
         app.buttons["finish-parking"].tap()
@@ -90,48 +70,37 @@ final class ParkNudgeUITests: XCTestCase {
     }
 
     @MainActor
-    func testSettingsReminderUpsellShowsPaidCoreOnlyForNewCustomers() {
-        for newCustomer in [true, false] {
-            let app = launch(extraArguments: newCustomer ? ["--new-customer-paywall"] : [])
-            app.tabBars.buttons["Settings"].tap()
-            app.buttons["Customize with Pro"].tap()
-            XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
-            if newCustomer {
-                XCTAssertTrue(app.staticTexts["Keep parking with Lifetime Pro"].exists)
-                XCTAssertFalse(app.staticTexts["Original"].exists)
-            } else {
-                XCTAssertTrue(app.staticTexts["Original"].exists)
-                XCTAssertFalse(app.staticTexts["Keep parking with Lifetime Pro"].exists)
-            }
-            keepScreenshot(named: newCustomer ? "ParkNudge-new-customer-settings-offer" : "ParkNudge-original-customer-settings-offer")
-            app.terminate()
-        }
+    func testSettingsReminderUpsellShowsTheFreeAndProComparison() {
+        let app = launch()
+        app.tabBars.buttons["Settings"].tap()
+        app.buttons["Customize with Pro"].tap()
+        XCTAssertTrue(app.buttons["close-paywall"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Free"].exists)
+        XCTAssertTrue(app.staticTexts["Pro"].exists)
+        keepScreenshot(named: "ParkNudge-settings-offer")
     }
 
-    /// Retains the six raw frames used for the version 1.1 App Store story.
-    /// The sequence starts as a new customer, shows the paid-core disclosure,
-    /// completes the deterministic purchase, and then shows the unlocked
-    /// parking workflow. This keeps the listing aligned with the production
-    /// contract while original customers retain their separately tested access.
+    /// Retains the six raw frames used for the App Store story: free parking,
+    /// the one-time Pro offer, then the unlocked parking workflow.
     @MainActor
     func testAppStorePaidCoreScreenshotStory() throws {
-        let fresh = launch(extraArguments: ["--new-customer-paywall"])
+        let fresh = launch()
         XCTAssertTrue(fresh.buttons["save-parking-spot"].waitForExistence(timeout: 5))
-        XCTAssertTrue(fresh.staticTexts["Your first park is free. Location is requested only after you tap this button."].exists)
+        XCTAssertTrue(fresh.staticTexts["Parking is free. Location is requested only after you tap this button."].exists)
         keepScreenshot(named: "01-ParkNudge-new-customer-home")
 
-        // The first park is the free result: no paywall before the editor.
+        // Parking is free: no paywall before the editor.
         fresh.buttons["save-parking-spot"].tap()
         XCTAssertTrue(fresh.buttons["confirm-save-parking"].waitForExistence(timeout: 5))
         XCTAssertFalse(fresh.buttons["close-paywall"].exists)
         keepScreenshot(named: "03-ParkNudge-adjust-and-confirm")
         fresh.terminate()
 
-        // A new customer with the free session in use sees the one-time offer.
-        let returning = launch(extraArguments: ["--new-customer-paywall", "-ui-test-active-meter"])
+        // Pro extras are a one-time offer.
+        let returning = launch(extraArguments: ["-ui-test-active-meter"])
         returning.tabBars.buttons["Settings"].tap()
         returning.buttons["Customize with Pro"].tap()
-        XCTAssertTrue(returning.staticTexts["Keep parking with Lifetime Pro"].waitForExistence(timeout: 5))
+        XCTAssertTrue(returning.buttons["close-paywall"].waitForExistence(timeout: 5))
         XCTAssertTrue(returning.descendants(matching: .any)["paywall-price"].exists)
         keepScreenshot(named: "02-ParkNudge-lifetime-one-time")
         returning.terminate()
@@ -160,7 +129,7 @@ final class ParkNudgeUITests: XCTestCase {
     }
 
     @MainActor
-    func testOriginalCustomerCompletesParkingLoopBeforePremiumExtrasPaywall() throws {
+    func testParkingLoopCompletesBeforePremiumExtrasPaywall() throws {
         let app = launch()
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.buttons["confirm-save-parking"].waitForExistence(timeout: 3))
@@ -171,7 +140,7 @@ final class ParkNudgeUITests: XCTestCase {
         app.buttons["Finish Parking"].tap()
         XCTAssertFalse(
             app.buttons["close-paywall"].waitForExistence(timeout: 1),
-            "The first completed parking session is free and must not open a paywall"
+            "A completed parking session is free and must not open a paywall"
         )
         app.tabBars.buttons["History"].tap()
         XCTAssertTrue(app.staticTexts["Parking session"].waitForExistence(timeout: 3))
