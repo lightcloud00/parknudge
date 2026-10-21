@@ -1,3 +1,4 @@
+import Combine
 import MapKit
 import SwiftUI
 
@@ -6,6 +7,8 @@ struct ParkView: View {
     @State private var editorContext: ParkingEditorContext?
     @State private var confirmsReplacement = false
     @State private var confirmsFinish = false
+    @State private var lowPowerMode = ParkNudgePowerState.current()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         NavigationStack {
@@ -64,6 +67,9 @@ struct ParkView: View {
         } message: {
             Text("Your current spot will move to History. Its photo and details will be kept.")
         }
+        .onReceive(NotificationCenter.default.publisher(for: .NSProcessInfoPowerStateDidChange)) { _ in
+            lowPowerMode = ParkNudgePowerState.current()
+        }
         .confirmationDialog(
             "Finish this parking session?",
             isPresented: $confirmsFinish,
@@ -119,54 +125,72 @@ struct ParkView: View {
     }
 
     private func activeContent(_ session: ParkingSession) -> some View {
-        ScrollView {
-            // Sized so a plain session — hero, map, details, three actions —
-            // rests entirely above the floating tab bar. Anything richer (a
-            // photo, a note, a cost) simply scrolls, which is expected; what is
-            // not acceptable is Finish landing under the bar on arrival.
-            VStack(spacing: 12) {
-                // The meter is the one thing a returning driver is anxious
-                // about, so it leads. Without a meter there is nothing urgent
-                // to hoist and the map keeps the top slot.
-                if let expiry = session.meterExpiresAt {
-                    MeterHero(startedAt: session.startedAt, expiry: expiry)
-                }
+        TimelineView(
+            ParkingTimelineSchedule(
+                meterExpiry: session.meterExpiresAt,
+                lowPowerMode: lowPowerMode,
+                reduceMotion: reduceMotion
+            )
+        ) { context in
+            ScrollView {
+                // Sized so a plain session — hero, map, details, three actions —
+                // rests entirely above the floating tab bar. Anything richer (a
+                // photo, a note, a cost) simply scrolls, which is expected; what is
+                // not acceptable is Finish landing under the bar on arrival.
+                VStack(spacing: 12) {
+                    // The meter is the one thing a returning driver is anxious
+                    // about, so it leads. Without a meter there is nothing urgent
+                    // to hoist and the map keeps the top slot.
+                    if let expiry = session.meterExpiresAt {
+                        let cadence = ParkingTimelinePolicy.cadence(
+                            now: context.date,
+                            meterExpiry: expiry,
+                            lowPowerMode: lowPowerMode,
+                            reduceMotion: reduceMotion
+                        )
+                        MeterHero(
+                            startedAt: session.startedAt,
+                            expiry: expiry,
+                            now: context.date,
+                            showsSeconds: cadence < ParkingTimelinePolicy.coarseCadence,
+                            reduceMotion: reduceMotion
+                        )
+                    }
 
-                ParkedMap(session: session)
-                    .frame(height: 148)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
-                    .accessibilityElement()
-                    .accessibilityLabel(mapAccessibilityLabel(for: session))
-                    .accessibilityIdentifier("active-parking-map")
-
-                detailsCard(session)
-
-                if let data = model.photoData(for: session), let image = UIImage(data: data) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity, minHeight: 180, maxHeight: 240)
+                    ParkedMap(session: session)
+                        .frame(height: 148)
                         .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
-                        .clipped()
-                        .accessibilityLabel("Saved parking photo")
-                }
+                        .accessibilityElement()
+                        .accessibilityLabel(mapAccessibilityLabel(for: session))
+                        .accessibilityIdentifier("active-parking-map")
 
-                actions(session)
+                    detailsCard(session, now: context.date)
+
+                    if let data = model.photoData(for: session), let image = UIImage(data: data) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, minHeight: 180, maxHeight: 240)
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
+                            .clipped()
+                            .accessibilityLabel("Saved parking photo")
+                    }
+
+                    actions(session)
+                }
+                .padding()
             }
-            .padding()
         }
     }
 
-    private func detailsCard(_ session: ParkingSession) -> some View {
+    private func detailsCard(_ session: ParkingSession, now: Date) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(session.locationLabel ?? "Saved parking spot")
                     .font(.title2.bold())
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    Text("Parked for \(ParkNudgeFormatting.duration(context.date.timeIntervalSince(session.startedAt)))")
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                }
+                Text("Parked for \(ParkingTimelinePolicy.elapsedDescription(now.timeIntervalSince(session.startedAt)))")
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
             }
 
             if hasAnyDetail(session) {
@@ -317,47 +341,53 @@ private struct MeterHero: View {
     @ScaledMetric(relativeTo: .title) private var scaledDigitSize: CGFloat = 52
     let startedAt: Date
     let expiry: Date
+    let now: Date
+    let showsSeconds: Bool
+    let reduceMotion: Bool
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            let state = MeterState.at(context.date, expiry: expiry)
-            let progress = MeterState.progress(start: startedAt, expiry: expiry, now: context.date)
+        let state = MeterState.at(now, expiry: expiry)
+        let progress = MeterState.progress(start: startedAt, expiry: expiry, now: now)
 
-            VStack(alignment: .leading, spacing: 10) {
-                // A fixed HStack with a Spacer collides at accessibility sizes,
-                // so the clock time drops below the label when it stops fitting.
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 8) {
-                        headline(state)
-                        Spacer(minLength: 8)
-                        clock(state)
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        headline(state)
-                        clock(state)
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            // A fixed HStack with a Spacer collides at accessibility sizes,
+            // so the clock time drops below the label when it stops fitting.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    headline(state)
+                    Spacer(minLength: 8)
+                    clock(state)
                 }
-
-                Text(state.digits)
-                    .font(.system(size: digitSize, weight: state.digitWeight, design: .default))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .foregroundStyle(state.accent)
-
-                ProgressView(value: progress)
-                    .progressViewStyle(.linear)
-                    .tint(state.accent)
-                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 6) {
+                    headline(state)
+                    clock(state)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(state.surface, in: RoundedRectangle(cornerRadius: Theme.radiusCard))
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(state.accessibilityDescription(expiry: expiry))
-            .accessibilityValue(state.digits)
-            .accessibilityIdentifier("meter-hero")
+
+            Text(state.digits(showSeconds: showsSeconds))
+                .font(.system(size: digitSize, weight: state.digitWeight, design: .default))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(state.accent)
+
+            ProgressView(value: progress)
+                .progressViewStyle(.linear)
+                .tint(state.accent)
+                .animation(
+                    ParkingTimelinePolicy.progressAnimation(reduceMotion: reduceMotion)
+                        .map { Animation.linear(duration: $0) },
+                    value: progress
+                )
+                .accessibilityHidden(true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(state.surface, in: RoundedRectangle(cornerRadius: Theme.radiusCard))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(state.accessibilityDescription(expiry: expiry))
+        .accessibilityValue(state.digits(showSeconds: showsSeconds))
+        .accessibilityIdentifier("meter-hero")
     }
 
     private func headline(_ state: MeterState) -> some View {

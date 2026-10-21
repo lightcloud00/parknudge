@@ -100,6 +100,21 @@ final class MeterStateTests: XCTestCase {
         XCTAssertEqual(MeterState.expiringSoon(remaining: 664).digits, "11:04")
     }
 
+    func testCoarseCadenceDigitsContainNoStaleSeconds() {
+        XCTAssertEqual(
+            MeterState.running(remaining: 6_432).digits(showSeconds: false),
+            "1h 47m"
+        )
+        XCTAssertEqual(
+            MeterState.expiringSoon(remaining: 664).digits(showSeconds: false),
+            "11m"
+        )
+        XCTAssertEqual(
+            MeterState.expired(since: 758).digits(showSeconds: false),
+            "+12m"
+        )
+    }
+
     func testEachStateCarriesItsOwnSymbolAndWeight() {
         let symbols = Set([
             MeterState.running(remaining: 1).symbol,

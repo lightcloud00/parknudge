@@ -13,13 +13,15 @@ final class MeterStateRenderingTests: XCTestCase {
         let valuePrefix: String?
     }
 
-    /// Retains visual evidence for every meter state in both appearances.
+    /// Proves that running, warning, and expired meters all render in both
+    /// supported appearances. Each attachment is retained even on success so
+    /// the fleet receipt carries visual evidence rather than assertions alone.
     @MainActor
     func testEveryMeterStateRendersInLightAndDark() {
         let scenarios = [
             Scenario(
                 name: "running",
-                offset: 3_600,
+                offset: 3600,
                 labelPrefix: "Meter time remaining",
                 valuePrefix: nil
             ),
@@ -89,19 +91,39 @@ final class MeterStateRenderingTests: XCTestCase {
     }
 
     @MainActor
-    private func launch(offset: TimeInterval, appearance: Appearance) -> XCUIApplication {
+    func testLowPowerModeUsesTruthfulWholeMinuteDigits() {
+        let app = launch(
+            offset: 600,
+            appearance: .light,
+            extraArguments: ["-ui-test-low-power-mode"]
+        )
+        defer { app.terminate() }
+
+        let hero = app.otherElements["meter-hero"]
+        XCTAssertTrue(hero.waitForExistence(timeout: 5))
+        let value = meterValue(hero)
+        XCTAssertFalse(value.contains(":"), "Low Power value exposes stale seconds: \(value)")
+        XCTAssertTrue(value.hasSuffix("m"), "Expected whole-minute Low Power value: \(value)")
+        attachScreenshot(app, name: "meter-low-power-coarse")
+    }
+
+    @MainActor
+    private func launch(
+        offset: TimeInterval,
+        appearance: Appearance,
+        extraArguments: [String] = []
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing",
             "-ui-test-meter-offset=\(offset)",
             "-AppleInterfaceStyle",
             appearance.rawValue,
-        ]
+        ] + extraArguments
         app.launch()
         return app
     }
 
-    @MainActor
     private func meterValue(_ hero: XCUIElement) -> String {
         hero.value as? String ?? ""
     }
