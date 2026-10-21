@@ -26,7 +26,10 @@ layout references only. The Swift on `main` is the source of truth for every str
 | Shipped · Screens (record from main a87a6b2) | `2:4` | Section `9:353` with 14 screen components, 393 wide |
 | Shipped · Dark appearance (record) | `2:5` | Section `12:4` with 4 screen instances, the Dark mode set on each wrapper |
 | Proposed · App Store 6.9″ frames (2026-10-14) | `2:6` | Section `13:7` with 4 frames at 1320×2868, plus a listing-metadata panel |
-| Decisions · open (2026-10-14) | `2:7` | Board `14:2` with 5 open decision cards and 9 source defects |
+| Approved · Mascot · Pip the Pin (2026-10-21) | `25:2` | Section `25:7`: Pip the Pin (approved) and Tock (not chosen), 5 states each in Light and Dark (below) |
+| Proposed · Onboarding · Claude (2026-10-20) | `27:2` | Section `27:7`: 6 onboarding screens at 393×852, the Mascot Slot component, flow rules |
+| Proposed · Paywall v2 (freemium) · Claude (2026-10-20) | `29:2` | Section `29:7`: 3 paywall frames (2 triggers, plus Dark) and a Free vs Pro spec |
+| Decisions · open (2026-10-14) | `2:7` | Board `14:2` with 6 decision cards (D6 decided) and 9 source defects |
 
 ## Tokens
 
@@ -104,13 +107,77 @@ Frame 4 is rewritten for the 1.1 earned-unlock model, using the draft copy in `H
 The retired canvas caption, "$9.99 once … The whole parking loop is free forever.", is not reused.
 The listing-metadata panel is `13:572`.
 
-## Open decisions (page `2:7`). None is ticked.
+## Mascot, Onboarding, Paywall v2 (2026-10-20). Mascot and gate change approved; the rest is proposed.
+
+Every shape is bound to `ParkNudge / Color` and `ParkNudge / Metrics`, and the mascots are editable vectors with
+no people in them.
+
+Gus approved the freemium gate change on 2026-10-20 ("go ahead"). PR #66 merged it to `main` as `d3bb9b2`:
+- **Free:** parking with unlimited saves, directions, notes, photos and the 15/5/0-minute reminders.
+- **Lifetime Pro ($9.99 once):** full history (Free shows the last 3), custom reminder times, cost records and CSV export.
+
+**It is not live.** Gus chose to skip the approved 1.1 that has the old "first park free" gate. Main's free-parking
+build is going to App Review as the new 1.1 (app lead, 2026-10-21).
+Shipped screens 01, 02, 11, 12 and 13 and store frame 4 record `a87a6b2`, so they are the pre-freemium baseline.
+The paywall frames use the copy that is now on `main`: the "Free / Pro" header and "Parking stays free. …".
+
+Gus picked **Pip the Pin** as the mascot on 2026-10-21 (D6). Tock was not chosen. Pip is not in the app yet: the
+build going to App Review has no mascot, and putting Pip into onboarding and the paywall is a follow-up.
+
+Still proposed and waiting on later approval:
+- the onboarding
+- more than one saved spot
+- the Live Activity
+- the automatic 4th-session paywall
+
+**Mascot (page `25:2`, now "Approved · Mascot · Pip the Pin (2026-10-21)"):** Pip the Pin approved, Tock kept for the record.
+
+| Concept | Card | Component set | Variants (State) |
+|---|---|---|---|
+| A · Pip the Pin, a teardrop map pin with stubby arms. **Approved 2026-10-21** | `25:8` | `Mascot / Pip the Pin` `25:101` | Idle `25:26`, Nudge `25:47`, Sleepy `25:62`, Alarm `25:81`, Happy `25:98` |
+| B · Tock, a parking-meter owl with a clock-face belly. Not chosen | `25:102` | `Mascot / Tock` `25:245` | Idle `25:131`, Nudge `25:159`, Sleepy `25:185`, Alarm `25:215`, Happy `25:242` |
+
+Each card has a Light row and a Dark row (the Dark mode is set on the row), plus a "when each state shows" list
+and the trade-offs. The placement panel is `26:547`.
+
+**Onboarding (page `27:2`):** 6 screens at 393×852. `main` has no onboarding.
+
+| # | Screen | Node ID | Mascot Slot hint |
+|---|---|---|---|
+| 1 | Promise: "Find your car. Beat the meter." | `27:17` | Idle |
+| 2 | Street meter, garage or lot | `27:58` | Idle |
+| 3 | Location pre-prime (While Using only, shipped purpose string) | `27:109` | Nudge |
+| 4 | First real save | `28:41` | Sleepy |
+| 5 | Notification pre-prime: 15 and 5 min before (shipped copy and free offsets) | `28:106` | Alarm |
+| 6 | Dismissible Pro teaser | `28:155` | Happy |
+
+`Mascot Slot` `27:10` is a local component with a `Hint` text property. Swap each instance for the picked mascot
+set. The flow rules are in `28:1900`.
+
+**Paywall v2 (page `29:2`):** built from a detached copy of shipped screen 13. Lifetime Pro stays $9.99, one-time,
+with no subscription.
+
+| Frame | Node ID | Trigger |
+|---|---|---|
+| A | `29:130` | A Pro-feature tap; the banner names the feature (custom reminder times) |
+| B | `29:270` | The 4th finished session, once, when History reaches the free cap of 3 |
+| A · Dark | `29:324` | Frame A with the Dark mode |
+
+The spec column `30:170` has the Free vs Pro table, the trigger rules, the price research (US App Store,
+2026-10-20) and how it matches PR #66. Multiple saved spots, the Live Activity and the automatic 4th-session
+trigger are not built.
+
+## Open decisions (page `2:7`). D6 is decided; D1 to D5 are open.
 
 - **D1 `14:6`:** what frame 4 claims under the earned-unlock model.
 - **D2 `14:27`:** whether the store art shows a price, given that StoreKit `displayPrice` varies by storefront.
 - **D3 `14:48`:** app icon direction. The two canvases propose different sets (issue #31).
 - **D4 `14:69`:** frame 3 privacy wording. Should "Nothing is uploaded anywhere." stay, given that MapKit search and directions send data to Apple?
 - **D5 `14:90`:** which listing localizations get the 1.1 frames.
+- **D6 `30:230`** (added 2026-10-20, decided):
+  - **Gate: approved (D).** Freemium replaces the "first park free, then pay" gate. Gus approved it on 2026-10-20,
+    and it is on `main` through PR #66.
+  - **Mascot: Pip the Pin (A).** Gus picked it on 2026-10-21. Tock (B) and no mascot (C) were not chosen.
 
 ## Defects noticed while recording (fix candidates)
 
