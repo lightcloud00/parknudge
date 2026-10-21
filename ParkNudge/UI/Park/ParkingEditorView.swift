@@ -61,9 +61,15 @@ struct ParkingEditorView: View {
             Form {
                 mapSection
                 searchSection
-                detailsSection
-                meterSection
-                photoSection
+                // The style chosen in onboarding or Settings leads; every
+                // section is still here whatever was chosen.
+                ForEach(ParkingDetailSection.order(for: model.settings.parkingStyle), id: \.self) { section in
+                    switch section {
+                    case .details: detailsSection
+                    case .meter: meterSection
+                    case .photo: photoSection
+                    }
+                }
                 costSection
             }
             .navigationTitle(context.mode == .new ? "Save Parking Spot" : "Edit Parking Spot")

@@ -10,6 +10,14 @@ enum PaywallHost: Equatable, Sendable {
     case parkingEditor
 }
 
+/// What became of the introduction's first save.
+enum FirstSpotSave: Equatable, Sendable {
+    case failed
+    case saved
+    /// Saved with a meter whose reminders wait on notification permission.
+    case savedAwaitingReminderPermission
+}
+
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var activeSession: ParkingSession?
@@ -32,6 +40,9 @@ final class AppModel: ObservableObject {
     }
     @Published private(set) var paywallHost: PaywallHost = .root
     @Published var requestedProFeature: ProFeature?
+    /// The introduction replaces the tab view while this is set: on first
+    /// launch for a new driver, or after a replay from Settings.
+    @Published private(set) var isOnboardingPresented = false
 
     let settings: AppSettings
 
@@ -80,6 +91,18 @@ final class AppModel: ObservableObject {
         self.reviews = reviews
         self.clock = clock
         self.marketingVersionProvider = marketingVersionProvider ?? { Self.marketingVersion }
+
+        // Decided here, not in `bootstrap()`, so a new driver never sees the
+        // tab view flash before the introduction replaces it.
+        let hasParkingHistory = (try? repository.activeSession()) != nil
+            || !((try? repository.completedSessions()) ?? []).isEmpty
+        if hasParkingHistory, !settings.hasCompletedOnboarding {
+            settings.hasCompletedOnboarding = true
+        }
+        isOnboardingPresented = OnboardingFlow.shouldPresent(
+            hasCompleted: settings.hasCompletedOnboarding,
+            hasParkingHistory: hasParkingHistory
+        )
     }
 
     deinit {
@@ -223,7 +246,7 @@ final class AppModel: ObservableObject {
             // `finishActive` holds `isBusy` for its whole body, so this is read
             // as "is anything *else* in flight" from the policy's point of view.
             isBusy: false,
-            isOnboardingPresented: false,
+            isOnboardingPresented: isOnboardingPresented,
             isLaunchInProgress: false
         )
         guard ReviewPromptPolicy.shouldRequest(context) else { return }
@@ -295,6 +318,57 @@ final class AppModel: ObservableObject {
         reachedFreeLimitThisSession = true
         requestedProFeature = feature
         isPaywallPresented = true
+    }
+
+    // MARK: - Onboarding
+
+    /// Saves the introduction's first spot as a real session. Unlike
+    /// `saveNew`, it never raises the notification prompt: the next screen
+    /// explains the reminders before iOS asks.
+    func saveFirstSpot(draft: ParkingDraft) async -> FirstSpotSave {
+        var draft = draft
+        if !hasAccess(to: .parkingCosts) {
+            draft.paidAmountMinor = nil
+        }
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            let result = try await coordinator.saveNew(
+                draft: draft,
+                replacingActive: false,
+                reminderOffsets: reminderOffsets,
+                requestsNotificationPermission: false
+            )
+            await reload()
+            alertMessage = result.notificationWarning
+            return result.remindersAwaitPermission ? .savedAwaitingReminderPermission : .saved
+        } catch {
+            alertMessage = error.localizedDescription
+            return .failed
+        }
+    }
+
+    /// Schedules the active meter's reminders, raising the system
+    /// notification prompt if it has not been answered.
+    func enableMeterReminders() async {
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            alertMessage = try await coordinator.scheduleActiveReminders(reminderOffsets: reminderOffsets)
+        } catch {
+            alertMessage = error.localizedDescription
+        }
+    }
+
+    /// Finishing and skipping are the same promise: the introduction does
+    /// not come back on launch.
+    func completeOnboarding() {
+        settings.hasCompletedOnboarding = true
+        isOnboardingPresented = false
+    }
+
+    func replayOnboarding() {
+        isOnboardingPresented = true
     }
 
     func parkingEditorDidAppear() { isParkingEditorOpen = true }

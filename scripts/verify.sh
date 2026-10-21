@@ -21,6 +21,7 @@ trap cleanup EXIT
 cd "$PROJECT_ROOT"
 "$SCRIPT_DIR/generate-project.sh"
 python3 site/scripts/check_site.py
+python3 scripts/generate_pip_assets.py --check
 plutil -lint ParkNudge/Resources/PrivacyInfo.xcprivacy >/dev/null
 python3 -m json.tool ParkNudge/Resources/ParkNudge.storekit >/dev/null
 

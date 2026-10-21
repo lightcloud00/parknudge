@@ -39,8 +39,11 @@ struct FixedClock: Clock {
 
 extension TestFixtures {
     @MainActor
-    static func appModel(completedSessions: Int = 0) throws -> AppModelHarness {
-        try AppModelHarness(completedSessions: completedSessions)
+    static func appModel(
+        completedSessions: Int = 0,
+        onboardingCompleted: Bool = true
+    ) throws -> AppModelHarness {
+        try AppModelHarness(completedSessions: completedSessions, onboardingCompleted: onboardingCompleted)
     }
 }
 
@@ -57,15 +60,18 @@ final class AppModelHarness {
     let reviews = ModelReviewFake()
     let settings: AppSettings
     let model: AppModel
-    private let defaults: UserDefaults
+    let defaults: UserDefaults
     private let suiteName = "ParkNudgeAppModelTests.\(UUID().uuidString)"
 
-    init(completedSessions: Int) throws {
+    /// - Parameter onboardingCompleted: Most tests are about a driver who is
+    ///   past the introduction; onboarding tests pass `false`.
+    init(completedSessions: Int, onboardingCompleted: Bool) throws {
         guard let defaults = UserDefaults(suiteName: suiteName) else {
             throw ModelHarnessError.unavailableDefaults
         }
         self.defaults = defaults
         settings = AppSettings(defaults: defaults)
+        settings.hasCompletedOnboarding = onboardingCompleted
         let clock = FixedClock(now: TestFixtures.date)
         for index in 0..<completedSessions {
             let endedAt = TestFixtures.date.addingTimeInterval(Double(-index - 1))
@@ -172,10 +178,18 @@ final class ModelLocationFake: LocationProviding {
 final class ModelNotificationFake: NotificationScheduling {
     var cancelled: [String] = []
     var scheduled: [ReminderPlan] = []
-    func requestAuthorizationIfNeeded() async throws -> Bool { true }
+    /// `false` models a permission nobody has been asked for yet. Asking
+    /// grants it, as if the user tapped Allow.
+    var allowsAlerts = true
+    private(set) var authorizationRequests = 0
+    func requestAuthorizationIfNeeded() async throws -> Bool {
+        authorizationRequests += 1
+        allowsAlerts = true
+        return true
+    }
     func schedule(_ reminders: [ReminderPlan], expiry: Date) async throws { scheduled += reminders }
     func cancel(identifiers: [String]) async { cancelled += identifiers }
-    func authorizationAllowsAlerts() async -> Bool { true }
+    func authorizationAllowsAlerts() async -> Bool { allowsAlerts }
 }
 
 @MainActor

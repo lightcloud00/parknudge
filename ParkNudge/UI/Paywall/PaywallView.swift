@@ -23,11 +23,9 @@ struct PaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 22) {
-                    Image(systemName: "parkingsign.circle.fill")
-                        .font(.system(size: 68))
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Theme.cream, Theme.navy)
-                        .accessibilityHidden(true)
+                    // Pip takes the hero slot (Figma Paywall v2). PipView
+                    // drops it at accessibility text sizes and never loops.
+                    PipView(mood: .happy, size: 88)
 
                     VStack(spacing: 6) {
                         Text("ParkNudge Lifetime Pro")

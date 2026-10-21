@@ -178,6 +178,11 @@ final class ParkNudgeUITests: XCTestCase {
         app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
 
+        // A fresh simulator is a first launch, so the real introduction shows.
+        let skipIntroduction = app.buttons["onboarding-skip"]
+        if skipIntroduction.waitForExistence(timeout: 5) {
+            skipIntroduction.tap()
+        }
         XCTAssertTrue(app.tabBars.buttons["Settings"].waitForExistence(timeout: 8))
         app.tabBars.buttons["Settings"].tap()
         XCTAssertTrue(app.buttons["settings-lifetime-pro"].waitForExistence(timeout: 8))

@@ -10,6 +10,7 @@ struct SettingsView: View {
             Form {
                 proSection
                 remindersSection
+                ParkingStyleSection(settings: model.settings)
                 dataSection
                 aboutSection
             }
@@ -121,6 +122,8 @@ struct SettingsView: View {
         Section("About") {
             Button("Privacy") { legalDocument = .privacy }
             Button("Terms") { legalDocument = .terms }
+            Button("Replay Introduction") { model.replayOnboarding() }
+                .accessibilityIdentifier("settings-replay-onboarding")
             LabeledContent("Version", value: appVersion)
         }
     }
@@ -129,6 +132,26 @@ struct SettingsView: View {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
         return "\(version) (\(build))"
+    }
+}
+
+private struct ParkingStyleSection: View {
+    @ObservedObject var settings: AppSettings
+
+    var body: some View {
+        Section {
+            Picker("Usually park in", selection: $settings.parkingStyle) {
+                Text("Not set").tag(ParkingStyle?.none)
+                ForEach(ParkingStyle.allCases) { style in
+                    Text(style.title).tag(Optional(style))
+                }
+            }
+            .accessibilityIdentifier("settings-parking-style")
+        } header: {
+            Text("Parking")
+        } footer: {
+            Text("Decides which details come first when you save a spot.")
+        }
     }
 }
 
