@@ -121,14 +121,40 @@ build is going to App Review as the new 1.1 (app lead, 2026-10-21).
 Shipped screens 01, 02, 11, 12 and 13 and store frame 4 record `a87a6b2`, so they are the pre-freemium baseline.
 The paywall frames use the copy that is now on `main`: the "Free / Pro" header and "Parking stays free. …".
 
-Gus picked **Pip the Pin** as the mascot on 2026-10-21 (D6). Tock was not chosen. Pip is not in the app yet: the
-build going to App Review has no mascot, and putting Pip into onboarding and the paywall is a follow-up.
+Gus picked **Pip the Pin** as the mascot on 2026-10-21 (D6). Tock was not chosen. The 1.1 (6) build in App Review
+has no mascot. The release after it adds Pip and the onboarding (see "In the app" below).
 
 Still proposed and waiting on later approval:
-- the onboarding
 - more than one saved spot
 - the Live Activity
 - the automatic 4th-session paywall
+
+### In the app (release after 1.1 (6))
+
+- **Pip art** is the Figma vector export, not a raster. `design/mascot/pip/*.svg` are the Light exports of
+  `25:26`, `25:47`, `25:62`, `25:81` and `25:98`. `scripts/generate_pip_assets.py` writes them into
+  `Assets.xcassets/Mascot/Pip*.imageset` and derives each Dark appearance from the file's Dark mode values.
+  `verify.sh` fails if the catalog drifts from the exports. `UI/Shared/PipView.swift` draws it. Pip is hidden from
+  VoiceOver and at accessibility text sizes, and never loops. With Reduce Motion on, a mood change swaps instantly.
+- **Park tab:** Pip sits on the bottom corner of the decorative map, not on the countdown
+  (`Domain/Policies/PipMood.swift`). It is Sleepy with no meter or more than 15 min left, Nudge from 15 to 5 min,
+  and Alarm from 5 min left and after expiry. The card's "Idle while the meter runs" is not used. The brief asked for
+  Sleepy whenever lots of time is left.
+- **Paywall:** Happy Pip replaces the Paywall Glyph in the hero slot, at 88 pt.
+- **Onboarding** (`UI/Onboarding/OnboardingView.swift`, `Domain/Policies/OnboardingFlow.swift`) follows screens 1–6
+  and the flow rules, with these deliberate differences:
+  - Screens 3 and 5 explain a permission. They offer only Continue, with no Not Now or Skip, so iOS's own prompt is
+    where access is granted or declined. This follows App Review's guidance on pre-permission screens.
+  - Screen 2's "Skip" is the same Skip shown on screens 1, 2 and 4. It ends the introduction. The style choice is
+    optional and is kept in Settings › Parking, and it decides which editor section comes first.
+  - Screen 4 offers None, 30 min, 1 hr and 2 hr. It drops "Other": Edit or Extend sets any time. Garage adds floor
+    and section fields, and Lot adds a row or landmark note. The save never raises the notification prompt.
+  - Screen 5 appears only when the first save set a meter and notifications are not allowed yet. The example
+    reminders use the shipped notification copy and the saved meter's real fire times.
+  - Screen 6 lists only what Pro unlocks today, taken from `ProFeature`. That excludes "More than one saved spot"
+    and "Meter countdown on the Lock Screen", which are not built. The price is StoreKit's `displayPrice`, shown only
+    once it has loaded.
+  - A replay with a spot already saved goes from screen 2 straight to screen 6, so it can never save a second spot.
 
 **Mascot (page `25:2`, now "Approved · Mascot · Pip the Pin (2026-10-21)"):** Pip the Pin approved, Tock kept for the record.
 
@@ -140,7 +166,7 @@ Still proposed and waiting on later approval:
 Each card has a Light row and a Dark row (the Dark mode is set on the row), plus a "when each state shows" list
 and the trade-offs. The placement panel is `26:547`.
 
-**Onboarding (page `27:2`):** 6 screens at 393×852. `main` has no onboarding.
+**Onboarding (page `27:2`):** 6 screens at 393×852. Built for the release after 1.1 (6). The differences are listed above.
 
 | # | Screen | Node ID | Mascot Slot hint |
 |---|---|---|---|

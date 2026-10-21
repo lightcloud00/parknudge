@@ -1,0 +1,23 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Mascot / Pip the Pin">
+<g id="art">
+<path id="ground-shadow" d="M80 153C93.2548 153 104 150.761 104 148C104 145.239 93.2548 143 80 143C66.7452 143 56 145.239 56 148C56 150.761 66.7452 153 80 153Z" fill="#767680" fill-opacity="0.12"/>
+<path id="arm-l" d="M42 82L25 57" stroke="#EE6605" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="arm-r" d="M118 82L135 57" stroke="#EE6605" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="body" d="M80 144C70 128 34 104 34 66C34 59.9592 35.1898 53.9775 37.5015 48.3966C39.8133 42.8156 43.2016 37.7446 47.4731 33.4731C51.7446 29.2016 56.8156 25.8133 62.3966 23.5015C67.9775 21.1898 73.9592 20 80 20C86.0408 20 92.0225 21.1898 97.6034 23.5015C103.184 25.8133 108.255 29.2016 112.527 33.4731C116.798 37.7446 120.187 42.8156 122.498 48.3966C124.81 53.9775 126 59.9592 126 66C126 104 90 128 80 144Z" fill="#EE6605"/>
+<path id="highlight" d="M48 44C51 33 59 25 69 21C62 28 56 36 54 47L48 44Z" fill="#FDAE11"/>
+<path id="face" d="M80 96C96.5685 96 110 82.5685 110 66C110 49.4315 96.5685 36 80 36C63.4315 36 50 49.4315 50 66C50 82.5685 63.4315 96 80 96Z" fill="#FBEDC7"/>
+<path id="sclera-l" d="M68 70C72.4183 70 76 66.4183 76 62C76 57.5817 72.4183 54 68 54C63.5817 54 60 57.5817 60 62C60 66.4183 63.5817 70 68 70Z" fill="white"/>
+<path id="sclera-r" d="M92 70C96.4183 70 100 66.4183 100 62C100 57.5817 96.4183 54 92 54C87.5817 54 84 57.5817 84 62C84 66.4183 87.5817 70 92 70Z" fill="white"/>
+<path id="pupil-l" d="M68 65.5C69.933 65.5 71.5 63.933 71.5 62C71.5 60.067 69.933 58.5 68 58.5C66.067 58.5 64.5 60.067 64.5 62C64.5 63.933 66.067 65.5 68 65.5Z" fill="#031738"/>
+<path id="pupil-r" d="M92 65.5C93.933 65.5 95.5 63.933 95.5 62C95.5 60.067 93.933 58.5 92 58.5C90.067 58.5 88.5 60.067 88.5 62C88.5 63.933 90.067 65.5 92 65.5Z" fill="#031738"/>
+<path id="brow-l" d="M59 48L73 45" stroke="#031738" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="brow-r" d="M87 45L101 48" stroke="#031738" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="mouth" d="M80 87C83.3137 87 86 83.866 86 80C86 76.134 83.3137 73 80 73C76.6863 73 74 76.134 74 80C74 83.866 76.6863 87 80 87Z" fill="#031738"/>
+<path id="alert-1" d="M36 20L42 29" stroke="#B3261E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="alert-2" d="M22 36L31 41" stroke="#B3261E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="alert-3" d="M124 20L118 29" stroke="#B3261E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="alert-4" d="M138 36L129 41" stroke="#B3261E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</svg>

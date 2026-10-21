@@ -49,11 +49,15 @@ struct AppEnvironment {
         let root = FileManager.default.temporaryDirectory
             .appending(path: "ParkNudgeUITests-\(UUID().uuidString)", directoryHint: .isDirectory)
         let photos = try ApplicationSupportPhotoStore(rootURL: root)
-        let notifications = UITestNotificationScheduler()
+        let notifications = UITestNotificationScheduler(
+            allowsAlerts: !arguments.contains("-ui-test-notifications-undetermined")
+        )
         let clock = SystemClock()
         let defaults = UserDefaults(suiteName: "ParkNudgeUITests") ?? .standard
         defaults.removePersistentDomain(forName: "ParkNudgeUITests")
         let settings = AppSettings(defaults: defaults)
+        // UI tests start in the tab view unless they are about onboarding.
+        settings.hasCompletedOnboarding = !arguments.contains("-ui-test-onboarding")
         let purchases = UITestPurchaseProvider(isPro: arguments.contains("-ui-test-pro"))
         let coordinator = ParkingCoordinator(
             repository: repository,
@@ -61,6 +65,16 @@ struct AppEnvironment {
             photos: photos,
             clock: clock
         )
+        // Seeded before the model exists, because that is when it decides
+        // whether this launch belongs to a returning driver.
+        if let meterOffset = try UITestMeterSeed.offset(arguments: arguments) {
+            try seedActiveMeteredSession(
+                into: repository,
+                clock: clock,
+                meterOffset: meterOffset
+            )
+        }
+
         let model = AppModel(
             repository: repository,
             coordinator: coordinator,
@@ -73,14 +87,6 @@ struct AppEnvironment {
             reviews: UITestReviewRequester(),
             clock: clock
         )
-
-        if let meterOffset = try UITestMeterSeed.offset(arguments: arguments) {
-            try seedActiveMeteredSession(
-                into: repository,
-                clock: clock,
-                meterOffset: meterOffset
-            )
-        }
 
         return AppEnvironment(container: container, model: model)
     }
@@ -148,12 +154,21 @@ private final class UITestLocationProvider: LocationProviding {
     }
 }
 
+/// Starts undecided under `-ui-test-notifications-undetermined`, and is
+/// allowed as soon as it is asked — standing in for the user tapping Allow.
 @MainActor
 private final class UITestNotificationScheduler: NotificationScheduling {
-    func requestAuthorizationIfNeeded() async throws -> Bool { true }
+    private var allowsAlerts: Bool
+
+    init(allowsAlerts: Bool) { self.allowsAlerts = allowsAlerts }
+
+    func requestAuthorizationIfNeeded() async throws -> Bool {
+        allowsAlerts = true
+        return true
+    }
     func schedule(_ reminders: [ReminderPlan], expiry: Date) async throws {}
     func cancel(identifiers: [String]) async {}
-    func authorizationAllowsAlerts() async -> Bool { true }
+    func authorizationAllowsAlerts() async -> Bool { allowsAlerts }
 }
 
 @MainActor

@@ -159,6 +159,20 @@ struct ParkView: View {
 
                     ParkedMap(session: session)
                         .frame(height: 148)
+                        .overlay(alignment: .bottomTrailing) {
+                            // Pip naps on the saved spot and perks up as the
+                            // meter runs down. An overlay on the decorative
+                            // map, so it adds no height and never sits on the
+                            // countdown.
+                            PipView(
+                                mood: PipMood.forActiveSession(
+                                    meterExpiry: session.meterExpiresAt,
+                                    now: context.date
+                                ),
+                                size: 56
+                            )
+                            .padding(6)
+                        }
                         .clipShape(RoundedRectangle(cornerRadius: Theme.radiusCard))
                         .accessibilityElement()
                         .accessibilityLabel(mapAccessibilityLabel(for: session))

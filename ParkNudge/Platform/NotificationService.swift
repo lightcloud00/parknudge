@@ -2,6 +2,10 @@ import Foundation
 @preconcurrency import UserNotifications
 
 enum ParkingNotificationCopy {
+    static func title(offsetMinutes: Int) -> String {
+        offsetMinutes == 0 ? "Parking meter expired" : "Parking meter reminder"
+    }
+
     static func body(offsetMinutes: Int) -> String {
         offsetMinutes == 0
             ? "Your saved parking meter time has ended."
@@ -48,7 +52,7 @@ final class LocalNotificationScheduler: NSObject, NotificationScheduling, UNUser
     func schedule(_ reminders: [ReminderPlan], expiry: Date) async throws {
         for reminder in reminders {
             let content = UNMutableNotificationContent()
-            content.title = reminder.offsetMinutes == 0 ? "Parking meter expired" : "Parking meter reminder"
+            content.title = ParkingNotificationCopy.title(offsetMinutes: reminder.offsetMinutes)
             content.body = ParkingNotificationCopy.body(offsetMinutes: reminder.offsetMinutes)
             content.sound = .default
             content.interruptionLevel = .timeSensitive

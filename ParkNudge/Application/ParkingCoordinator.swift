@@ -19,10 +19,14 @@ final class ParkingCoordinator {
         self.clock = clock
     }
 
+    /// - Parameter requestsNotificationPermission: `false` stores the meter's
+    ///   reminders without raising the system prompt when alerts are not
+    ///   allowed yet, so onboarding can explain reminders before iOS asks.
     func saveNew(
         draft: ParkingDraft,
         replacingActive: Bool,
-        reminderOffsets: [Int]
+        reminderOffsets: [Int],
+        requestsNotificationPermission: Bool = true
     ) async throws -> ParkingSaveOutcome {
         // Resolve failures and replacement consent before creating a photo.
         let previousActive = try repository.activeSession()
@@ -52,7 +56,11 @@ final class ParkingCoordinator {
         if let previousActive {
             await cancelReminders(for: previousActive.id)
         }
-        let warning = await synchronizeReminders(for: session, offsets: reminderOffsets)
+        let sync = await synchronizeReminders(
+            for: session,
+            offsets: reminderOffsets,
+            requestsPermission: requestsNotificationPermission
+        )
         return ParkingSaveOutcome(
             session: session,
             archivedSession: previousActive.map { archived in
@@ -61,7 +69,8 @@ final class ParkingCoordinator {
                 archived.updatedAt = now
                 return archived
             },
-            notificationWarning: warning
+            notificationWarning: sync.warning,
+            remindersAwaitPermission: sync.awaitsPermission
         )
     }
 
@@ -101,8 +110,18 @@ final class ParkingCoordinator {
         if let oldPhotoPath, oldPhotoPath != newPhotoPath {
             try? photos.delete(relativePath: oldPhotoPath)
         }
-        let warning = await synchronizeReminders(for: session, offsets: reminderOffsets)
+        let warning = await synchronizeReminders(for: session, offsets: reminderOffsets).warning
         return ParkingSaveOutcome(session: session, archivedSession: nil, notificationWarning: warning)
+    }
+
+    /// Schedules the active meter's reminders, asking for notification
+    /// permission if it has not been decided. Returns the same warning a save
+    /// would when alerts stay off or scheduling fails.
+    func scheduleActiveReminders(reminderOffsets: [Int]) async throws -> String? {
+        guard let session = try repository.activeSession() else {
+            throw ParkingRepositoryError.sessionNotFound
+        }
+        return await synchronizeReminders(for: session, offsets: reminderOffsets).warning
     }
 
     func finishActive() async throws -> ParkingSession {
@@ -164,13 +183,22 @@ final class ParkingCoordinator {
         )
     }
 
-    private func synchronizeReminders(for session: ParkingSession, offsets: [Int]) async -> String? {
+    private struct ReminderSync {
+        var warning: String?
+        var awaitsPermission = false
+    }
+
+    private func synchronizeReminders(
+        for session: ParkingSession,
+        offsets: [Int],
+        requestsPermission: Bool = true
+    ) async -> ReminderSync {
         let existing = (try? repository.reminders(sessionID: session.id)) ?? []
         await notifications.cancel(identifiers: existing.map(\.notificationIdentifier))
 
         guard let expiry = session.meterExpiresAt else {
             try? repository.replaceReminders(sessionID: session.id, with: [])
-            return nil
+            return ReminderSync()
         }
 
         let plans = ReminderPlanner.plans(
@@ -191,14 +219,17 @@ final class ParkingCoordinator {
         }
         try? repository.replaceReminders(sessionID: session.id, with: stored)
 
+        if !requestsPermission, !(await notifications.authorizationAllowsAlerts()) {
+            return ReminderSync(awaitsPermission: !plans.isEmpty)
+        }
         do {
             guard try await notifications.requestAuthorizationIfNeeded() else {
-                return "Parking was saved, but notifications are turned off."
+                return ReminderSync(warning: "Parking was saved, but notifications are turned off.")
             }
             try await notifications.schedule(plans, expiry: expiry)
-            return nil
+            return ReminderSync()
         } catch {
-            return "Parking was saved, but one or more meter reminders could not be scheduled."
+            return ReminderSync(warning: "Parking was saved, but one or more meter reminders could not be scheduled.")
         }
     }
 

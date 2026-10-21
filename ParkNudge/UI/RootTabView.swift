@@ -2,23 +2,20 @@ import SwiftUI
 
 struct RootTabView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedTab = 0
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ParkView()
-                .tabItem { Label("Park", systemImage: "parkingsign.circle.fill") }
-                .tag(0)
-
-            HistoryView()
-                .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
-                .tag(1)
-
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(2)
+        Group {
+            if model.isOnboardingPresented {
+                OnboardingView()
+                    .transition(.opacity)
+            } else {
+                tabs
+                    .transition(.opacity)
+            }
         }
-        .tint(Theme.brandInk)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: model.isOnboardingPresented)
         .sheet(isPresented: model.paywallPresentation(on: .root), onDismiss: model.paywallDidDismiss) {
             PaywallView()
                 .environmentObject(model)
@@ -34,5 +31,22 @@ struct RootTabView: View {
         } message: {
             Text(model.alertMessage ?? "")
         }
+    }
+
+    private var tabs: some View {
+        TabView(selection: $selectedTab) {
+            ParkView()
+                .tabItem { Label("Park", systemImage: "parkingsign.circle.fill") }
+                .tag(0)
+
+            HistoryView()
+                .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
+                .tag(1)
+
+            SettingsView()
+                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(2)
+        }
+        .tint(Theme.brandInk)
     }
 }

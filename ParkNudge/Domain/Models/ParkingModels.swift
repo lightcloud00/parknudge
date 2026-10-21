@@ -123,4 +123,8 @@ struct ParkingSaveOutcome: Equatable, Sendable {
     var session: ParkingSession
     var archivedSession: ParkingSession?
     var notificationWarning: String?
+    /// The meter's reminders are stored but not scheduled, because the save
+    /// asked not to raise the notification prompt and alerts are not allowed
+    /// yet. `ParkingCoordinator.scheduleActiveReminders` schedules them.
+    var remindersAwaitPermission = false
 }

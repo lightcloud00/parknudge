@@ -10,6 +10,18 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(currencyCode, forKey: Keys.currencyCode) }
     }
 
+    /// Decides which details the save screens offer first. `nil` until the
+    /// driver picks one, which keeps the editor's original order.
+    @Published var parkingStyle: ParkingStyle? {
+        didSet { defaults.set(parkingStyle?.rawValue, forKey: Keys.parkingStyle) }
+    }
+
+    /// Set when the introduction is finished or skipped. Replaying it from
+    /// Settings does not clear it, so a replay can never come back on launch.
+    @Published var hasCompletedOnboarding: Bool {
+        didSet { defaults.set(hasCompletedOnboarding, forKey: Keys.hasCompletedOnboarding) }
+    }
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -19,6 +31,8 @@ final class AppSettings: ObservableObject {
         currencyCode = defaults.string(forKey: Keys.currencyCode)
             ?? Locale.current.currency?.identifier
             ?? "USD"
+        parkingStyle = defaults.string(forKey: Keys.parkingStyle).flatMap(ParkingStyle.init(rawValue:))
+        hasCompletedOnboarding = defaults.bool(forKey: Keys.hasCompletedOnboarding)
     }
 
     /// Marketing version the rating prompt was last *attempted* for. Attempted,
@@ -38,5 +52,7 @@ final class AppSettings: ObservableObject {
         static let currencyCode = "currencyCode"
         static let lastReviewRequestVersion = "lastReviewRequestVersion"
         static let lastReviewRequestDate = "lastReviewRequestDate"
+        static let parkingStyle = "parkingStyle"
+        static let hasCompletedOnboarding = "hasCompletedOnboarding"
     }
 }

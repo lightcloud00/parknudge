@@ -15,7 +15,7 @@ The primary loop is:
 
 ## Product principles
 
-- No onboarding carousel and no first-launch paywall.
+- No first-launch paywall. New drivers get a short, skippable introduction that ends in a real first save; anyone with parking history never sees it, and Settings can replay it.
 - Location permission is contextual and When-In-Use only.
 - The free parking workflow stays intact when StoreKit or notifications fail.
 - All data stays local unless the user explicitly shares a CSV.
