@@ -40,6 +40,9 @@ final class AppModel: ObservableObject {
     }
     @Published private(set) var paywallHost: PaywallHost = .root
     @Published var requestedProFeature: ProFeature?
+    /// A Siri or Shortcuts action waiting for the Park tab to act on it. The Park tab clears it,
+    /// so a route that arrives during onboarding runs once the tabs appear.
+    @Published var pendingShortcut: ParkingShortcutRoute?
     /// The introduction replaces the tab view while this is set: on first
     /// launch for a new driver, or after a replay from Settings.
     @Published private(set) var isOnboardingPresented = false

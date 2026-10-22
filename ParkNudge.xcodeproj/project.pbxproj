@@ -45,7 +45,9 @@
 		831EDCA3232FABD9C48C19CD /* ParkingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */; };
 		8779B15E2F5506F5F6946909 /* OnboardingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F07AB4F91D485D1A669F1B /* OnboardingUITests.swift */; };
 		881712E7C5C982F61EE99A89 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 193EF026C7D109DF426DBB98 /* TestFixtures.swift */; };
+		8B0A7A60E6FE6C0699D823E1 /* ParkingShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE0730D15957DCEA6267F9D /* ParkingShortcuts.swift */; };
 		8CBC18810AB9699F161430F6 /* ReviewRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A184EAAC5CA4FB586B97DB /* ReviewRequester.swift */; };
+		8CCFC11FF2A1DB993C137518 /* ParkingShortcutsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D20599DD394376DB9DD2C /* ParkingShortcutsTests.swift */; };
 		94D33FC8B5250A9B6577053F /* SwiftDataParkingRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */; };
 		97906D19862442D700B89768 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A493D05EE1EF49A061A6151 /* LocationService.swift */; };
 		9DA6BE54D4B984CBA4F93E54 /* ParkNudge.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D5C278146C7DD473E256D402 /* ParkNudge.storekit */; };
@@ -124,6 +126,7 @@
 		71C2678EB2B7CC58A6BEEE3B /* PhotoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoStore.swift; sourceTree = "<group>"; };
 		72D137EC9F2BDE1FEE609ECE /* ParkingTimelineSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingTimelineSchedule.swift; sourceTree = "<group>"; };
 		72FB46512DB1E2B072403BCE /* CSVExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVExportService.swift; sourceTree = "<group>"; };
+		744D20599DD394376DB9DD2C /* ParkingShortcutsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingShortcutsTests.swift; sourceTree = "<group>"; };
 		77214E081DE879A62D84879E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		798A8B2C5C8C672030F8DB43 /* SwiftDataParkingRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataParkingRepository.swift; sourceTree = "<group>"; };
 		7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkNudgeSchema.swift; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		E3ED9EEBA34DB66DD8DF4EA1 /* CSVAndMoneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVAndMoneyTests.swift; sourceTree = "<group>"; };
 		E434716DC1A20D7858F844CA /* ParkingTimelinePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingTimelinePolicy.swift; sourceTree = "<group>"; };
 		E492E497CAD31CB851443229 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		EFE0730D15957DCEA6267F9D /* ParkingShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingShortcuts.swift; sourceTree = "<group>"; };
 		F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderPlannerTests.swift; sourceTree = "<group>"; };
 		F6CBBBF0715C815B9FFB4035 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		F9A9EA2DFFAFE1AD839104CF /* PlaceSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceSearchService.swift; sourceTree = "<group>"; };
@@ -272,6 +276,7 @@
 				45DAC73BE4A04DBDC5AF973C /* MeterStateTests.swift */,
 				957836F929571FB0063BB1C3 /* OnboardingTests.swift */,
 				BEE6CF9358C9FB22AD7B883E /* ParkingCoordinatorTests.swift */,
+				744D20599DD394376DB9DD2C /* ParkingShortcutsTests.swift */,
 				9CF903511BF0ADB0756017F7 /* ParkingTimelinePolicyTests.swift */,
 				F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */,
 				6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */,
@@ -370,6 +375,7 @@
 				F6CBBBF0715C815B9FFB4035 /* AppModel.swift */,
 				2304928308586BD34F76033E /* AppSettings.swift */,
 				815755E3470D2AA0984D9EFA /* ParkingCoordinator.swift */,
+				EFE0730D15957DCEA6267F9D /* ParkingShortcuts.swift */,
 				D999E66AF8929A2F86EEFC8B /* ParkNudgePowerState.swift */,
 				8BE2FA9EFF39F749270E87B4 /* UITestAppearance.swift */,
 				405D4A998DE23F660E2F5B98 /* UITestMeterSeed.swift */,
@@ -545,6 +551,7 @@
 				831EDCA3232FABD9C48C19CD /* ParkingCoordinator.swift in Sources */,
 				C39BD4D7287322E4EA4BB8FD /* ParkingEditorView.swift in Sources */,
 				4EFB3D96C53AEB8026385959 /* ParkingModels.swift in Sources */,
+				8B0A7A60E6FE6C0699D823E1 /* ParkingShortcuts.swift in Sources */,
 				175C580D2DEA4CD981DE7097 /* ParkingStyle.swift in Sources */,
 				B321BA7085EBAD9DC2D7E593 /* ParkingTimelinePolicy.swift in Sources */,
 				6C2EB845034BDAFFF6B38165 /* ParkingTimelineSchedule.swift in Sources */,
@@ -578,6 +585,7 @@
 				A38A36DC5E9795FC66CF40D2 /* MeterStateTests.swift in Sources */,
 				0DA0C79B7F44A34FD022405D /* OnboardingTests.swift in Sources */,
 				F665962FEB106B420427463D /* ParkingCoordinatorTests.swift in Sources */,
+				8CCFC11FF2A1DB993C137518 /* ParkingShortcutsTests.swift in Sources */,
 				7A129FDF1A084A2F78D7C813 /* ParkingTimelinePolicyTests.swift in Sources */,
 				D4873D443D4B1B74A7D7A2E6 /* ReminderPlannerTests.swift in Sources */,
 				D3672089E80290ADB26AED01 /* ReviewPromptPolicyTests.swift in Sources */,

@@ -70,6 +70,8 @@ struct ParkView: View {
         .onReceive(NotificationCenter.default.publisher(for: .NSProcessInfoPowerStateDidChange)) { _ in
             lowPowerMode = ParkNudgePowerState.current()
         }
+        .task { handleShortcut() }
+        .onChange(of: model.pendingShortcut) { handleShortcut() }
         .confirmationDialog(
             "Finish this parking session?",
             isPresented: $confirmsFinish,
@@ -273,6 +275,25 @@ struct ParkView: View {
             // three identical-looking buttons, one of which ends the session.
             .tint(Theme.alertInk)
             .accessibilityIdentifier("finish-parking")
+        }
+    }
+
+    /// Runs a Siri / Shortcuts route with the same controls a tap would use, so nothing is saved,
+    /// replaced or opened without the usual confirmation.
+    private func handleShortcut() {
+        guard let route = model.pendingShortcut else { return }
+        model.pendingShortcut = nil
+        switch route {
+        case .parkHere:
+            if model.activeSession == nil {
+                beginNewParking(replacing: false)
+            } else {
+                // A spot is already saved: ask before archiving it, exactly like the menu action.
+                confirmsReplacement = true
+            }
+        case .findMyCar:
+            // With no saved spot the Park tab's empty state is the honest answer.
+            if model.activeSession != nil { model.openDirections() }
         }
     }
 
