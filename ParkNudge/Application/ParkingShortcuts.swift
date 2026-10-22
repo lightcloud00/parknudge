@@ -16,12 +16,20 @@ enum ParkingShortcutRoute: String, Equatable, Sendable {
 final class ParkingShortcutInbox {
     static let shared = ParkingShortcutInbox()
     static let didEnqueue = Notification.Name("ParkNudge.parkingShortcutDidEnqueue")
+    /// `didEnqueue` carries the route's raw value under this key, so an observer can tell which
+    /// route arrived even after the running app has already drained it.
+    nonisolated static let routeKey = "route"
 
+    private let notificationCenter: NotificationCenter
     private(set) var pending: ParkingShortcutRoute?
+
+    init(notificationCenter: NotificationCenter = .default) {
+        self.notificationCenter = notificationCenter
+    }
 
     func enqueue(_ route: ParkingShortcutRoute) {
         pending = route
-        NotificationCenter.default.post(name: Self.didEnqueue, object: nil)
+        notificationCenter.post(name: Self.didEnqueue, object: nil, userInfo: [Self.routeKey: route.rawValue])
     }
 
     func take() -> ParkingShortcutRoute? {
