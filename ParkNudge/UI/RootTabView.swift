@@ -16,6 +16,11 @@ struct RootTabView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: model.isOnboardingPresented)
+        // Siri / Shortcuts: a cold launch finds the route already queued; a warm one is notified.
+        .task { drainShortcut() }
+        .onReceive(NotificationCenter.default.publisher(for: ParkingShortcutInbox.didEnqueue)) { _ in
+            drainShortcut()
+        }
         .sheet(isPresented: model.paywallPresentation(on: .root), onDismiss: model.paywallDidDismiss) {
             PaywallView()
                 .environmentObject(model)
@@ -31,6 +36,12 @@ struct RootTabView: View {
         } message: {
             Text(model.alertMessage ?? "")
         }
+    }
+
+    private func drainShortcut() {
+        guard let route = ParkingShortcutInbox.shared.take() else { return }
+        selectedTab = 0
+        model.pendingShortcut = route
     }
 
     private var tabs: some View {
