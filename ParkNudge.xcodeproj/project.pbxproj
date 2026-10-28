@@ -727,7 +727,7 @@
 				CODE_SIGN_ENTITLEMENTS = ParkNudge/ParkNudge.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 9QCR933V26;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ParkNudge;
@@ -746,7 +746,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gusdigitalsolutions.parknudge;
 				PRODUCT_NAME = ParkNudge;
 				PROVISIONING_PROFILE_SPECIFIER = "ParkNudge App Store 2026-08-25";
@@ -830,7 +830,7 @@
 				CODE_SIGN_ENTITLEMENTS = ParkNudge/ParkNudge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ParkNudge;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -848,7 +848,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gusdigitalsolutions.parknudge;
 				PRODUCT_NAME = ParkNudge;
 				SDKROOT = iphoneos;

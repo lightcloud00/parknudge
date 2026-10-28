@@ -43,8 +43,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.gusdigitalsolutions.parknudge
         PRODUCT_NAME: ParkNudge
         TARGETED_DEVICE_FAMILY: "1"
-        MARKETING_VERSION: "1.1"
-        CURRENT_PROJECT_VERSION: 6
+        MARKETING_VERSION: "1.2"
+        CURRENT_PROJECT_VERSION: 7
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: ParkNudge
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.navigation
