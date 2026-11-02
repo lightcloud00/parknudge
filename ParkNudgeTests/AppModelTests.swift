@@ -389,3 +389,77 @@ final class StoreDeadlineTests: XCTestCase {
         }
     }
 }
+
+/// #79: a lookup that could not reach the App Store is `.unavailable`, and
+/// while it is, the offer must not sell Lifetime Pro to a possibly-paying user.
+@MainActor
+final class EntitlementVerificationTests: XCTestCase {
+    func testStalledLookupReadsAsUnavailableNotFree() async {
+        let state = await StoreKitPurchaseService.resolveEntitlement(seconds: 0.2) {
+            await Task.detached { try? await Task.sleep(for: .seconds(5)) }.value
+            return EntitlementState.pro
+        }
+        XCTAssertEqual(state, .unavailable)
+    }
+
+    func testFailedLookupReadsAsUnavailable() async {
+        let state = await StoreKitPurchaseService.resolveEntitlement(seconds: 5) {
+            throw PurchaseServiceError.storeUnavailable
+        }
+        XCTAssertEqual(state, .unavailable)
+    }
+
+    func testPromptLookupPassesThrough() async {
+        let state = await StoreKitPurchaseService.resolveEntitlement(seconds: 5) { EntitlementState.free }
+        XCTAssertEqual(state, .free)
+    }
+
+    func testUnavailableEntitlementHidesThePurchaseUntilTheStoreAnswers() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .unavailable
+        await harness.model.bootstrap()
+        XCTAssertEqual(harness.model.entitlement, .unavailable)
+        XCTAssertTrue(harness.model.isEntitlementUnresolved, "The offer shows the verifying state, not the buy button")
+
+        harness.model.requestAccess(to: .customReminders)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+
+        harness.purchases.entitlement = .pro
+        await harness.model.retryEntitlementLookup()
+        XCTAssertEqual(harness.model.entitlement, .pro)
+        XCTAssertFalse(harness.model.isEntitlementUnresolved)
+        XCTAssertFalse(harness.model.isPaywallPresented, "A confirmed Pro closes the offer it never had to sell")
+    }
+
+    func testUnavailableLookupNeverDowngradesAVerifiedPro() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .pro
+        await harness.model.bootstrap()
+        XCTAssertEqual(harness.model.entitlement, .pro)
+
+        harness.purchases.entitlement = .unavailable
+        await harness.model.retryEntitlementLookup()
+        XCTAssertEqual(harness.model.entitlement, .pro)
+    }
+
+    func testConfirmedFreeShowsThePurchase() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        XCTAssertEqual(harness.model.entitlement, .free)
+        XCTAssertFalse(harness.model.isEntitlementUnresolved)
+    }
+
+    func testRestoreThatCannotReachTheStoreSaysSo() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .unavailable
+        await harness.model.bootstrap()
+        harness.model.requestAccess(to: .customReminders)
+        await harness.model.restorePurchases()
+        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not confirm Lifetime Pro"))
+        XCTAssertTrue(harness.model.isPaywallPresented)
+    }
+}

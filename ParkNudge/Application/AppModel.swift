@@ -26,6 +26,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var paywallDismissalCount = 0
     @Published private(set) var lifetimeProduct: PurchaseProduct?
     @Published private(set) var isBusy = false
+    @Published private(set) var isVerifyingEntitlement = false
     @Published var alertMessage: String?
     @Published var isPaywallPresented = false {
         didSet {
@@ -128,7 +129,8 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
-        entitlement = await purchases.currentEntitlement()
+        adoptEntitlement(await purchases.currentEntitlement())
+        closeOfferIfUnlocked()
         observeEntitlementUpdates()
         lifetimeProduct = await purchases.loadProduct()
     }
@@ -321,6 +323,42 @@ final class AppModel: ObservableObject {
         reachedFreeLimitThisSession = true
         requestedProFeature = feature
         isPaywallPresented = true
+        // The offer shows a verifying state, not a purchase button, until the
+        // App Store answers. Ask it again; the offer closes if Pro comes back.
+        if entitlement == .unavailable {
+            Task { await retryEntitlementLookup() }
+        }
+    }
+
+    // MARK: - Entitlement verification
+
+    /// The App Store has not answered yet, or could not be reached. Neither is
+    /// a confirmed free user, so the offer must not sell Lifetime Pro (#79).
+    var isEntitlementUnresolved: Bool {
+        entitlement == .loading || entitlement == .unavailable
+    }
+
+    func retryEntitlementLookup() async {
+        guard !isVerifyingEntitlement else { return }
+        isVerifyingEntitlement = true
+        defer { isVerifyingEntitlement = false }
+        adoptEntitlement(await purchases.currentEntitlement())
+        closeOfferIfUnlocked()
+    }
+
+    /// A lookup that could not reach the store never downgrades a verified Pro.
+    private func adoptEntitlement(_ state: EntitlementState) {
+        if state == .unavailable, entitlement == .pro { return }
+        entitlement = state
+    }
+
+    /// A verified Pro that arrives while the offer is open completes it, just
+    /// like a synchronous purchase. ParkView consumes its saved intent once,
+    /// after the sheet actually dismisses.
+    private func closeOfferIfUnlocked() {
+        guard entitlement.isPro, isPaywallPresented else { return }
+        alertMessage = nil
+        isPaywallPresented = false
     }
 
     // MARK: - Onboarding
@@ -396,8 +434,10 @@ final class AppModel: ObservableObject {
         do {
             switch try await purchases.purchase() {
             case .purchased:
-                entitlement = await purchases.currentEntitlement()
-                if entitlement.isPro {
+                adoptEntitlement(await purchases.currentEntitlement())
+                if entitlement == .unavailable {
+                    alertMessage = "Your purchase went through, but the App Store has not confirmed it yet. Pro unlocks once it does; Restore Purchases also checks again. Your saved spot remains available."
+                } else if entitlement.isPro {
                     // Read before the offer closes: `offerIsOverParkingEditor`
                     // is false once `isPaywallPresented` is cleared.
                     let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
@@ -421,9 +461,13 @@ final class AppModel: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            entitlement = try await purchases.restore()
+            adoptEntitlement(try await purchases.restore())
         } catch {
             alertMessage = "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
+            return
+        }
+        if entitlement == .unavailable {
+            alertMessage = "The App Store could not confirm Lifetime Pro right now. Try Restore Purchases again when the store is available. Your saved spot remains available."
             return
         }
         guard entitlement.isPro else {
@@ -501,14 +545,9 @@ final class AppModel: ObservableObject {
             guard let updates = self?.purchases.entitlementUpdates() else { return }
             for await state in updates {
                 guard let self else { return }
-                self.entitlement = state
-                if state.isPro && self.isPaywallPresented {
-                    // A verified Ask to Buy update completes the still-open
-                    // offer just like a synchronous purchase. ParkView consumes
-                    // its saved intent once, after the sheet actually dismisses.
-                    self.alertMessage = nil
-                    self.isPaywallPresented = false
-                }
+                // A verified Ask to Buy update completes the still-open offer.
+                self.adoptEntitlement(state)
+                self.closeOfferIfUnlocked()
             }
         }
     }

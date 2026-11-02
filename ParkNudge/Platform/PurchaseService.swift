@@ -73,21 +73,31 @@ final class StoreKitPurchaseService: PurchaseProviding {
     }
 
     /// `Transaction.currentEntitlements` can stall like any other StoreKit
-    /// call, so it gets the same deadline. A stalled lookup reads as free, never as Pro.
+    /// call, so it gets the same deadline.
     func currentEntitlement() async -> EntitlementState {
         let productID = Self.productIdentifier
-        do {
-            return try await withStoreDeadline(seconds: Self.silentStoreDeadline) {
-                for await result in Transaction.currentEntitlements {
-                    guard case .verified(let transaction) = result,
-                          transaction.productID == productID,
-                          transaction.revocationDate == nil else { continue }
-                    return EntitlementState.pro
-                }
-                return EntitlementState.free
+        return await Self.resolveEntitlement(seconds: Self.silentStoreDeadline) {
+            for await result in Transaction.currentEntitlements {
+                guard case .verified(let transaction) = result,
+                      transaction.productID == productID,
+                      transaction.revocationDate == nil else { continue }
+                return EntitlementState.pro
             }
+            return EntitlementState.free
+        }
+    }
+
+    /// A lookup that misses its deadline or fails reads as `.unavailable`:
+    /// never as Pro, and never as a confirmed free user, so a paying customer
+    /// on a slow or offline store is not offered Lifetime Pro again (#79).
+    static func resolveEntitlement(
+        seconds: Double,
+        lookup: @escaping @Sendable () async throws -> EntitlementState
+    ) async -> EntitlementState {
+        do {
+            return try await withStoreDeadline(seconds: seconds, operation: lookup)
         } catch {
-            return .free
+            return .unavailable
         }
     }
 

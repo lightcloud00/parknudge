@@ -56,25 +56,29 @@ struct PaywallView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
 
-                    Button {
-                        Task { await model.purchaseLifetime() }
-                    } label: {
-                        Group {
-                            if model.isBusy {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text("Unlock Lifetime Pro")
+                    if model.isEntitlementUnresolved {
+                        entitlementVerification
+                    } else {
+                        Button {
+                            Task { await model.purchaseLifetime() }
+                        } label: {
+                            Group {
+                                if model.isBusy {
+                                    ProgressView().tint(.white)
+                                } else {
+                                    Text("Unlock Lifetime Pro")
+                                }
                             }
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
                         }
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 4)
+                        .buttonStyle(.borderedProminent)
+                        .tint(Theme.brand)
+                        .disabled(model.lifetimeProduct == nil || model.isBusy)
+                        .accessibilityIdentifier("purchase-lifetime-pro")
+                        .accessibilityLabel(purchaseAccessibilityLabel)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Theme.brand)
-                    .disabled(model.lifetimeProduct == nil || model.isBusy)
-                    .accessibilityIdentifier("purchase-lifetime-pro")
-                    .accessibilityLabel(purchaseAccessibilityLabel)
 
                     Button("Restore Purchases") { Task { await model.restorePurchases() } }
                         .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget)
@@ -143,6 +147,40 @@ struct PaywallView: View {
             return "Unlock Lifetime Pro. The price has not loaded from the App Store yet."
         }
         return "Unlock Lifetime Pro for \(price). One-time purchase."
+    }
+
+    /// Shown instead of the purchase button while the App Store has not said
+    /// whether this Apple ID owns Pro. A paying customer on a slow or offline
+    /// store must not be sold it again (#79). Restore stays below.
+    private var entitlementVerification: some View {
+        VStack(spacing: 10) {
+            Text(model.entitlement == .loading
+                 ? "Checking your Lifetime Pro purchase with the App Store."
+                 : "The App Store could not confirm your purchase right now. If you already bought Lifetime Pro, it is not lost.")
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("paywall-verifying-entitlement")
+
+            Button {
+                Task { await model.retryEntitlementLookup() }
+            } label: {
+                Group {
+                    if model.isVerifyingEntitlement || model.entitlement == .loading {
+                        ProgressView()
+                    } else {
+                        Text("Check Again")
+                    }
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.bordered)
+            .disabled(model.isVerifyingEntitlement || model.entitlement == .loading || model.isBusy)
+            .accessibilityIdentifier("retry-entitlement-lookup")
+            .accessibilityLabel(model.entitlement == .loading ? "Checking your purchase" : "Check your purchase again")
+        }
     }
 
     /// The billed amount, standing on its own. It previously existed only
