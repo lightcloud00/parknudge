@@ -27,7 +27,7 @@ Fixes an issue where a slow or offline connection could make ParkNudge show Life
 
 ## Before submission (the Mac)
 
-1. Read back App Store Connect: confirm build 8 is unused and check the state of 1.2 (7). A new 1.2.1 version can only be created after 1.2 is released or rejected by the developer.
+1. Read back App Store Connect: confirm build 8 is unused. 1.2 (7) has been live since 2026-10-30 (public App Store lookup, read 2026-11-08), so 1.2.1 is a normal new version; nothing has to be rejected first.
 2. Run `./scripts/verify.sh` on the exact head. It regenerates the project (`git status` must stay clean afterwards), runs the unit and UI tests, builds Release, and runs `scripts/audit-release.sh`, which fails if the Release app contains `ParkNudge.storekit`.
 3. Archive the same head and confirm the archived `ParkNudge.app` has version 1.2.1 (8) and no `.storekit` file.
 4. Sandbox, on TestFlight 1.2.1 (8), for #7: buy, cancel, restore on a clean install, and, with the network off at launch, an owner sees the verifying state, not the buy button.
