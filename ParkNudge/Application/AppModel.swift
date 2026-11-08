@@ -172,7 +172,7 @@ final class AppModel: ObservableObject {
     func saveNew(draft: ParkingDraft, replacingActive: Bool) async -> Bool {
         // Parking itself is free for everyone; only Pro extras are dropped.
         var draft = draft
-        if !hasAccess(to: .parkingCosts) {
+        if dropsProExtras(for: .parkingCosts) {
             draft.paidAmountMinor = nil
         }
         isBusy = true
@@ -194,7 +194,7 @@ final class AppModel: ObservableObject {
 
     func updateActive(draft: ParkingDraft) async -> Bool {
         var draft = draft
-        if !hasAccess(to: .parkingCosts) {
+        if dropsProExtras(for: .parkingCosts) {
             draft.paidAmountMinor = activeSession?.paidAmountMinor
             draft.currencyCode = activeSession?.currencyCode ?? draft.currencyCode
         }
@@ -338,6 +338,14 @@ final class AppModel: ObservableObject {
         entitlement == .loading || entitlement == .unavailable
     }
 
+    /// Pro extras are dropped from a save only for a confirmed free user.
+    /// While the App Store has not answered, or could not be reached, the
+    /// draft keeps what it carries, so a slow lookup never deletes a paying
+    /// user's parking cost (#79).
+    private func dropsProExtras(for feature: ProFeature) -> Bool {
+        !hasAccess(to: feature) && !isEntitlementUnresolved
+    }
+
     func retryEntitlementLookup() async {
         guard !isVerifyingEntitlement else { return }
         isVerifyingEntitlement = true
@@ -368,7 +376,7 @@ final class AppModel: ObservableObject {
     /// explains the reminders before iOS asks.
     func saveFirstSpot(draft: ParkingDraft) async -> FirstSpotSave {
         var draft = draft
-        if !hasAccess(to: .parkingCosts) {
+        if dropsProExtras(for: .parkingCosts) {
             draft.paidAmountMinor = nil
         }
         isBusy = true

@@ -484,6 +484,22 @@ final class EntitlementVerificationTests: XCTestCase {
         XCTAssertFalse(harness.model.isPaywallPresented)
     }
 
+    func testSavingWhileTheStoreIsUnreachableKeepsTheParkingCost() async throws {
+        let harness = try TestFixtures.appModel(completedSessions: 1)
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .unavailable
+        await harness.model.bootstrap()
+        XCTAssertTrue(harness.model.isEntitlementUnresolved)
+        var draft = await harness.model.newParkingDraft()
+        draft.paidAmountMinor = 450
+        let saved = await harness.model.saveNew(draft: draft, replacingActive: false)
+        XCTAssertTrue(saved)
+        XCTAssertEqual(
+            harness.model.activeSession?.paidAmountMinor, 450,
+            "An unreachable store is not a confirmed free user; the cost must survive (#79)"
+        )
+    }
+
     func testRestoreThatCannotReachTheStoreSaysSo() async throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }
