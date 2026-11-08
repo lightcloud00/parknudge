@@ -6,13 +6,16 @@ Row ids I-01..I-27 were reconstructed from #2806 because the original list (a Ma
 
 Physical-device checks that are not paywall-specific live in [DEVICE-ACCEPTANCE.md](../DEVICE-ACCEPTANCE.md) (see its "StoreKit Sandbox" section); this file does not duplicate them.
 
+
+> **TestFlight account note (added 2026-11-08 after review).** Per Apple's TestFlight documentation, in-app purchases in a TestFlight build run in the sandbox environment, are not charged, and use the Apple ID signed in to the App Store on the device. The Sandbox Account under Settings > Developer applies to development-signed (Xcode) builds, not TestFlight. On a TF row, read "the Sandbox tester account" as "the Apple ID the purchase sheet shows". Trial eligibility and purchase history then follow that Apple ID and cannot be cleared, so run unentitled rows (cancel, restore with nothing) before any purchase. Confirm on the device: the purchase sheet should show [Environment: Sandbox]. lightcloud00/claudecode-workspace#976 bars a personal Apple ID, so Gus decides whether the TF route is acceptable.
+
 ## What this proves and what it does not
 
 - SK rows (Xcode StoreKit configuration in the simulator) prove the app's own purchase, restore and entitlement logic against a local fake store. They do not prove Apple servers, App Store Connect product state, Sandbox behaviour, RevenueCat, Superwall or any server ledger.
 - ParkNudge has no RevenueCat, no Superwall and no backend (AGENTS.md: local-only, StoreKit 2 only), so there is no provider or server ledger to check. Row I-25 is therefore n/a.
 - The XCUITests that exist run with `-ui-testing`, which swaps in a stub purchase provider (`UITestPurchaseProvider` in `ParkNudge/Application/AppEnvironment.swift`). They never touch StoreKit, except `testAppReviewLifetimePaywallScreenshot`, which omits `-ui-testing`.
 - The unit tests in `ParkNudgeTests/AppModelTests.swift` use a fake `PurchaseProviding` from `TestFixtures.swift`. No file in the repo uses `SKTestSession` or `StoreKitTest`. No row is automated against a real or simulated StoreKit session.
-- Env codes: SK = StoreKit configuration file in the simulator. SB = Sandbox tester account on a device with a dev/Xcode build. TF = TestFlight build on Gus's iPhone with the Sandbox tester account (TestFlight subscription renewals are accelerated and capped per day; moot here, no subscriptions). PR = a second physical device. Never a personal Apple ID or real money.
+- Env codes: SK = StoreKit configuration file in the simulator. SB = Sandbox tester account on a device with a dev/Xcode build. TF = TestFlight build on Gus's iPhone (sandbox environment, the device's App Store Apple ID; see the TestFlight account note) (TestFlight subscription renewals are accelerated and capped per day; moot here, no subscriptions). PR = a second physical device. Never a personal Apple ID or real money.
 
 ## Products
 
