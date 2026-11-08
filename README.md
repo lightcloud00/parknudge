@@ -2,7 +2,7 @@
 
 ParkNudge is a privacy-first iPhone parking spot and meter reminder. It saves one active parking location, lets the driver correct the pin, records garage details and one photo, schedules local meter alerts, opens Apple Maps walking directions, and keeps completed history on-device.
 
-The repository contains the native iOS app, tests, product documentation, and a static launch website. It is an MVP source repository—not evidence of physical-device acceptance, App Store availability, a configured in-app purchase, or a deployed domain.
+The repository contains the native iOS app, tests, product documentation, and a static launch website. It is an MVP source repository—not evidence of physical-device acceptance, App Store availability, a configured in-app purchase, or a deployed website.
 
 ## Product boundary
 
@@ -40,14 +40,14 @@ To preview the website locally:
 python3 -m http.server 8080 --directory site
 ```
 
-Then visit `http://localhost:8080`. The `parknudge.app` canonical URL and `parknudge` Cloudflare Pages project name are candidates only until the domain is acquired and the public deployment is verified. The source includes a real 404 page, path-normalization redirects, crawler files, `llms.txt`, an IndexNow verification file, and a provider-neutral search-engine manifest; none is provider or indexing proof by itself.
+Then visit `http://localhost:8080`. ParkNudge has no domain of its own. Its public pages are [gusdigitalsolutions.com/parknudge/](https://gusdigitalsolutions.com/parknudge/) and its subpages, built and deployed from the private `lightcloud00/gusdigitalsolutions` repository (`src/pages/parknudge/`), not from this folder. `site/` is a source copy whose canonical URLs, sitemap, `robots.txt`, `llms.txt`, and JSON-LD point at those `https://gusdigitalsolutions.com/parknudge/` pages. The source includes a real 404 page, path-normalization redirects, crawler files, `llms.txt`, and a provider-neutral search-engine manifest; none is provider or indexing proof by itself.
 
 ## Repository map
 
 - `ParkNudge/` — application, domain, persistence, platform adapters, UI, privacy manifest, and assets
 - `ParkNudgeTests/` — deterministic unit and in-memory SwiftData tests
 - `ParkNudgeUITests/` — simulator UI smoke flows
-- `site/` — static SEO/AEO-ready launch and support pages
+- `site/` — source copy of the static SEO/AEO-ready launch and support pages published at `https://gusdigitalsolutions.com/parknudge/`
 - `Docs/` — product, architecture, naming, monetization, release, and device-acceptance records
 - `scripts/` — project generation, verification, and release-content audits
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -9,7 +10,20 @@ from urllib.parse import urlsplit
 from xml.etree import ElementTree
 
 
-CANONICAL_ORIGIN = "https://parknudge.app"
+# ParkNudge has no domain of its own. Its public pages live under the publisher
+# site, built from lightcloud00/gusdigitalsolutions (src/pages/parknudge/); this
+# folder is a source copy whose canonicals must point at those publisher URLs.
+PUBLISHER_HOST = "gusdigitalsolutions.com"
+PUBLISHER_ORIGIN = f"https://{PUBLISHER_HOST}"
+CANONICAL_BASE_PATH = "/parknudge/"
+CANONICAL_BASE = f"{PUBLISHER_ORIGIN}{CANONICAL_BASE_PATH}"
+PUBLISHER_SITEMAP = f"{PUBLISHER_ORIGIN}/sitemap-index.xml"
+# The only hosts a published file may name in an absolute URL.
+ALLOWED_URL_HOSTS = {PUBLISHER_HOST, "github.com", "apps.apple.com", "schema.org", "www.sitemaps.org"}
+ABSOLUTE_URL = re.compile(r"https?://[^\s\"'<>()\[\]{}]+", re.IGNORECASE)
+# A domain-shaped ParkNudge name (parknudge.app, www.parknudge.com), with or without
+# a scheme. A reverse-DNS identifier such as com.example.parknudge.pro is not matched.
+PARKNUDGE_DOMAIN = re.compile(r"(?<![\w.-])(?:www\.)?parknudge\.[a-z]{2,63}\b", re.IGNORECASE)
 GUIDE_SCHEMA = {
     "find-my-parked-car/index.html": {"Article", "BreadcrumbList"},
     "parking-meter-reminder/index.html": {"Article", "BreadcrumbList"},
@@ -97,16 +111,15 @@ def local_target(page: Path, reference: str, root: Path) -> Path | None:
     return target
 
 
+def schema_nodes(document: object) -> list[dict]:
+    if isinstance(document, dict) and isinstance(document.get("@graph"), list):
+        document = document["@graph"]
+    items = document if isinstance(document, list) else [document]
+    return [item for item in items if isinstance(item, dict)]
+
+
 def schema_types(document: object) -> set[str]:
-    if isinstance(document, list):
-        return {item.get("@type") for item in document if isinstance(item, dict) and isinstance(item.get("@type"), str)}
-    if not isinstance(document, dict):
-        return set()
-    graph = document.get("@graph")
-    if isinstance(graph, list):
-        return {item.get("@type") for item in graph if isinstance(item, dict) and isinstance(item.get("@type"), str)}
-    value = document.get("@type")
-    return {value} if isinstance(value, str) else set()
+    return {node["@type"] for node in schema_nodes(document) if isinstance(node.get("@type"), str)}
 
 
 def main() -> int:
@@ -139,7 +152,18 @@ def main() -> int:
             if "noindex" not in parser.meta_names.get("robots", ""): errors.append("404.html: must be noindex")
             if parser.canonical: errors.append("404.html: must not declare a canonical")
         else:
-            if not parser.canonical.startswith(f"{CANONICAL_ORIGIN}/"): errors.append(f"{label}: candidate canonical missing")
+            page_dir = page.parent.relative_to(root).as_posix()
+            own_url = CANONICAL_BASE if page_dir == "." else f"{CANONICAL_BASE}{page_dir}/"
+            if parser.canonical != own_url: errors.append(f"{label}: canonical must be its own page {own_url}, found {parser.canonical!r}")
+            for node in (node for document in parser.json_documents for node in schema_nodes(document)):
+                if node.get("@type") == "Article":
+                    entity = node.get("mainEntityOfPage")
+                    entity = entity.get("@id") if isinstance(entity, dict) else entity
+                    if entity != parser.canonical: errors.append(f"{label}: Article mainEntityOfPage must equal the canonical")
+                if node.get("@type") == "BreadcrumbList":
+                    crumbs = node.get("itemListElement")
+                    last = crumbs[-1].get("item") if isinstance(crumbs, list) and crumbs and isinstance(crumbs[-1], dict) else None
+                    if last != parser.canonical: errors.append(f"{label}: last breadcrumb item must equal the canonical")
             expected_social = {
                 "og:title", "og:description", "og:type", "og:url", "og:image", "og:site_name"
             }
@@ -189,8 +213,8 @@ def main() -> int:
                 errors.append(f"sitemap/canonical mismatch: sitemap={sorted(sitemap_urls)} canonicals={sorted(indexable)}")
         except Exception as exc:
             errors.append(f"sitemap.xml: parse error: {exc}")
-        if f"Sitemap: {CANONICAL_ORIGIN}/sitemap.xml" not in robots_path.read_text(encoding="utf-8"):
-            errors.append("robots.txt: canonical sitemap declaration missing")
+        if f"Sitemap: {PUBLISHER_SITEMAP}" not in robots_path.read_text(encoding="utf-8"):
+            errors.append("robots.txt: publisher sitemap declaration missing")
 
     llms_path = root / "llms.txt"
     if not llms_path.exists():
@@ -213,17 +237,52 @@ def main() -> int:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if manifest.get("schema") != "gds.search-site.v1": errors.append("SEARCH-ENGINE.json: schema mismatch")
         if manifest.get("siteId") != "parknudge-app": errors.append("SEARCH-ENGINE.json: siteId mismatch")
-        if manifest.get("canonical", {}).get("origin") != CANONICAL_ORIGIN: errors.append("SEARCH-ENGINE.json: origin mismatch")
+        canonical = manifest.get("canonical", {})
+        if canonical.get("origin") != PUBLISHER_ORIGIN: errors.append("SEARCH-ENGINE.json: origin mismatch")
+        if canonical.get("basePath") != CANONICAL_BASE_PATH: errors.append("SEARCH-ENGINE.json: basePath mismatch")
         endpoints = manifest.get("endpoints", {})
-        if endpoints.get("sitemap") != f"{CANONICAL_ORIGIN}/sitemap.xml": errors.append("SEARCH-ENGINE.json: sitemap mismatch")
-        key_url = endpoints.get("indexNowKey", "")
-        key_name = Path(urlsplit(key_url).path).name
-        key_path = root / key_name
-        if not key_name.endswith(".txt") or not key_path.exists(): errors.append("SEARCH-ENGINE.json: IndexNow key file missing")
-        elif key_path.read_text(encoding="utf-8").strip() != key_name.removesuffix(".txt"):
-            errors.append("IndexNow key file content must match its filename")
+        if endpoints.get("sitemap") != PUBLISHER_SITEMAP: errors.append("SEARCH-ENGINE.json: sitemap mismatch")
+        for name in ("robots", "llms"):
+            if endpoints.get(name) != f"{PUBLISHER_ORIGIN}/{name}.txt": errors.append(f"SEARCH-ENGINE.json: {name} mismatch")
+        # The publisher host owns the IndexNow key file at its root (it lives in the
+        # gusdigitalsolutions repository, so its content cannot be read from here).
+        key = urlsplit(endpoints.get("indexNowKey", ""))
+        key_stem = key.path.removeprefix("/").removesuffix(".txt")
+        if (
+            f"{key.scheme}://{key.netloc}" != PUBLISHER_ORIGIN
+            or not key.path.endswith(".txt")
+            or "/" in key_stem
+            or not 8 <= len(key_stem) <= 128
+            or any(c not in "0123456789abcdefABCDEF-" for c in key_stem)
+        ):
+            errors.append("SEARCH-ENGINE.json: indexNowKey must be a key file at the publisher root")
     except Exception as exc:
         errors.append(f"SEARCH-ENGINE.json: parse error: {exc}")
+
+    # ParkNudge has no domain of its own. A published file (everything in site/ except
+    # scripts/, plus SEARCH-ENGINE.json) may name only the allowed hosts, every
+    # gusdigitalsolutions.com/parknudge/ URL must match a page or asset in site/, and
+    # no parknudge.<tld> domain may appear, even without a scheme.
+    for path in sorted([*root.rglob("*"), manifest_path]):
+        if not path.is_file() or "scripts" in path.relative_to(root.parent).parts or path.suffix not in {".html", ".txt", ".xml", ".json", ".css", ""}:
+            continue
+        name = path.relative_to(root.parent)
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for domain in sorted({match.group(0).lower() for match in PARKNUDGE_DOMAIN.finditer(text)}):
+            errors.append(f"{name}: names {domain}; ParkNudge has no domain of its own, use {CANONICAL_BASE}")
+        for url in sorted({match.rstrip(".,;:!?") for match in ABSOLUTE_URL.findall(text)}):
+            parts = urlsplit(url)
+            host = (parts.hostname or "").lower()
+            if host not in ALLOWED_URL_HOSTS:
+                errors.append(f"{name}: links to {url}; allowed hosts are {', '.join(sorted(ALLOWED_URL_HOSTS))}")
+            elif host == PUBLISHER_HOST and parts.path.startswith(CANONICAL_BASE_PATH):
+                try:
+                    target = local_target(root / "index.html", "/" + parts.path.removeprefix(CANONICAL_BASE_PATH), root)
+                except ValueError as exc:
+                    errors.append(f"{name}: {exc}")
+                    continue
+                if target is None or not target.is_file():
+                    errors.append(f"{name}: {url} has no matching page or asset in site/")
 
     if errors:
         print("Site checks failed:")
@@ -231,8 +290,8 @@ def main() -> int:
         return 1
     print(
         "Site checks passed: "
-        f"{len(pages)} HTML pages, canonical/sitemap parity, social metadata, JSON-LD, "
-        "Cloudflare assets, crawler files, IndexNow key, and search-engine manifest verified."
+        f"{len(pages)} HTML pages, own-page canonicals, canonical/sitemap parity, social metadata, JSON-LD, "
+        "Cloudflare assets, crawler files, link hosts, and publisher-hosted search-engine manifest verified."
     )
     return 0
 

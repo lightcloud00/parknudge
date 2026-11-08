@@ -8,7 +8,7 @@ Status: working launch identity, subject to trademark and App Store Connect avai
 - Draft App Store name: **ParkNudge: Find My Car**
 - Draft subtitle: **Parking Spot & Meter Timer**
 - Repository: `lightcloud00/parknudge`
-- Candidate domain: `parknudge.app`
+- Website: no domain of its own; public pages at `https://gusdigitalsolutions.com/parknudge/`
 
 The brand is short, pronounceable, and connects the parking job (“Park”) with the reminder behavior (“Nudge”). The App Store name and subtitle carry the direct category language instead of forcing every search phrase into the brand.
 
@@ -19,6 +19,8 @@ The brand is short, pronounceable, and connects the parking job (“Park”) wit
 - `ParkPin` was rejected because an existing App Store product uses that name.
 
 These are point-in-time collision signals, not reservation, ownership, trademark clearance, or final App Store name acceptance. Recheck immediately before acquiring a domain or creating the App Store record.
+
+Note (November 8, 2026): ParkNudge has no domain of its own and no domain purchase is planned; its public pages are `https://gusdigitalsolutions.com/parknudge/`. The domain signals above are kept as history only.
 
 Research package verification fingerprint: `168d79b9442a1999b6122eed2710492d8d9bdebb21abca470b2ad5a0c36e9f4b`.
 
@@ -48,6 +50,5 @@ The product-owned [search-engine handoff](SEARCH-ENGINE.md) registers ParkNudge 
 ## Before public use
 
 1. Complete trademark review in relevant markets.
-2. Recheck App Store, search-engine, social-handle, GitHub, and domain collisions.
-3. Acquire the selected domain.
-4. Replace or confirm candidate canonical URLs, then deploy and verify HTTPS, redirects, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow receipts under issues #11 and #25.
+2. Recheck App Store, search-engine, social-handle, and GitHub collisions.
+3. Keep canonical URLs on `https://gusdigitalsolutions.com/parknudge/`, then verify HTTPS, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow receipts for those pages under issues #11 and #25.

@@ -7,7 +7,7 @@
 | Physical device | Unproven | Completed `DEVICE-ACCEPTANCE.md` with build SHA |
 | Product identity | Working name only | App Store name availability and trademark review |
 | Commerce | Debug StoreKit configuration only | App Store Connect product plus Apple Sandbox outcomes |
-| Website | Local static files and checker | Owned domain, deployment receipt, public HTTPS readback |
+| Website | Local static files and checker | Publisher-domain pages (`gusdigitalsolutions.com/parknudge/`) with public HTTPS readback |
 | Legal/privacy | Draft copy and privacy manifest | Final contact, legal review, App Store privacy answers |
 | Beta | Not uploaded | Signed archive and TestFlight processing/installation proof |
 | Release | Not authorized | Explicit release decision and App Review acceptance |
