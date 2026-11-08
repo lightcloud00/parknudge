@@ -434,10 +434,13 @@ final class AppModel: ObservableObject {
         do {
             switch try await purchases.purchase() {
             case .purchased:
-                adoptEntitlement(await purchases.currentEntitlement())
-                if entitlement == .unavailable {
-                    alertMessage = "Your purchase went through, but the App Store has not confirmed it yet. Pro unlocks once it does; Restore Purchases also checks again. Your saved spot remains available."
-                } else if entitlement.isPro {
+                // `.purchased` comes only from a verified, unrevoked Lifetime
+                // Pro transaction that `purchase()` has already finished, so
+                // the App Store will not deliver it again. A readback that
+                // cannot reach the store must not leave a paid customer locked.
+                let readback = await purchases.currentEntitlement()
+                adoptEntitlement(readback == .unavailable ? .pro : readback)
+                if entitlement.isPro {
                     // Read before the offer closes: `offerIsOverParkingEditor`
                     // is false once `isPaywallPresented` is cleared.
                     let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor

@@ -452,6 +452,38 @@ final class EntitlementVerificationTests: XCTestCase {
         XCTAssertFalse(harness.model.isEntitlementUnresolved)
     }
 
+    func testVerifiedPurchaseUnlocksWhenTheReadbackCannotReachTheStore() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        harness.model.requestAccess(to: .customReminders)
+        XCTAssertTrue(harness.model.isPaywallPresented)
+
+        harness.purchases.outcome = .purchased
+        harness.purchases.entitlement = .unavailable
+        await harness.model.purchaseLifetime()
+
+        XCTAssertEqual(harness.model.entitlement, .pro, "The verified purchase is the answer; nothing re-delivers it")
+        XCTAssertFalse(harness.model.isPaywallPresented)
+        XCTAssertFalse(harness.model.alertMessage?.contains("not confirmed") ?? false)
+    }
+
+    func testOpeningTheOfferWhileUnavailableAsksTheStoreAgain() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .unavailable
+        await harness.model.bootstrap()
+
+        harness.purchases.entitlement = .pro
+        harness.model.requestAccess(to: .customReminders)
+        for _ in 0..<100 where harness.model.entitlement != .pro {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+
+        XCTAssertEqual(harness.model.entitlement, .pro, "requestAccess retries the lookup on its own")
+        XCTAssertFalse(harness.model.isPaywallPresented)
+    }
+
     func testRestoreThatCannotReachTheStoreSaysSo() async throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }
@@ -459,7 +491,10 @@ final class EntitlementVerificationTests: XCTestCase {
         await harness.model.bootstrap()
         harness.model.requestAccess(to: .customReminders)
         await harness.model.restorePurchases()
-        XCTAssertTrue(try XCTUnwrap(harness.model.alertMessage).contains("could not confirm Lifetime Pro"))
+        let message = try XCTUnwrap(harness.model.alertMessage)
+        XCTAssertTrue(message.contains("could not confirm Lifetime Pro"))
+        XCTAssertFalse(message.contains("No Lifetime Pro purchase was found"), "A stalled lookup is not a negative purchase claim (#79)")
         XCTAssertTrue(harness.model.isPaywallPresented)
+        XCTAssertTrue(harness.model.isEntitlementUnresolved, "Restore must not turn unavailable into free")
     }
 }
