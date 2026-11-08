@@ -22,6 +22,8 @@ cd "$PROJECT_ROOT"
 "$SCRIPT_DIR/generate-project.sh"
 python3 site/scripts/check_site.py
 python3 scripts/generate_pip_assets.py --check
+# Source-contract tests for scripts and the paywall's unresolved-entitlement gate (#79).
+python3 -m unittest discover -s scripts -p 'test_*.py'
 plutil -lint ParkNudge/Resources/PrivacyInfo.xcprivacy >/dev/null
 python3 -m json.tool ParkNudge/Resources/ParkNudge.storekit >/dev/null
 
