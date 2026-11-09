@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0735C9E7FA35A18B5A6EB3FD /* ReviewPromptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B416813A621E5C755EE0C0B0 /* ReviewPromptPolicy.swift */; };
 		0D40C197944341BE5CF4FCEE /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2304928308586BD34F76033E /* AppSettings.swift */; };
+		0D6B1FC32B29DA21623D87B5 /* AppStoreLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A63F39789A4E8FDECAF3213 /* AppStoreLinks.swift */; };
 		0DA0C79B7F44A34FD022405D /* OnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957836F929571FB0063BB1C3 /* OnboardingTests.swift */; };
 		0F98DAB48CE337DFF9005C37 /* ParkNudgeSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EAE90046DD78E0A83497B0F /* ParkNudgeSchema.swift */; };
 		11F183B02811FFC0183E721D /* UITestAppearanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0ABE802E1158F5D05A644CF /* UITestAppearanceTests.swift */; };
@@ -20,6 +21,7 @@
 		27C114DB450A0C13B88BF0AD /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E7824D3F5571AE7D51CBF9 /* ServiceProtocols.swift */; };
 		2EB3A0365AC9F06432F0CC3A /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CBBBF0715C815B9FFB4035 /* AppModel.swift */; };
 		307E1BAE371E65706BA61B6C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F41A0705254D59FBD77B5E /* AppEnvironment.swift */; };
+		318F2325238D7A25B6213CD8 /* AppStoreLinksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 278C7A15D32CE623C3D7F02F /* AppStoreLinksTests.swift */; };
 		31D8AEE646D3F4F20E73A905 /* PipMood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1028A7B97D4FB4D6D3B6A07F /* PipMood.swift */; };
 		34E64CA02786D8A297EEBB99 /* CSVExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FB46512DB1E2B072403BCE /* CSVExportService.swift */; };
 		37F28760DA48858A67740E35 /* PipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E673F30EF466C093934100 /* PipView.swift */; };
@@ -99,6 +101,7 @@
 		155013AAB02BAC5F8332F57A /* MeterStateRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterStateRenderingTests.swift; sourceTree = "<group>"; };
 		1562DDDBE12B6F70CD7EEB74 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		193EF026C7D109DF426DBB98 /* TestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFixtures.swift; sourceTree = "<group>"; };
+		1A63F39789A4E8FDECAF3213 /* AppStoreLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreLinks.swift; sourceTree = "<group>"; };
 		1B5979F5EACD343FD04685AF /* CommerceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceModels.swift; sourceTree = "<group>"; };
 		2204CFFA0375A28287D92280 /* ParkNudgeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkNudgeUITests.swift; sourceTree = "<group>"; };
 		2304928308586BD34F76033E /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -106,6 +109,7 @@
 		26714F71FEC7D9891537C896 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		26F90EA87BD5A7865DCA9211 /* ReminderPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderPlanner.swift; sourceTree = "<group>"; };
 		275830D0C012ACD3A2420118 /* ParkingEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingEditorView.swift; sourceTree = "<group>"; };
+		278C7A15D32CE623C3D7F02F /* AppStoreLinksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreLinksTests.swift; sourceTree = "<group>"; };
 		2FAAFBF35122A9270667B1BA /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		2FB9A1475601952858205660 /* LegalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalView.swift; sourceTree = "<group>"; };
 		340B090F688D988C830201BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -226,6 +230,7 @@
 		3F7EBC8D1A3BE5286072605C /* Policies */ = {
 			isa = PBXGroup;
 			children = (
+				1A63F39789A4E8FDECAF3213 /* AppStoreLinks.swift */,
 				8F8C61F50D93EDD27A912FA8 /* MeterState.swift */,
 				A78FA484C979F0EF61B22BD6 /* OnboardingFlow.swift */,
 				E434716DC1A20D7858F844CA /* ParkingTimelinePolicy.swift */,
@@ -270,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				97415266DC492C05402587AC /* AppModelTests.swift */,
+				278C7A15D32CE623C3D7F02F /* AppStoreLinksTests.swift */,
 				E3ED9EEBA34DB66DD8DF4EA1 /* CSVAndMoneyTests.swift */,
 				48E4E69317A2D992B567237E /* FeatureAccessTests.swift */,
 				8963BD223DB8784863585F73 /* MeterContrastTests.swift */,
@@ -531,6 +537,7 @@
 				307E1BAE371E65706BA61B6C /* AppEnvironment.swift in Sources */,
 				2EB3A0365AC9F06432F0CC3A /* AppModel.swift in Sources */,
 				0D40C197944341BE5CF4FCEE /* AppSettings.swift in Sources */,
+				0D6B1FC32B29DA21623D87B5 /* AppStoreLinks.swift in Sources */,
 				7311997915FFB32AC3059C98 /* CSVEncoder.swift in Sources */,
 				34E64CA02786D8A297EEBB99 /* CSVExportService.swift in Sources */,
 				D58A95D195922C5942073A47 /* CommerceModels.swift in Sources */,
@@ -579,6 +586,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1A3423BE95AD3080BCBDF79 /* AppModelTests.swift in Sources */,
+				318F2325238D7A25B6213CD8 /* AppStoreLinksTests.swift in Sources */,
 				F18BEC25B1C3ABA71BBAF3C7 /* CSVAndMoneyTests.swift in Sources */,
 				A185CA40648EFD6AD46A5D3E /* FeatureAccessTests.swift in Sources */,
 				CC53D2A1AC84DAA758D51513 /* MeterContrastTests.swift in Sources */,

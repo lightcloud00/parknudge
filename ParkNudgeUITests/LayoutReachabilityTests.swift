@@ -95,6 +95,15 @@ final class LayoutReachabilityTests: XCTestCase {
         // accessibility element carrying label *and* value, so the bare title
         // never matches. A button is the stable thing to assert on.
         assertReachable(app.buttons["Restore Purchases"], "Settings restore button")
+        // The About section is the last in the Form, below four others, so
+        // scroll (bounded) until the row is on screen, as OnboardingUITests
+        // does for the replay row. Existence only: tapping would leave the
+        // app for the App Store.
+        let rateRow = app.buttons["settings-rate-parknudge"]
+        for _ in 0..<5 where !(rateRow.exists && rateRow.isHittable) {
+            app.swipeUp()
+        }
+        assertReachable(app.buttons["settings-rate-parknudge"], "Settings rate row")
     }
 
     // MARK: - Helpers
