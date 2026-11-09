@@ -1,7 +1,7 @@
 # Paywall matrix — ParkNudge
 
 Issues: lightcloud00/claudecode-workspace#2806 (paywall test kit), lightcloud00/claudecode-workspace#976 (Sandbox commerce scoreboard), parknudge#79 / PR #80 (slow lookup no longer shows a payer as free). No separate commerce issue for the app was found in the repo.
-Source commit: 9cdba94 (HEAD, "A stalled purchase lookup is unavailable, not free (#79) (#80)"). Date: 2026-11-08. Sitting target: ParkNudge 1.2.1.
+Source commit: 6c2d3a2 on main ("chore(release): ParkNudge 1.2.1 (8), the stalled-lookup fix (#79) (#84)", which follows #80). Date: 2026-11-08. Sitting target: ParkNudge 1.2.1 (8).
 Row ids I-01..I-27 were reconstructed from #2806 because the original list (a Mac-local file, section 7 of the paywall-superwall research note) is not available in this container. Mac owner: please reconcile the numbering against the original before the sitting.
 
 Physical-device checks that are not paywall-specific live in [DEVICE-ACCEPTANCE.md](../DEVICE-ACCEPTANCE.md) (see its "StoreKit Sandbox" section); this file does not duplicate them.
@@ -29,7 +29,7 @@ Drift check:
 - Product id: .storekit and code constant match. The ASC product id was not given in the #976 note, so confirm it on the device by the product loading in Sandbox.
 - Price: .storekit 9.99 and ASC $9.99 match. The app never hardcodes a price; the paywall shows the StoreKit `displayPrice`.
 - Display name: .storekit "ParkNudge Lifetime Pro". The paywall title is the literal string "ParkNudge Lifetime Pro", not read from StoreKit. The ASC display name was not provided.
-- Version: `project.yml` is at MARKETING_VERSION 1.2, CURRENT_PROJECT_VERSION 7. The sitting target is 1.2.1, which is not in source at 9cdba94, and ASC live is 1.1 (6). Record the real version and build on every receipt.
+- Version: `project.yml` and `ParkNudge.xcodeproj/project.pbxproj` are at MARKETING_VERSION 1.2.1, CURRENT_PROJECT_VERSION 8 on main 6c2d3a2. ASC live is 1.1 (6). Record the real version and build on every receipt.
 - The .storekit `appPolicies` EULA and policy URL are empty (local config only; the in-app Terms and Privacy come from `LegalView.swift`).
 - The paywall states "No subscription, no trial, no account." and the .storekit has no subscriptions or offers, so no drift.
 
