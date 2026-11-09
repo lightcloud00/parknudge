@@ -95,6 +95,8 @@ final class LayoutReachabilityTests: XCTestCase {
         // accessibility element carrying label *and* value, so the bare title
         // never matches. A button is the stable thing to assert on.
         assertReachable(app.buttons["Restore Purchases"], "Settings restore button")
+        // Existence only: tapping would leave the app for the App Store.
+        assertReachable(app.buttons["settings-rate-parknudge"], "Settings rate row")
     }
 
     // MARK: - Helpers

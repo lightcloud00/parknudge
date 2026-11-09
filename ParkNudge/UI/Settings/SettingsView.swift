@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.openURL) private var openURL
     @State private var legalDocument: LegalDocument?
     @State private var confirmDeleteAll = false
 
@@ -122,6 +123,14 @@ struct SettingsView: View {
         Section("About") {
             Button("Privacy") { legalDocument = .privacy }
             Button("Terms") { legalDocument = .terms }
+            Button {
+                openURL(AppStoreLinks.writeReviewURL)
+            } label: {
+                Label("Rate ParkNudge", systemImage: "star")
+            }
+            .accessibilityLabel("Rate ParkNudge")
+            .accessibilityHint("Opens the App Store page where you can write a review.")
+            .accessibilityIdentifier("settings-rate-parknudge")
             Button("Replay Introduction") { model.replayOnboarding() }
                 .accessibilityIdentifier("settings-replay-onboarding")
             LabeledContent("Version", value: appVersion)
