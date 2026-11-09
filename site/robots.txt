@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://parknudge.app/sitemap.xml
+Sitemap: https://gusdigitalsolutions.com/sitemap-index.xml

@@ -6,18 +6,22 @@
   "sourcePath": "site",
   "hosting": {
     "provider": "cloudflare-pages",
-    "projectName": "parknudge",
-    "status": "not-created-or-unverified"
+    "projectName": "gusdigitalsolutions",
+    "repository": "https://github.com/lightcloud00/gusdigitalsolutions",
+    "pagesPath": "src/pages/parknudge",
+    "status": "publisher-managed"
   },
   "canonical": {
-    "origin": "https://parknudge.app",
-    "status": "candidate-unowned"
+    "origin": "https://gusdigitalsolutions.com",
+    "basePath": "/parknudge/",
+    "url": "https://gusdigitalsolutions.com/parknudge/",
+    "status": "publisher-domain-no-own-domain"
   },
   "endpoints": {
-    "robots": "https://parknudge.app/robots.txt",
-    "sitemap": "https://parknudge.app/sitemap.xml",
-    "llms": "https://parknudge.app/llms.txt",
-    "indexNowKey": "https://parknudge.app/b95efcf4fe87747cf341ebb65298e42d.txt"
+    "robots": "https://gusdigitalsolutions.com/robots.txt",
+    "sitemap": "https://gusdigitalsolutions.com/sitemap-index.xml",
+    "llms": "https://gusdigitalsolutions.com/llms.txt",
+    "indexNowKey": "https://gusdigitalsolutions.com/f93ad0dbec5e79958155fed0ab4c7069cde80da898f59b2624e549316d12a5ed.txt"
   },
   "providers": {
     "googleSearchConsole": "unverified",

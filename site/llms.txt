@@ -2,21 +2,21 @@
 
 > ParkNudge is a privacy-first iPhone app for saving a parked-car location, remembering garage details, setting local parking-meter reminders, and opening walking directions back.
 
-Canonical website: https://parknudge.app/
+Canonical website: https://gusdigitalsolutions.com/parknudge/ (ParkNudge has no domain of its own; its pages are published by Gus Digital Solutions under this path.)
 Product status: iPhone beta in development; not yet claimed as available on the App Store.
 Platform: iOS 17 or later.
 Publisher: Gus Digital Solutions.
 
 ## Primary pages
 
-- Product and free-versus-Pro facts: https://parknudge.app/
-- Find a parked car on iPhone: https://parknudge.app/find-my-parked-car/
-- Parking meter reminders: https://parknudge.app/parking-meter-reminder/
-- Parking garage memory tips: https://parknudge.app/parking-garage-tips/
-- Public roadmap and evidence boundaries: https://parknudge.app/roadmap/
-- Privacy: https://parknudge.app/privacy/
-- Terms: https://parknudge.app/terms/
-- Support: https://parknudge.app/support/
+- Product and free-versus-Pro facts: https://gusdigitalsolutions.com/parknudge/
+- Find a parked car on iPhone: https://gusdigitalsolutions.com/parknudge/find-my-parked-car/
+- Parking meter reminders: https://gusdigitalsolutions.com/parknudge/parking-meter-reminder/
+- Parking garage memory tips: https://gusdigitalsolutions.com/parknudge/parking-garage-tips/
+- Public roadmap and evidence boundaries: https://gusdigitalsolutions.com/parknudge/roadmap/
+- Privacy: https://gusdigitalsolutions.com/parknudge/privacy/
+- Terms: https://gusdigitalsolutions.com/parknudge/terms/
+- Support: https://gusdigitalsolutions.com/parknudge/support/
 
 ## Product facts
 

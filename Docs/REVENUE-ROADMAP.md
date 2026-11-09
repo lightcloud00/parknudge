@@ -41,7 +41,7 @@ Exit gate: deterministic verification, device/accessibility acceptance, identity
 
 - Verification and device gates: [#1](https://github.com/lightcloud00/parknudge/issues/1)–[#5](https://github.com/lightcloud00/parknudge/issues/5)
 - Identity, commerce, metadata, and beta: [#6](https://github.com/lightcloud00/parknudge/issues/6)–[#9](https://github.com/lightcloud00/parknudge/issues/9)
-- Domain and website launch: [#10](https://github.com/lightcloud00/parknudge/issues/10)–[#11](https://github.com/lightcloud00/parknudge/issues/11), with the shared Google/Bing Engine handoff in [#25](https://github.com/lightcloud00/parknudge/issues/25)
+- Website launch on `gusdigitalsolutions.com/parknudge/` (no domain of its own): [#10](https://github.com/lightcloud00/parknudge/issues/10)–[#11](https://github.com/lightcloud00/parknudge/issues/11), with the shared Google/Bing Engine handoff in [#25](https://github.com/lightcloud00/parknudge/issues/25)
 
 No revenue projection is promoted until these evidence gates are complete.
 

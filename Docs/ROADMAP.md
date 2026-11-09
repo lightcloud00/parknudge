@@ -18,7 +18,7 @@ This roadmap separates implemented source from evidence that requires a physical
 - [x] Privacy manifest, contextual permission copy, time-sensitive entitlement, no background modes
 - [x] Unit and simulator UI test sources
 - [x] Dependency-free static website, privacy, terms, support, roadmap, natural-search guides, JSON-LD, sitemap, and checker
-- [x] Cloudflare-ready 404/redirect assets, crawler/LLM/IndexNow files, and provider-neutral search-engine handoff
+- [x] Cloudflare-ready 404/redirect assets, crawler/LLM files, and provider-neutral search-engine handoff
 - [x] Deterministic full simulator, Release, audit, and exact-head CI gate ([#1](https://github.com/lightcloud00/parknudge/issues/1))
 
 ## Device and accessibility acceptance
@@ -37,8 +37,8 @@ This roadmap separates implemented source from evidence that requires a physical
 
 ## Website launch
 
-- [ ] Acquire the selected domain, replace candidate canonicals, and establish the final support channel ([#10](https://github.com/lightcloud00/parknudge/issues/10))
-- [ ] Deploy and verify HTTPS, redirects, canonical URLs, robots, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
+- [ ] Establish the final support channel ([#10](https://github.com/lightcloud00/parknudge/issues/10)). ParkNudge has no domain of its own; canonicals use `https://gusdigitalsolutions.com/parknudge/`.
+- [ ] Verify HTTPS, canonical URLs, robots, sitemap, Google Search Console, Bing Webmaster Tools, and IndexNow for the ParkNudge pages on gusdigitalsolutions.com from the public edge ([#11](https://github.com/lightcloud00/parknudge/issues/11))
 - [ ] Complete the shared Google/Bing Engine lane and record merged, provider, query-baseline, Obsidian, and Hindsight evidence ([#25](https://github.com/lightcloud00/parknudge/issues/25))
 
 ## Revenue foundation
