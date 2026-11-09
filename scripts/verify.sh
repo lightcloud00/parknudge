@@ -9,6 +9,10 @@ SIMULATOR_NAME="ParkNudge-Verify-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 SIMULATOR_ID=""
 REQUESTED_DEVICE_TYPE_ID="${PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID:-}"
 XCRESULT_PATH="${PARKNUDGE_XCRESULT_PATH:-}"
+# A ratchet just under the 157 tests that ParkNudge 1.2.1 (8) ran on
+# 2026-11-08, so a test target that silently drops out of the scheme fails
+# verification. Raise it when tests are added; lower it only on purpose.
+MIN_TESTS=150
 
 cleanup() {
   if [[ -n "$SIMULATOR_ID" ]]; then
@@ -48,6 +52,10 @@ if [[ -n "$XCRESULT_PATH" ]]; then
     exit 73
   fi
   mkdir -p "$(dirname "$XCRESULT_PATH")"
+else
+  # Always keep a result bundle: the test counts below are read from it.
+  XCRESULT_PATH="$PROJECT_ROOT/.build/xcresults/verify-$(date -u +%Y%m%dT%H%M%SZ)-$$.xcresult"
+  mkdir -p "$(dirname "$XCRESULT_PATH")"
 fi
 
 SIMULATOR_ID="$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE_ID" "$RUNTIME_ID")"
@@ -73,11 +81,14 @@ TEST_COMMAND=(
   -destination "platform=iOS Simulator,id=$SIMULATOR_ID"
   -derivedDataPath "$DERIVED_DATA_PATH"
 )
-if [[ -n "$XCRESULT_PATH" ]]; then
-  TEST_COMMAND+=(-resultBundlePath "$XCRESULT_PATH")
-fi
-TEST_COMMAND+=(test-without-building)
+TEST_COMMAND+=(-resultBundlePath "$XCRESULT_PATH" test-without-building)
 "${TEST_COMMAND[@]}"
+
+# Exit 0 from test-without-building does not prove that tests ran. Read the
+# counts from the result bundle (scripts/xcresult_counts.py, unit-tested).
+xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" \
+  | python3 "$SCRIPT_DIR/xcresult_counts.py" --min-tests "$MIN_TESTS"
+echo "Test result bundle: $XCRESULT_PATH"
 
 bash "$SCRIPT_DIR/run-native-command.sh" \
   -project ParkNudge.xcodeproj \
