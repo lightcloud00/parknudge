@@ -1,6 +1,8 @@
 # ParkNudge 1.2.1 (8)
 
-Prepared 2026-11-08. Source only: not archived, uploaded, or submitted. App Review submission needs Gus's own words naming ParkNudge 1.2.1 (8).
+Prepared 2026-11-08 from main `6c2d3a2`. Submitted for App Review on 2026-11-10, and approved by Apple. A read-only App Store Connect readback on 2026-11-11 (claudecode-workspace#3660) shows PENDING_DEVELOPER_RELEASE with a MANUAL release. 1.2 (7) is still the live version (public US lookup, 2026-11-11). Releasing 1.2.1 (8) needs Gus's own words naming ParkNudge 1.2.1 (8).
+
+Not in build 8: everything merged after `6c2d3a2`, including the Rate ParkNudge row (#87) and the open entitlement-ordering follow-up (#89). They ship in the next version.
 
 ## Changes since 1.2 (7)
 
