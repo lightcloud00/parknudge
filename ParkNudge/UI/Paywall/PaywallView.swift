@@ -75,7 +75,7 @@ struct PaywallView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.brand)
-                        .disabled(model.lifetimeProduct == nil || model.isBusy)
+                        .disabled(model.lifetimeProduct == nil || model.isBusy || model.isVerifyingEntitlement || model.entitlement != .free)
                         .accessibilityIdentifier("purchase-lifetime-pro")
                         .accessibilityLabel(purchaseAccessibilityLabel)
                     }

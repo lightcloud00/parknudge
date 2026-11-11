@@ -394,6 +394,98 @@ final class StoreDeadlineTests: XCTestCase {
 /// while it is, the offer must not sell Lifetime Pro to a possibly-paying user.
 @MainActor
 final class EntitlementVerificationTests: XCTestCase {
+    func testOlderFreeLookupCannotOverwriteRestoredPro() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        let lookup = ControlledEntitlementLookup()
+        harness.purchases.lookup = { await lookup.value() }
+        let refresh = Task { await harness.model.retryEntitlementLookup() }
+        await fulfillment(of: [lookup.started], timeout: 2)
+
+        harness.purchases.entitlement = .pro
+        await harness.model.restorePurchases()
+        lookup.finish(.free)
+        await refresh.value
+
+        XCTAssertEqual(harness.model.entitlement, .pro)
+        XCTAssertFalse(harness.model.isVerifyingEntitlement)
+    }
+
+    func testOlderFreeLookupCannotOverwriteVerifiedTransaction() async throws {
+        try await assertTransactionSupersedesLookup(initial: .free, event: .pro, stale: .free)
+    }
+
+    func testOlderProLookupCannotUndoRevocation() async throws {
+        try await assertTransactionSupersedesLookup(initial: .pro, event: .free, stale: .pro)
+    }
+
+    func testLaunchLookupObservesTransactionUpdatesBeforeItFinishes() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        let lookup = ControlledEntitlementLookup()
+        harness.purchases.lookup = { await lookup.value() }
+        let launch = Task { await harness.model.bootstrap() }
+        await fulfillment(of: [lookup.started], timeout: 2)
+        let updated = expectation(description: "Launch received verified Pro")
+        let observation = harness.model.$entitlement.filter { $0 == .pro }.prefix(1)
+            .sink { _ in updated.fulfill() }
+        harness.purchases.sendEntitlementUpdate(.pro)
+        await fulfillment(of: [updated], timeout: 2)
+        lookup.finish(.free)
+        await launch.value
+        withExtendedLifetime(observation) {}
+        XCTAssertEqual(harness.model.entitlement, .pro)
+    }
+
+    func testLookupCannotStartPurchaseOrAnotherLookupWhileVerifying() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        await harness.model.bootstrap()
+        let lookup = ControlledEntitlementLookup()
+        harness.purchases.lookup = { await lookup.value() }
+        let refresh = Task { await harness.model.retryEntitlementLookup() }
+        await fulfillment(of: [lookup.started], timeout: 2)
+        await harness.model.retryEntitlementLookup()
+        await harness.model.purchaseLifetime()
+        XCTAssertEqual(harness.purchases.lookupCount, 2, "Launch plus one shared retry")
+        XCTAssertEqual(harness.purchases.purchaseCount, 0)
+        lookup.finish(.free)
+        await refresh.value
+    }
+
+    func testResolvedFreeLookupStillRemovesProWhenNoNewerEventExists() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = .pro
+        await harness.model.bootstrap()
+        harness.purchases.entitlement = .free
+        await harness.model.retryEntitlementLookup()
+        XCTAssertEqual(harness.model.entitlement, .free)
+    }
+
+    private func assertTransactionSupersedesLookup(
+        initial: EntitlementState, event: EntitlementState, stale: EntitlementState
+    ) async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        harness.purchases.entitlement = initial
+        await harness.model.bootstrap()
+        let lookup = ControlledEntitlementLookup()
+        harness.purchases.lookup = { await lookup.value() }
+        let refresh = Task { await harness.model.retryEntitlementLookup() }
+        await fulfillment(of: [lookup.started], timeout: 2)
+        let updated = expectation(description: "Newer transaction was adopted")
+        let observation = harness.model.$entitlement.filter { $0 == event }.prefix(1)
+            .sink { _ in updated.fulfill() }
+        harness.purchases.sendEntitlementUpdate(event)
+        await fulfillment(of: [updated], timeout: 2)
+        lookup.finish(stale)
+        await refresh.value
+        withExtendedLifetime(observation) {}
+        XCTAssertEqual(harness.model.entitlement, event)
+    }
+
     func testStalledLookupReadsAsUnavailableNotFree() async {
         let state = await StoreKitPurchaseService.resolveEntitlement(seconds: 0.2) {
             await Task.detached { try? await Task.sleep(for: .seconds(5)) }.value
@@ -512,5 +604,23 @@ final class EntitlementVerificationTests: XCTestCase {
         XCTAssertFalse(message.contains("No Lifetime Pro purchase was found"), "A stalled lookup is not a negative purchase claim (#79)")
         XCTAssertTrue(harness.model.isPaywallPresented)
         XCTAssertTrue(harness.model.isEntitlementUnresolved, "Restore must not turn unavailable into free")
+    }
+}
+
+@MainActor
+private final class ControlledEntitlementLookup {
+    let started = XCTestExpectation(description: "Entitlement lookup started")
+    private var continuation: CheckedContinuation<EntitlementState, Never>?
+
+    func value() async -> EntitlementState {
+        await withCheckedContinuation {
+            continuation = $0
+            started.fulfill()
+        }
+    }
+
+    func finish(_ state: EntitlementState) {
+        continuation?.resume(returning: state)
+        continuation = nil
     }
 }
