@@ -29,7 +29,7 @@ Drift check:
 - Product id: .storekit and code constant match. The ASC product id was not given in the #976 note, so confirm it on the device by the product loading in Sandbox.
 - Price: .storekit 9.99 and ASC $9.99 match. The app never hardcodes a price; the paywall shows the StoreKit `displayPrice`.
 - Display name: .storekit "ParkNudge Lifetime Pro". The paywall title is the literal string "ParkNudge Lifetime Pro", not read from StoreKit. The ASC display name was not provided.
-- Version: `project.yml` and `ParkNudge.xcodeproj/project.pbxproj` are at MARKETING_VERSION 1.2.1, CURRENT_PROJECT_VERSION 8 on main 6c2d3a2. ASC live is 1.1 (6). Record the real version and build on every receipt.
+- Version: `project.yml` and `ParkNudge.xcodeproj/project.pbxproj` are at MARKETING_VERSION 1.2.1, CURRENT_PROJECT_VERSION 8 on main 6c2d3a2. The live App Store version is 1.2 (7), since 2026-10-30; 1.2.1 (8) is approved and waiting for a manual release (2026-11-11 readback, claudecode-workspace#3660). Record the real version and build on every receipt.
 - The .storekit `appPolicies` EULA and policy URL are empty (local config only; the in-app Terms and Privacy come from `LegalView.swift`).
 - The paywall states "No subscription, no trial, no account." and the .storekit has no subscriptions or offers, so no drift.
 
