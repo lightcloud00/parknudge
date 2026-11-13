@@ -221,14 +221,24 @@ final class ModelPurchaseFake: PurchaseProviding {
     var entitlement: EntitlementState = .free
     var outcome: PurchaseOutcome = .cancelled
     var restoreFails = false
+    var lookup: (() async -> EntitlementState)?
+    private(set) var lookupCount = 0
+    private(set) var purchaseCount = 0
     private let updates: AsyncStream<EntitlementState>
     private let updatesContinuation: AsyncStream<EntitlementState>.Continuation
     init() {
         (updates, updatesContinuation) = AsyncStream.makeStream()
     }
     func loadProduct() async -> PurchaseProduct? { nil }
-    func currentEntitlement() async -> EntitlementState { entitlement }
-    func purchase() async throws -> PurchaseOutcome { outcome }
+    func currentEntitlement() async -> EntitlementState {
+        lookupCount += 1
+        if let lookup { return await lookup() }
+        return entitlement
+    }
+    func purchase() async throws -> PurchaseOutcome {
+        purchaseCount += 1
+        return outcome
+    }
     func restore() async throws -> EntitlementState {
         if restoreFails { throw PurchaseServiceError.storeUnavailable }
         return entitlement

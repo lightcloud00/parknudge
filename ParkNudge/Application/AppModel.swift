@@ -61,6 +61,7 @@ final class AppModel: ObservableObject {
     private let clock: Clock
     private let marketingVersionProvider: () -> String
     private var entitlementTask: Task<Void, Never>?
+    private var entitlementRevision = 0
     private var isParkingEditorOpen = false
     private var hasBootstrapped = false
     /// Not persisted: "this session" for the review policy is this app run.
@@ -129,9 +130,8 @@ final class AppModel: ObservableObject {
         exporter.cleanupTemporaryExports()
         try? coordinator.cleanOrphanedPhotos()
         await reload()
-        adoptEntitlement(await purchases.currentEntitlement())
-        closeOfferIfUnlocked()
         observeEntitlementUpdates()
+        await retryEntitlementLookup()
         lifetimeProduct = await purchases.loadProduct()
     }
 
@@ -347,10 +347,15 @@ final class AppModel: ObservableObject {
     }
 
     func retryEntitlementLookup() async {
-        guard !isVerifyingEntitlement else { return }
+        guard !isVerifyingEntitlement, !isBusy else { return }
         isVerifyingEntitlement = true
         defer { isVerifyingEntitlement = false }
-        adoptEntitlement(await purchases.currentEntitlement())
+        let revision = entitlementRevision
+        let state = await purchases.currentEntitlement()
+        // Restore, purchase, and transaction events supersede an older lookup,
+        // including a completed but stale free/Pro snapshot.
+        guard revision == entitlementRevision else { return }
+        adoptEntitlement(state)
         closeOfferIfUnlocked()
     }
 
@@ -437,16 +442,20 @@ final class AppModel: ObservableObject {
     }
 
     func purchaseLifetime() async {
+        guard entitlement == .free, !isVerifyingEntitlement, !isBusy else { return }
         isBusy = true
         defer { isBusy = false }
         do {
             switch try await purchases.purchase() {
             case .purchased:
+                entitlementRevision += 1
+                let revision = entitlementRevision
                 // `.purchased` comes only from a verified, unrevoked Lifetime
                 // Pro transaction that `purchase()` has already finished, so
                 // the App Store will not deliver it again. A readback that
                 // cannot reach the store must not leave a paid customer locked.
                 let readback = await purchases.currentEntitlement()
+                guard revision == entitlementRevision else { return }
                 adoptEntitlement(readback == .unavailable ? .pro : readback)
                 if entitlement.isPro {
                     // Read before the offer closes: `offerIsOverParkingEditor`
@@ -469,11 +478,17 @@ final class AppModel: ObservableObject {
     }
 
     func restorePurchases() async {
+        guard !isBusy else { return }
+        entitlementRevision += 1
+        let revision = entitlementRevision
         isBusy = true
         defer { isBusy = false }
         do {
-            adoptEntitlement(try await purchases.restore())
+            let restored = try await purchases.restore()
+            guard revision == entitlementRevision else { return }
+            adoptEntitlement(restored)
         } catch {
+            guard revision == entitlementRevision else { return }
             alertMessage = "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
             return
         }
@@ -557,6 +572,7 @@ final class AppModel: ObservableObject {
             for await state in updates {
                 guard let self else { return }
                 // A verified Ask to Buy update completes the still-open offer.
+                self.entitlementRevision += 1
                 self.adoptEntitlement(state)
                 self.closeOfferIfUnlocked()
             }
