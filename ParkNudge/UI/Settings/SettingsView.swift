@@ -48,8 +48,7 @@ struct SettingsView: View {
                     .foregroundStyle(.green)
             } else {
                 Button {
-                    model.requestedProFeature = nil
-                    model.isPaywallPresented = true
+                    model.presentLifetimeOffer(from: .settings)
                 } label: {
                     HStack {
                         Label {

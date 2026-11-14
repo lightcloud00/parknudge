@@ -41,9 +41,14 @@ extension TestFixtures {
     @MainActor
     static func appModel(
         completedSessions: Int = 0,
-        onboardingCompleted: Bool = true
+        onboardingCompleted: Bool = true,
+        remotePaywall: (any RemotePaywallPresenting)? = nil
     ) throws -> AppModelHarness {
-        try AppModelHarness(completedSessions: completedSessions, onboardingCompleted: onboardingCompleted)
+        try AppModelHarness(
+            completedSessions: completedSessions,
+            onboardingCompleted: onboardingCompleted,
+            remotePaywall: remotePaywall
+        )
     }
 }
 
@@ -65,7 +70,11 @@ final class AppModelHarness {
 
     /// - Parameter onboardingCompleted: Most tests are about a driver who is
     ///   past the introduction; onboarding tests pass `false`.
-    init(completedSessions: Int, onboardingCompleted: Bool) throws {
+    init(
+        completedSessions: Int,
+        onboardingCompleted: Bool,
+        remotePaywall: (any RemotePaywallPresenting)? = nil
+    ) throws {
         guard let defaults = UserDefaults(suiteName: suiteName) else {
             throw ModelHarnessError.unavailableDefaults
         }
@@ -87,6 +96,7 @@ final class AppModelHarness {
             repository: repository, coordinator: coordinator, location: location,
             directions: directions, purchases: purchases, exporter: exporter,
             photos: photos, settings: settings, reviews: reviews, clock: clock,
+            remotePaywall: remotePaywall ?? DormantRemotePaywall(),
             marketingVersionProvider: { "1.0-test" }
         )
     }

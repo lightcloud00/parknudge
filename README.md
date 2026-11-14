@@ -21,7 +21,7 @@ See [MONETIZATION.md](Docs/MONETIZATION.md), [ROADMAP.md](Docs/ROADMAP.md), [REV
 - UserNotifications local, time-sensitive reminders
 - StoreKit 2 verified entitlements
 - XcodeGen with iOS 17 deployment target
-- No third-party packages, backend, account, ads, analytics, background location, or remote push
+- StoreKit 2 owns purchases. SuperwallKit 4.19.1 is linked and stays dormant unless a valid `pk_` key is injected into `SUPERWALL_PUBLIC_API_KEY` at build time. No backend, account, ads, analytics, background location, or remote push
 
 ## Build and test
 

@@ -59,7 +59,11 @@ final class AppModel: ObservableObject {
     private let photos: PhotoStoring
     private let reviews: ReviewRequesting
     private let clock: Clock
+    private let remotePaywall: any RemotePaywallPresenting
     private let marketingVersionProvider: () -> String
+    /// True while a Superwall paywall is loading or on screen. The native
+    /// offer flag stays false then, so the review policy has to see this too.
+    private var remoteOfferInFlight = false
     private var entitlementTask: Task<Void, Never>?
     private var entitlementRevision = 0
     private var isParkingEditorOpen = false
@@ -83,6 +87,7 @@ final class AppModel: ObservableObject {
         // implicit and trips any stricter check.
         reviews: ReviewRequesting,
         clock: Clock,
+        remotePaywall: any RemotePaywallPresenting,
         marketingVersionProvider: (() -> String)? = nil
     ) {
         self.repository = repository
@@ -95,6 +100,7 @@ final class AppModel: ObservableObject {
         self.settings = settings
         self.reviews = reviews
         self.clock = clock
+        self.remotePaywall = remotePaywall
         self.marketingVersionProvider = marketingVersionProvider ?? { Self.marketingVersion }
 
         // Decided here, not in `bootstrap()`, so a new driver never sees the
@@ -246,7 +252,7 @@ final class AppModel: ObservableObject {
             reachedFreeLimitThisSession: reachedFreeLimitThisSession,
             hasActiveAlert: alertMessage != nil,
             hasActiveConfirmation: false,
-            isPaywallPresented: isPaywallPresented,
+            isPaywallPresented: isPaywallPresented || remoteOfferInFlight,
             isPurchasePresented: false,
             // `finishActive` holds `isBusy` for its whole body, so this is read
             // as "is anything *else* in flight" from the policy's point of view.
@@ -321,12 +327,32 @@ final class AppModel: ObservableObject {
 
     func requestAccess(to feature: ProFeature) {
         reachedFreeLimitThisSession = true
+        presentLifetimeOffer(from: PaywallEntryPoint(feature), feature: feature)
+    }
+
+    /// Opens Lifetime Pro. A confirmed free customer is offered through
+    /// Superwall when a valid public key configured it. Every other case, and
+    /// every case where Superwall cannot present, uses the native paywall.
+    /// An unresolved entitlement is never sent to Superwall (#79).
+    func presentLifetimeOffer(from entryPoint: PaywallEntryPoint, feature: ProFeature? = nil) {
         requestedProFeature = feature
-        isPaywallPresented = true
-        // The offer shows a verifying state, not a purchase button, until the
-        // App Store answers. Ask it again; the offer closes if Pro comes back.
         if entitlement == .unavailable {
             Task { await retryEntitlementLookup() }
+        }
+        guard entitlement == .free else {
+            if !entitlement.isPro {
+                isPaywallPresented = true
+            }
+            return
+        }
+        if remotePaywall.defersNativePaywall {
+            remoteOfferInFlight = true
+        }
+        remotePaywall.presentPaywall(entryPoint: entryPoint.rawValue) { [weak self] in
+            self?.remoteOfferInFlight = false
+            self?.isPaywallPresented = true
+        } onFinish: { [weak self] in
+            self?.remoteOfferInFlight = false
         }
     }
 
@@ -363,6 +389,7 @@ final class AppModel: ObservableObject {
     private func adoptEntitlement(_ state: EntitlementState) {
         if state == .unavailable, entitlement == .pro { return }
         entitlement = state
+        remotePaywall.noteEntitlement(state)
     }
 
     /// A verified Pro that arrives while the offer is open completes it, just
@@ -442,7 +469,30 @@ final class AppModel: ObservableObject {
     }
 
     func purchaseLifetime() async {
-        guard entitlement == .free, !isVerifyingEntitlement, !isBusy else { return }
+        _ = await performLifetimePurchase(announceFailures: true)
+    }
+
+    func restorePurchases() async {
+        _ = await performRestore(announceFailures: true)
+    }
+
+    func purchaseForRemotePaywall() async -> RemotePurchaseReport {
+        await performLifetimePurchase(announceFailures: false)
+    }
+
+    func restoreForRemotePaywall() async -> RemoteRestoreReport {
+        await performRestore(announceFailures: false)
+    }
+
+    /// The native button announces a store failure itself. The remote paywall
+    /// shows that same sentence, so it must not also set `alertMessage`.
+    private func performLifetimePurchase(announceFailures: Bool) async -> RemotePurchaseReport {
+        guard entitlement == .free, !isVerifyingEntitlement, !isBusy else {
+            if entitlement.isPro { return RemotePurchaseReport.purchased }
+            return RemotePurchaseReport.failed(
+                "Lifetime Pro is not available from the store right now. Your saved parking details remain available."
+            )
+        }
         isBusy = true
         defer { isBusy = false }
         do {
@@ -455,56 +505,83 @@ final class AppModel: ObservableObject {
                 // the App Store will not deliver it again. A readback that
                 // cannot reach the store must not leave a paid customer locked.
                 let readback = await purchases.currentEntitlement()
-                guard revision == entitlementRevision else { return }
-                adoptEntitlement(readback == .unavailable ? .pro : readback)
-                if entitlement.isPro {
-                    // Read before the offer closes: `offerIsOverParkingEditor`
-                    // is false once `isPaywallPresented` is cleared.
-                    let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
-                    isPaywallPresented = false
-                    // An export intent resumes after the offer dismisses. A
-                    // simultaneous success alert competes for the same
-                    // presentation and can discard it.
-                    alertMessage = confirmsInPlace ? nil : "Lifetime Pro is unlocked."
+                guard revision == entitlementRevision else {
+                    return entitlement.isPro ? RemotePurchaseReport.purchased : RemotePurchaseReport.cancelled
                 }
+                adoptEntitlement(readback == .unavailable ? .pro : readback)
+                guard entitlement.isPro else {
+                    return RemotePurchaseReport.failed(
+                        PurchaseServiceError.verificationFailed.localizedDescription
+                            ?? "The purchase could not be verified. Try Restore Purchases or contact support."
+                    )
+                }
+                // Read before the offer closes: `offerIsOverParkingEditor`
+                // is false once `isPaywallPresented` is cleared.
+                let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
+                isPaywallPresented = false
+                // An export intent resumes after the offer dismisses. A
+                // simultaneous success alert competes for the same
+                // presentation and can discard it.
+                alertMessage = confirmsInPlace ? nil : "Lifetime Pro is unlocked."
+                return RemotePurchaseReport.purchased
             case .cancelled:
-                break
+                return RemotePurchaseReport.cancelled
             case .pending:
                 alertMessage = "Your purchase is pending approval. Pro unlocks after verification. Your saved spot remains available."
+                return RemotePurchaseReport.pending
             }
         } catch {
-            alertMessage = error.localizedDescription
+            if announceFailures {
+                alertMessage = error.localizedDescription
+            }
+            return RemotePurchaseReport.failed(error.localizedDescription)
         }
     }
 
-    func restorePurchases() async {
-        guard !isBusy else { return }
+    private func performRestore(announceFailures: Bool) async -> RemoteRestoreReport {
+        guard !isBusy else {
+            return .failed(
+                "Apple is still working on an earlier purchase or restore. No second purchase was started."
+            )
+        }
         entitlementRevision += 1
         let revision = entitlementRevision
         isBusy = true
         defer { isBusy = false }
         do {
             let restored = try await purchases.restore()
-            guard revision == entitlementRevision else { return }
+            guard revision == entitlementRevision else {
+                return entitlement.isPro
+                    ? .restored
+                    : .failed("The App Store could not confirm Lifetime Pro right now. Try Restore Purchases again when the store is available. Your saved spot remains available.")
+            }
             adoptEntitlement(restored)
         } catch {
-            guard revision == entitlementRevision else { return }
-            alertMessage = "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
-            return
+            guard revision == entitlementRevision else {
+                return entitlement.isPro
+                    ? .restored
+                    : .failed("The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available.")
+            }
+            let message = "The App Store could not restore Lifetime Pro. Try Restore Purchases again when the store is available. Your saved spot remains available."
+            if announceFailures { alertMessage = message }
+            return .failed(message)
         }
         if entitlement == .unavailable {
-            alertMessage = "The App Store could not confirm Lifetime Pro right now. Try Restore Purchases again when the store is available. Your saved spot remains available."
-            return
+            let message = "The App Store could not confirm Lifetime Pro right now. Try Restore Purchases again when the store is available. Your saved spot remains available."
+            if announceFailures { alertMessage = message }
+            return .failed(message)
         }
         guard entitlement.isPro else {
-            alertMessage = "No Lifetime Pro purchase was found for this Apple ID."
-            return
+            let message = "No Lifetime Pro purchase was found for this Apple ID."
+            if announceFailures { alertMessage = message }
+            return .failed(message)
         }
         // Read before the offer closes: `offerIsOverParkingEditor` is false
         // once `isPaywallPresented` is cleared.
         let confirmsInPlace = resumesIntentAfterUnlock || offerIsOverParkingEditor
         alertMessage = confirmsInPlace ? nil : "Lifetime Pro was restored."
         isPaywallPresented = false
+        return .restored
     }
 
     func makeCSVExport() -> URL? {
@@ -579,3 +656,5 @@ final class AppModel: ObservableObject {
         }
     }
 }
+
+extension AppModel: LifetimePurchaseOwning {}

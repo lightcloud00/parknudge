@@ -74,6 +74,10 @@
 		F18BEC25B1C3ABA71BBAF3C7 /* CSVAndMoneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3ED9EEBA34DB66DD8DF4EA1 /* CSVAndMoneyTests.swift */; };
 		F627C9D004400DEF8DF165FB /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78FA484C979F0EF61B22BD6 /* OnboardingFlow.swift */; };
 		F665962FEB106B420427463D /* ParkingCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE6CF9358C9FB22AD7B883E /* ParkingCoordinatorTests.swift */; };
+		177C3372C337177C3372C337 /* SuperwallConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33E0F38E0F3C33E0F38E0F3 /* SuperwallConfigTests.swift */; };
+		5BB077B6077B5BB077B6077B /* SuperwallKit in Frameworks */ = {isa = PBXBuildFile; productRef = 399E5594E559399E5594E559 /* SuperwallKit */; };
+		E55A1150A115E55A1150A115 /* SuperwallConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11C0F16C0F1A11C0F16C0F1 /* SuperwallConfig.swift */; };
+		F66B2261B226F66B2261B226 /* SuperwallBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22D0E27D0E2B22D0E27D0E2 /* SuperwallBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -165,6 +169,10 @@
 		F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderPlannerTests.swift; sourceTree = "<group>"; };
 		F6CBBBF0715C815B9FFB4035 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		F9A9EA2DFFAFE1AD839104CF /* PlaceSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceSearchService.swift; sourceTree = "<group>"; };
+		A11C0F16C0F1A11C0F16C0F1 /* SuperwallConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperwallConfig.swift; sourceTree = "<group>"; };
+		B22D0E27D0E2B22D0E27D0E2 /* SuperwallBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperwallBridge.swift; sourceTree = "<group>"; };
+		C33E0F38E0F3C33E0F38E0F3 /* SuperwallConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperwallConfigTests.swift; sourceTree = "<group>"; };
+		D44F1049F104D44F1049F104 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -190,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				C4F074A9CB5A39DB8665D84B /* ParkNudge.entitlements */,
+				D44F1049F104D44F1049F104 /* Info.plist */,
 				396325E8F8FBE93D7A4AF108 /* App */,
 				EEDE213CF1DD6D995F2F706F /* Application */,
 				C5E75C3C3D9BEF0775002721 /* Domain */,
@@ -286,6 +295,7 @@
 				9CF903511BF0ADB0756017F7 /* ParkingTimelinePolicyTests.swift */,
 				F622155E76A6F8C44EBB7703 /* ReminderPlannerTests.swift */,
 				6DEDB36934A2B45B84BEAB7E /* ReviewPromptPolicyTests.swift */,
+				C33E0F38E0F3C33E0F38E0F3 /* SuperwallConfigTests.swift */,
 				6FB4A93CDA232A9EC219FAEE /* SwiftDataParkingRepositoryTests.swift */,
 				193EF026C7D109DF426DBB98 /* TestFixtures.swift */,
 				E0ABE802E1158F5D05A644CF /* UITestAppearanceTests.swift */,
@@ -408,6 +418,8 @@
 				71C2678EB2B7CC58A6BEEE3B /* PhotoStore.swift */,
 				F9A9EA2DFFAFE1AD839104CF /* PlaceSearchService.swift */,
 				5B2CDA4A0325C839A543EADC /* PurchaseService.swift */,
+				B22D0E27D0E2B22D0E27D0E2 /* SuperwallBridge.swift */,
+				A11C0F16C0F1A11C0F16C0F1 /* SuperwallConfig.swift */,
 				96A184EAAC5CA4FB586B97DB /* ReviewRequester.swift */,
 			);
 			path = Platform;
@@ -438,6 +450,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AFF7060526FAA5D8B6C27878 /* Build configuration list for PBXNativeTarget "ParkNudge" */;
 			buildPhases = (
+				4AAF66A5F66A4AAF66A5F66A /* Frameworks */,
 				2491B3DCF327A5358AF9DF78 /* Sources */,
 				A92B1181F2797BEC17C26EA6 /* Resources */,
 			);
@@ -447,6 +460,7 @@
 			);
 			name = ParkNudge;
 			packageProductDependencies = (
+				399E5594E559399E5594E559 /* SuperwallKit */,
 			);
 			productName = ParkNudge;
 			productReference = A836C6BCDF9B3F2013AFB86E /* ParkNudge.app */;
@@ -501,6 +515,9 @@
 			productRefGroup = 3ADEBA48AF6E7A36FA402F79 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
+			packageReferences = (
+				288D4483D448288D4483D448 /* XCRemoteSwiftPackageReference "Superwall-iOS" */,
+			);
 			targets = (
 				75D075E89A658D778366A5AC /* ParkNudge */,
 				FD3457DAEE31F285EC2D705D /* ParkNudgeTests */,
@@ -568,6 +585,8 @@
 				37F28760DA48858A67740E35 /* PipView.swift in Sources */,
 				64D293ACB513A9880B3DF41B /* PlaceSearchService.swift in Sources */,
 				5665510805039382EBB8A58B /* PurchaseService.swift in Sources */,
+				F66B2261B226F66B2261B226 /* SuperwallBridge.swift in Sources */,
+				E55A1150A115E55A1150A115 /* SuperwallConfig.swift in Sources */,
 				A09D7EFFFEA0B5EEFF5037CF /* ReminderPlanner.swift in Sources */,
 				0735C9E7FA35A18B5A6EB3FD /* ReviewPromptPolicy.swift in Sources */,
 				8CBC18810AB9699F161430F6 /* ReviewRequester.swift in Sources */,
@@ -597,6 +616,7 @@
 				7A129FDF1A084A2F78D7C813 /* ParkingTimelinePolicyTests.swift in Sources */,
 				D4873D443D4B1B74A7D7A2E6 /* ReminderPlannerTests.swift in Sources */,
 				D3672089E80290ADB26AED01 /* ReviewPromptPolicyTests.swift in Sources */,
+				177C3372C337177C3372C337 /* SuperwallConfigTests.swift in Sources */,
 				94D33FC8B5250A9B6577053F /* SwiftDataParkingRepositoryTests.swift in Sources */,
 				881712E7C5C982F61EE99A89 /* TestFixtures.swift in Sources */,
 				11F183B02811FFC0183E721D /* UITestAppearanceTests.swift in Sources */,
@@ -629,6 +649,36 @@
 			targetProxy = 256748CEEB0B2D1C1969E63F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4AAF66A5F66A4AAF66A5F66A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5BB077B6077B5BB077B6077B /* SuperwallKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		288D4483D448288D4483D448 /* XCRemoteSwiftPackageReference "Superwall-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/superwall/Superwall-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 4.19.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		399E5594E559399E5594E559 /* SuperwallKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 288D4483D448288D4483D448 /* XCRemoteSwiftPackageReference "Superwall-iOS" */;
+			productName = SuperwallKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0CAC8FDC5F70B2805961619F /* Debug */ = {
@@ -738,6 +788,7 @@
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 9QCR933V26;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ParkNudge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ParkNudge;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
@@ -757,6 +808,7 @@
 				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gusdigitalsolutions.parknudge;
 				PRODUCT_NAME = ParkNudge;
+				SUPERWALL_PUBLIC_API_KEY = "";
 				PROVISIONING_PROFILE_SPECIFIER = "ParkNudge App Store 2026-08-25";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -840,6 +892,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 9;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ParkNudge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ParkNudge;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
@@ -859,6 +912,7 @@
 				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gusdigitalsolutions.parknudge;
 				PRODUCT_NAME = ParkNudge;
+				SUPERWALL_PUBLIC_API_KEY = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

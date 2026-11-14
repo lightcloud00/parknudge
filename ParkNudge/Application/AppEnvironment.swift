@@ -28,6 +28,7 @@ struct AppEnvironment {
             photos: photos,
             clock: clock
         )
+        let bridge = SuperwallBridge()
         let model = AppModel(
             repository: repository,
             coordinator: coordinator,
@@ -38,8 +39,12 @@ struct AppEnvironment {
             photos: photos,
             settings: AppSettings(),
             reviews: StoreKitReviewRequester(),
-            clock: clock
+            clock: clock,
+            remotePaywall: bridge
         )
+        // After the model exists, so the purchase controller can call back
+        // into it. With no valid pk_ key this does not touch SuperwallKit.
+        bridge.configureIfEnabled(owner: model)
         return AppEnvironment(container: container, model: model)
     }
 
@@ -85,7 +90,10 @@ struct AppEnvironment {
             photos: photos,
             settings: settings,
             reviews: UITestReviewRequester(),
-            clock: clock
+            clock: clock,
+            // UI tests assert the native paywall. Never configure Superwall,
+            // even when the test host was built with a public key.
+            remotePaywall: DormantRemotePaywall()
         )
 
         return AppEnvironment(container: container, model: model)

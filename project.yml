@@ -17,6 +17,10 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
     TARGETED_DEVICE_FAMILY: "1"
     SUPPORTS_MACCATALYST: NO
+packages:
+  SuperwallKit:
+    url: https://github.com/superwall/Superwall-iOS
+    exactVersion: 4.19.1
 targets:
   ParkNudge:
     type: application
@@ -26,6 +30,7 @@ targets:
       - path: ParkNudge
         excludes:
           - Resources
+          - Info.plist
       - path: ParkNudge/Resources
         buildPhase: resources
         excludes:
@@ -58,6 +63,9 @@ targets:
           - UIInterfaceOrientationPortrait
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        INFOPLIST_FILE: ParkNudge/Info.plist
+        # Empty in the repo. A Release archive overrides it with the public pk_ key.
+        SUPERWALL_PUBLIC_API_KEY: ""
         CODE_SIGN_STYLE: Automatic
       configs:
         Release:
@@ -65,6 +73,9 @@ targets:
           CODE_SIGN_STYLE: Manual
           DEVELOPMENT_TEAM: 9QCR933V26
           PROVISIONING_PROFILE_SPECIFIER: ParkNudge App Store 2026-08-25
+    dependencies:
+      - package: SuperwallKit
+        product: SuperwallKit
   ParkNudgeTests:
     type: bundle.unit-test
     platform: iOS

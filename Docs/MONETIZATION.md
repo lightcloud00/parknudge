@@ -43,6 +43,17 @@ All completed sessions remain stored locally. Upgrade reveals older sessions. A 
 - Restore: call `AppStore.sync()` and recompute current verified entitlement.
 - Revoked or refunded: recompute to free without deleting data.
 
+## Remote paywall
+
+SuperwallKit 4.19.1 can present the Lifetime Pro offer. `StoreKitPurchaseService` remains the purchase owner: Superwall calls back into the same purchase and restore the native paywall uses, and only a verified StoreKit transaction unlocks Pro.
+
+- Placement: `parknudge_paywall`.
+- Product: `com.gusdigitalsolutions.parknudge.pro.lifetime` only. Any other product id is refused before StoreKit runs.
+- `Superwall.configure` runs only when `SUPERWALL_PUBLIC_API_KEY` is a public `pk_` key. The committed Info.plist value is the build setting `$(SUPERWALL_PUBLIC_API_KEY)`, and that setting is empty in the repository. With no valid key, every offer opens the native paywall, as before.
+- UI tests pass `-ui-testing` and always use the native paywall, even if a key is present in that build.
+- Confirmed free customers are registered on `parknudge_paywall`. A missing key, a configuration that is not ready, no campaign, a holdout, no audience match, a presentation error, a web-view load failure, or a paywall that does not appear within 2.5 seconds falls back to `PaywallView`. Closing a paywall that did load, a purchase, a restore, and a second tap while one paywall is already up do not stack a second offer.
+- An entitlement that is still loading or unavailable shows the native verifying paywall and is not registered with Superwall.
+
 ## Why not a subscription
 
 The MVP is an on-device utility whose launch value does not depend on continuously delivered content or a hosted service. A one-time purchase is the clearer fit. See Apple’s [in-app purchase type reference](https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/in-app-purchase-types) and [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
