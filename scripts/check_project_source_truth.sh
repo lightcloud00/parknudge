@@ -29,4 +29,22 @@ done
 scheme_path='ParkNudge.xcodeproj/xcshareddata/xcschemes/ParkNudge.xcscheme'
 test "$(rg -F '../../ParkNudge/Resources/ParkNudge.storekit' "$scheme_path" | wc -l | tr -d ' ')" -eq 2
 
+test "$(rg -F 'url: https://github.com/superwall/Superwall-iOS' project.yml | wc -l | tr -d ' ')" -eq 1
+test "$(rg -F 'exactVersion: 4.19.1' project.yml | wc -l | tr -d ' ')" -eq 1
+test "$(rg -F 'SUPERWALL_PUBLIC_API_KEY: ""' project.yml | wc -l | tr -d ' ')" -eq 1
+
+key_status=0
+rg -n 'pk_[A-Za-z0-9_-]{8,}' project.yml ParkNudge/Info.plist ParkNudge.xcodeproj/project.pbxproj || key_status=$?
+case "$key_status" in
+  0)
+    echo "A Superwall key value is committed." >&2
+    exit 1
+    ;;
+  1) ;;
+  *)
+    echo "The Superwall key scan could not run (rg exit $key_status)." >&2
+    exit 1
+    ;;
+esac
+
 echo "ParkNudge generated-project source truth passed."

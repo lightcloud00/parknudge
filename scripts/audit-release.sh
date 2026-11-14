@@ -59,8 +59,37 @@ case "$sdk_status" in
   *) fail "The SDK marker scan could not run (rg exit $sdk_status)." ;;
 esac
 
-lockfile_match="$(find "$PROJECT_ROOT" -name Package.resolved -print -quit)"
-[[ -z "$lockfile_match" ]] || fail "A Swift package dependency lockfile was found ($lockfile_match); review dependency policy."
+# SuperwallKit 4.19.1 is the only approved package. Checkouts under DerivedData
+# also contain Package.resolved files; only the app lockfile is the policy.
+lockfile="$PROJECT_ROOT/ParkNudge.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+[[ -f "$lockfile" ]] || fail "Swift package lockfile is missing ($lockfile)."
+python3 - "$lockfile" <<'PY' || fail "Package.resolved is not the approved SuperwallKit 4.19.1 pin."
+import json, sys
+pins = json.load(open(sys.argv[1])).get("pins") or []
+found = {}
+for pin in pins:
+    identity = str(pin.get("identity", "")).lower()
+    found[identity] = (pin.get("state") or {}).get("version")
+expected = {
+    "superwall-ios": "4.19.1",
+    "superscript-ios-next": "1.0.18",
+}
+if found != expected:
+    raise SystemExit(f"pins {found} != {expected}")
+PY
+
+key_status=0
+rg -n 'pk_[A-Za-z0-9_-]{8,}' \
+  "$PROJECT_ROOT/project.yml" \
+  "$PROJECT_ROOT/ParkNudge/Info.plist" \
+  "$PROJECT_ROOT/ParkNudge.xcodeproj/project.pbxproj" \
+  "$PROJECT_ROOT/ParkNudge" \
+  -g '!*.md' || key_status=$?
+case "$key_status" in
+  0) fail "A Superwall key value is committed." ;;
+  1) ;;
+  *) fail "The Superwall key scan could not run (rg exit $key_status)." ;;
+esac
 
 plutil -lint "$APP_PATH/PrivacyInfo.xcprivacy" >/dev/null
-echo "Release audit passed: ParkNudge $built_version ($built_build); no StoreKit config, background modes, tracking prompt, third-party SDK marker, or package lockfile."
+echo "Release audit passed: ParkNudge $built_version ($built_build); no StoreKit config, background modes, tracking prompt, or unapproved package."

@@ -12,7 +12,7 @@ ParkNudge is a native iPhone utility for saving a parked-car location, rememberi
 - Keep Apple framework adapters behind small protocols where this improves deterministic testing.
 - Store absolute dates for meter deadlines. Never persist a decrementing countdown.
 - Request When-In-Use location only after the user asks to save a spot. Never add background or Always location to the MVP.
-- Do not add a third-party dependency without an explicit product decision and privacy review.
+- SuperwallKit 4.19.1 is the one approved third-party package. Configure it only with a valid `pk_` key in `SUPERWALL_PUBLIC_API_KEY`. `StoreKitPurchaseService` stays the purchase owner. Do not add another third-party dependency without an explicit product decision and privacy review.
 - Never treat cached preferences as purchase authority; only verified StoreKit transactions unlock Pro.
 
 ## UI

@@ -11,8 +11,8 @@ Physical-device checks that are not paywall-specific live in [DEVICE-ACCEPTANCE.
 
 ## What this proves and what it does not
 
-- SK rows (Xcode StoreKit configuration in the simulator) prove the app's own purchase, restore and entitlement logic against a local fake store. They do not prove Apple servers, App Store Connect product state, Sandbox behaviour, RevenueCat, Superwall or any server ledger.
-- ParkNudge has no RevenueCat, no Superwall and no backend (AGENTS.md: local-only, StoreKit 2 only), so there is no provider or server ledger to check. Row I-25 is therefore n/a.
+- SK rows (Xcode StoreKit configuration in the simulator) prove the app's own purchase, restore and entitlement logic against a local fake store. They do not prove Apple servers, App Store Connect product state, Sandbox behaviour, or any server ledger.
+- The app links SuperwallKit 4.19.1, which stays dormant unless a Release build injects a valid `pk_` key into `SUPERWALL_PUBLIC_API_KEY`. Purchases still go through `StoreKitPurchaseService`. There is no RevenueCat and no ParkNudge backend. Row I-25 stays n/a: Superwall does not grant Pro, and the transaction record is still the App Store one.
 - The XCUITests that exist run with `-ui-testing`, which swaps in a stub purchase provider (`UITestPurchaseProvider` in `ParkNudge/Application/AppEnvironment.swift`). They never touch StoreKit, except `testAppReviewLifetimePaywallScreenshot`, which omits `-ui-testing`.
 - The unit tests in `ParkNudgeTests/AppModelTests.swift` use a fake `PurchaseProviding` from `TestFixtures.swift`. No file in the repo uses `SKTestSession` or `StoreKitTest`. No row is automated against a real or simulated StoreKit session.
 - Env codes: SK = StoreKit configuration file in the simulator. SB = Sandbox tester account on a device with a dev/Xcode build. TF = TestFlight build on Gus's iPhone, signed in to the Sandbox tester under Settings > Developer (see the TestFlight account note) (subscription renewal speed is moot here, no subscriptions). PR = a second physical device. Never a personal Apple ID or real money.
@@ -98,7 +98,7 @@ Status is "not run" for every applicable row; no receipts are in the repo. Prere
 | I-22 | Double tap on Buy: single charge | SK, SB | Double-tap "Unlock Lifetime Pro" quickly. | Button shows a spinner and is disabled while busy (`isBusy`), so one purchase sheet and one transaction. | Screen recording; one transaction in the Xcode transaction manager or the Sandbox receipt. | not run |
 | I-23 | Manage subscription link | all | n/a — no subscription and no manage-subscriptions control in source. | n/a | n/a | n/a |
 | I-24 | Consumable credit once | all | n/a — Lifetime Pro is non-consumable; no consumable products. | n/a | n/a | n/a |
-| I-25 | Provider / server ledger records the transaction | all | n/a — no RevenueCat, Superwall or server (local-only app). The only record is the App Store/Sandbox transaction (capture the last 6 of the id). | n/a | n/a | n/a |
+| I-25 | Provider / server ledger records the transaction | all | n/a — no RevenueCat or ParkNudge server. Superwall, when a key and the `parknudge_paywall` campaign exist, can record that a paywall was shown. It does not grant Pro. The purchase record is the App Store/Sandbox transaction (capture the last 6 of the id). | n/a | n/a | n/a |
 | I-26 | TestFlight renewal-limit behaviour | TF | n/a — no renewing products. | n/a | n/a | n/a |
 | I-27 | Production purchase | none | not authorized (no real money). Do not tap "Unlock Lifetime Pro" on an App Store build signed in with a real Apple ID. | n/a | n/a | not authorized |
 

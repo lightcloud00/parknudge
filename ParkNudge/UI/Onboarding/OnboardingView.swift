@@ -382,8 +382,7 @@ private struct ProTeaserPage: View {
                 }
             } else {
                 PrimaryAction(title: "See Lifetime Pro", identifier: "onboarding-see-pro") {
-                    model.requestedProFeature = nil
-                    model.isPaywallPresented = true
+                    model.presentLifetimeOffer(from: .onboarding)
                 }
                 Button("Maybe Later") { model.completeOnboarding() }
                     .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget)

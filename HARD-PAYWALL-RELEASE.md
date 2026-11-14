@@ -17,7 +17,7 @@ Candidate: **1.1 (5)**. App Store Connect has the 1.1 version record with builds
 - Home and the paywall say "Your first park is free" before it is used and "You've used your free park" after.
 - Verified production app ownership from original builds 1–2 keeps the original Free parking. It doesn't grant Pro extras.
 - A verified sandbox or Xcode app transaction (App Review, TestFlight, local StoreKit) is never an original customer, so it is treated as a new customer. Restore with nothing to restore then says "No previous parking access or active Lifetime Pro purchase was found." Only an unverified or failed lookup stays unknown and reports that the App Store could not verify access.
-- Keep the approved product `com.gusdigitalsolutions.parknudge.pro.lifetime`. Prices come from StoreKit. No subscription or Superwall SDK is introduced.
+- Keep the approved product `com.gusdigitalsolutions.parknudge.pro.lifetime`. Prices come from StoreKit. This 1.1 candidate did not add a subscription or a Superwall SDK. Current source may link SuperwallKit, gated on `SUPERWALL_PUBLIC_API_KEY`; see Docs/MONETIZATION.md.
 - DEBUG UI fixtures stay legacy by default. Use `--new-customer-paywall` for the new-customer journey.
 
 ## Release acceptance

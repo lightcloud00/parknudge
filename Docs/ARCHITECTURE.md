@@ -15,7 +15,8 @@ Protocol boundaries
     ├── NotificationScheduling → LocalNotificationScheduler
     ├── PhotoStoring → ApplicationSupportPhotoStore
     ├── DirectionsOpening → AppleMapsDirectionsOpener
-    ├── PurchaseProviding → StoreKitPurchaseService
+    ├── PurchaseProviding → StoreKitPurchaseService (purchase owner)
+    ├── RemotePaywallPresenting → SuperwallBridge, dormant without a valid pk_ key
     ├── CSVExporting → LocalCSVExporter
     └── Clock → SystemClock
 ```
@@ -43,4 +44,4 @@ Money is stored as an integer number of minor units plus the session’s ISO cur
 
 ## Privacy and capabilities
 
-The target includes When-In-Use location and camera purpose strings, the time-sensitive notification entitlement, and in-app purchase capability. It has no background modes, push entitlement, tracking declaration, or third-party SDK.
+The target includes When-In-Use location and camera purpose strings, the time-sensitive notification entitlement, and in-app purchase capability. It has no background modes, push entitlement, or tracking declaration. The only third-party SDK is SuperwallKit 4.19.1. It is not configured unless `SUPERWALL_PUBLIC_API_KEY` holds a valid public `pk_` key, and it does not grant Pro.
