@@ -228,10 +228,10 @@ struct ParkingEditorView: View {
 
     private var detailsSection: some View {
         Section("Helpful details") {
-            TextField("Place label (optional)", text: $draft.locationLabel)
-            TextField("Floor (optional)", text: $draft.floor)
-            TextField("Section (optional)", text: $draft.section)
-            TextField("Note (optional)", text: $draft.note, axis: .vertical)
+            ParkingDetailField(title: "Place label (optional)", text: $draft.locationLabel)
+            ParkingDetailField(title: "Floor (optional)", text: $draft.floor)
+            ParkingDetailField(title: "Section (optional)", text: $draft.section)
+            ParkingDetailField(title: "Note (optional)", text: $draft.note, axis: .vertical)
                 .lineLimit(2...5)
         }
     }
@@ -462,6 +462,22 @@ private struct CameraPicker: UIViewControllerRepresentable {
 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.dismiss()
+        }
+    }
+}
+
+struct ParkingDetailField: View {
+    let title: LocalizedStringKey
+    @Binding var text: String
+    var axis: Axis = .horizontal
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            TextField(title, text: $text, prompt: Text(""), axis: axis)
         }
     }
 }

@@ -264,15 +264,15 @@ private struct FirstSavePage: View {
         case .garage:
             VStack(alignment: .leading, spacing: 8) {
                 Text("Garage").font(.headline)
-                TextField("Floor (optional)", text: $draft.floor)
+                ParkingDetailField(title: "Floor (optional)", text: $draft.floor)
                     .textFieldStyle(.roundedBorder)
-                TextField("Section (optional)", text: $draft.section)
+                ParkingDetailField(title: "Section (optional)", text: $draft.section)
                     .textFieldStyle(.roundedBorder)
             }
         case .lot:
             VStack(alignment: .leading, spacing: 8) {
                 Text("Lot").font(.headline)
-                TextField("Row or landmark (optional)", text: $draft.note)
+                ParkingDetailField(title: "Row or landmark (optional)", text: $draft.note)
                     .textFieldStyle(.roundedBorder)
             }
         case .streetMeter, nil:
