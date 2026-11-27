@@ -46,6 +46,32 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertFalse(app.otherElements["onboarding-step-promise"].exists)
     }
 
+    /// A denied lookup must not finish the introduction until the pin is confirmed.
+    @MainActor
+    func testDeniedOnboardingRequiresConfirmingThePinBeforeSaving() {
+        let app = launch(["-ui-test-onboarding", "-ui-test-location-denied"])
+        XCTAssertTrue(app.buttons["onboarding-continue"].waitForExistence(timeout: 5))
+        app.buttons["onboarding-continue"].tap()
+        XCTAssertTrue(app.otherElements["onboarding-step-parkingStyle"].waitForExistence(timeout: 5))
+        app.buttons["onboarding-continue"].tap()
+        XCTAssertTrue(app.otherElements["onboarding-step-location"].waitForExistence(timeout: 5))
+        app.buttons["onboarding-continue"].tap()
+
+        XCTAssertTrue(app.otherElements["onboarding-step-firstSave"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["onboarding-location-failure"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["onboarding-retry-location"].exists)
+        XCTAssertTrue(app.textFields["onboarding-place-search-field"].exists)
+        XCTAssertTrue(app.buttons["onboarding-confirm-pin"].isHittable)
+
+        app.buttons["onboarding-save-first-spot"].tap()
+        XCTAssertTrue(app.otherElements["onboarding-step-firstSave"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.otherElements["onboarding-step-pro"].exists)
+
+        app.buttons["onboarding-confirm-pin"].tap()
+        app.buttons["onboarding-save-first-spot"].tap()
+        XCTAssertTrue(app.otherElements["onboarding-step-pro"].waitForExistence(timeout: 5))
+    }
+
     @MainActor
     func testSkipGoesStraightToTheParkTabWithoutAnOffer() {
         let app = launch(["-ui-test-onboarding"])

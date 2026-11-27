@@ -180,6 +180,77 @@ final class ParkingCoordinatorTests: XCTestCase {
         }
     }
 
+    func testUnconfirmedPlaceholderIsRejectedWithoutTouchingTheSavedSpot() async throws {
+        let fixture = try makePhotoFixture()
+        defer { try? FileManager.default.removeItem(at: fixture.root) }
+        let original = try seedLegacyPhoto(repository: fixture.repository, root: fixture.root)
+        var draft = ParkingDraft.unconfirmedPlaceholder(currencyCode: "USD", failure: .denied)
+        draft.coordinate = GeoCoordinate(latitude: 41, longitude: -73)
+        draft.source = .manualPin
+        draft.note = "Moved but not confirmed"
+        draft.photoData = photoData(color: .white)
+
+        do {
+            _ = try await fixture.coordinator.saveNew(
+                draft: draft,
+                replacingActive: true,
+                reminderOffsets: []
+            )
+            XCTFail("An unconfirmed pin must not be stored.")
+        } catch {
+            XCTAssertEqual(error as? ParkingLocationError, .unconfirmedLocation)
+            XCTAssertEqual(try fixture.repository.activeSession(), original)
+            XCTAssertEqual(try photoPaths(in: fixture.root), Set([try XCTUnwrap(original.photoRelativePath)]))
+        }
+    }
+
+    func testExplicitSelectionAtThePlaceholderCoordinateIsStored() async throws {
+        let fixture = try makePhotoFixture()
+        defer { try? FileManager.default.removeItem(at: fixture.root) }
+        var draft = ParkingDraft.unconfirmedPlaceholder(currencyCode: "USD", failure: .unavailable)
+        draft.confirmExplicitSelection(source: .manualPin)
+
+        let outcome = try await fixture.coordinator.saveNew(
+            draft: draft,
+            replacingActive: false,
+            reminderOffsets: []
+        )
+
+        XCTAssertEqual(draft.coordinate, ParkingDraft.unconfirmedPlaceholderCoordinate)
+        XCTAssertEqual(outcome.session.coordinate, ParkingDraft.unconfirmedPlaceholderCoordinate)
+        XCTAssertEqual(outcome.session.source, .manualPin)
+        XCTAssertEqual(
+            try fixture.repository.activeSession()?.coordinate,
+            ParkingDraft.unconfirmedPlaceholderCoordinate
+        )
+    }
+
+    func testUnconfirmedUpdateDoesNotChangeTheSavedSpot() async throws {
+        let fixture = try makePhotoFixture()
+        defer { try? FileManager.default.removeItem(at: fixture.root) }
+        var draft = ParkingDraft.fallback(
+            currencyCode: "USD",
+            coordinate: GeoCoordinate(latitude: 1, longitude: 2)
+        )
+        draft.note = "Original"
+        let outcome = try await fixture.coordinator.saveNew(
+            draft: draft,
+            replacingActive: false,
+            reminderOffsets: []
+        )
+        var unconfirmed = ParkingDraft.unconfirmedPlaceholder(currencyCode: "USD", failure: .unavailable)
+        unconfirmed.note = "Should not land"
+        unconfirmed.photoData = photoData(color: .white)
+
+        do {
+            _ = try await fixture.coordinator.updateActive(draft: unconfirmed, reminderOffsets: [])
+            XCTFail("An unconfirmed pin must not replace a saved spot.")
+        } catch {
+            XCTAssertEqual(error as? ParkingLocationError, .unconfirmedLocation)
+            XCTAssertEqual(try fixture.repository.activeSession(), outcome.session)
+        }
+    }
+
     func testUnconfirmedReplacementPreservesOriginalSessionAndPhoto() async throws {
         let fixture = try makePhotoFixture()
         defer { try? FileManager.default.removeItem(at: fixture.root) }

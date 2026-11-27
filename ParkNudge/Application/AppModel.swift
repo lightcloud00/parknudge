@@ -147,6 +147,19 @@ final class AppModel: ObservableObject {
     func newParkingDraft() async -> ParkingDraft {
         isBusy = true
         defer { isBusy = false }
+        return await resolveParkingLocation(keeping: nil)
+    }
+
+    /// Captures location again. Notes, meter, and the other details already on
+    /// `draft` stay. A failed retry does not replace a pin the user already
+    /// confirmed, and it does not turn a placeholder into a saved spot.
+    func retryParkingLocation(keeping draft: ParkingDraft) async -> ParkingDraft {
+        isBusy = true
+        defer { isBusy = false }
+        return await resolveParkingLocation(keeping: draft)
+    }
+
+    private func resolveParkingLocation(keeping existing: ParkingDraft?) async -> ParkingDraft {
         do {
             let captured = try await location.captureCurrentLocation()
             if captured.isReducedAccuracy {
@@ -154,22 +167,36 @@ final class AppModel: ObservableObject {
             } else if clock.now.timeIntervalSince(captured.capturedAt) > 60 {
                 alertMessage = "That location may be stale. Check and move the pin before saving."
             }
-            return ParkingDraft(
+            var draft = existing ?? ParkingDraft(
                 coordinate: captured.coordinate,
                 horizontalAccuracy: captured.horizontalAccuracy,
                 source: .currentLocation,
                 currencyCode: settings.currencyCode,
-                originalPhotoRelativePath: nil
+                originalPhotoRelativePath: nil,
+                locationConfirmation: .captured
             )
+            draft.coordinate = captured.coordinate
+            draft.horizontalAccuracy = captured.horizontalAccuracy
+            draft.source = .currentLocation
+            draft.locationConfirmation = .captured
+            return draft
         } catch {
-            return .fallback(
-                currencyCode: settings.currencyCode,
-                coordinate: GeoCoordinate(latitude: 39.8283, longitude: -98.5795)
-            )
+            let failure = LocationAcquisitionFailure(classifying: error)
+            guard var draft = existing else {
+                return .unconfirmedPlaceholder(currencyCode: settings.currencyCode, failure: failure)
+            }
+            // A pin the user already accepted survives a later lookup failure.
+            guard !draft.locationConfirmation.isConfirmed else { return draft }
+            draft.coordinate = ParkingDraft.unconfirmedPlaceholderCoordinate
+            draft.horizontalAccuracy = -1
+            draft.source = .manualPin
+            draft.locationConfirmation = .needsConfirmation(failure)
+            return draft
         }
     }
 
     func saveNew(draft: ParkingDraft, replacingActive: Bool) async -> Bool {
+        guard !rejectsUnconfirmed(draft) else { return false }
         // Parking itself is free for everyone; only Pro extras are dropped.
         var draft = draft
         if dropsProExtras(for: .parkingCosts) {
@@ -193,6 +220,7 @@ final class AppModel: ObservableObject {
     }
 
     func updateActive(draft: ParkingDraft) async -> Bool {
+        guard !rejectsUnconfirmed(draft) else { return false }
         var draft = draft
         if dropsProExtras(for: .parkingCosts) {
             draft.paidAmountMinor = activeSession?.paidAmountMinor
@@ -374,12 +402,23 @@ final class AppModel: ObservableObject {
         isPaywallPresented = false
     }
 
+    /// The introduction and the parking editor explain a missing location
+    /// themselves. A root alert while the editor sheet is up dismisses it.
+    private func rejectsUnconfirmed(_ draft: ParkingDraft) -> Bool {
+        guard !draft.locationConfirmation.isConfirmed else { return false }
+        if !isOnboardingPresented, !isParkingEditorOpen {
+            alertMessage = ParkingLocationError.unconfirmedLocation.localizedDescription
+        }
+        return true
+    }
+
     // MARK: - Onboarding
 
     /// Saves the introduction's first spot as a real session. Unlike
     /// `saveNew`, it never raises the notification prompt: the next screen
     /// explains the reminders before iOS asks.
     func saveFirstSpot(draft: ParkingDraft) async -> FirstSpotSave {
+        guard !rejectsUnconfirmed(draft) else { return .failed }
         var draft = draft
         if dropsProExtras(for: .parkingCosts) {
             draft.paidAmountMinor = nil
@@ -576,6 +615,24 @@ final class AppModel: ObservableObject {
                 self.adoptEntitlement(state)
                 self.closeOfferIfUnlocked()
             }
+        }
+    }
+}
+
+extension LocationAcquisitionFailure {
+    /// Permission failures keep their own case. Timeout and every other
+    /// capture error share `.unavailable`.
+    init(classifying error: Error) {
+        guard let error = error as? LocationServiceError else {
+            self = .unavailable
+            return
+        }
+        switch error {
+        case .servicesDisabled: self = .servicesDisabled
+        case .denied: self = .denied
+        case .restricted: self = .restricted
+        case .unavailable: self = .unavailable
+        case .requestInProgress: self = .requestInProgress
         }
     }
 }

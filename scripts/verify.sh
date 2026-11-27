@@ -9,10 +9,10 @@ SIMULATOR_NAME="ParkNudge-Verify-$(date -u +%Y%m%dT%H%M%SZ)-$$"
 SIMULATOR_ID=""
 REQUESTED_DEVICE_TYPE_ID="${PARKNUDGE_SIMULATOR_DEVICE_TYPE_ID:-}"
 XCRESULT_PATH="${PARKNUDGE_XCRESULT_PATH:-}"
-# A ratchet just under the 157 tests that ParkNudge 1.2.1 (8) ran on
-# 2026-11-08, so a test target that silently drops out of the scheme fails
-# verification. Raise it when tests are added; lower it only on purpose.
-MIN_TESTS=150
+# A ratchet just under the 175 test methods in the scheme, so a test target
+# that silently drops out fails verification. Raise it when tests are added;
+# lower it only on purpose.
+MIN_TESTS=168
 
 cleanup() {
   if [[ -n "$SIMULATOR_ID" ]]; then
