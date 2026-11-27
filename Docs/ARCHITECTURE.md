@@ -35,6 +35,7 @@ Money is stored as an integer number of minor units plus the session’s ISO cur
 ## Invariants
 
 - The repository refuses a second active session.
+- An unconfirmed location placeholder is never persisted. Save requires a captured fix or an explicit selection, including a selection whose coordinates equal the placeholder.
 - Confirmed replacement archives the current session and creates one new active session.
 - Notification identifiers are `parknudge.meter.<session-uuid>.<offset>`.
 - Old reminders are cancelled and replaced when the meter changes.

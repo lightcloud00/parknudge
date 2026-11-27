@@ -184,8 +184,10 @@ private struct LocationPage: View {
 private struct FirstSavePage: View {
     @EnvironmentObject private var model: AppModel
     @ObservedObject var settings: AppSettings
+    @StateObject private var searchModel = PlaceSearchModel()
     @State private var draft: ParkingDraft
     @State private var meterMinutes = 0
+    @State private var searchText = ""
     @State private var mapPosition: MapCameraPosition
     let onSaved: (FirstSpotSave) -> Void
 
@@ -203,11 +205,28 @@ private struct FirstSavePage: View {
         self.onSaved = onSaved
     }
 
+    private var acquisitionFailure: LocationAcquisitionFailure? {
+        draft.locationConfirmation.acquisitionFailure
+    }
+
     var body: some View {
-        OnboardingPage(step: .firstSave, showsPip: false, title: "Save your first spot",
-                       message: "Stand by your car and tap Save. Tap the map to move the pin.") {
+        OnboardingPage(
+            step: .firstSave,
+            showsPip: false,
+            title: "Save your first spot",
+            message: acquisitionFailure == nil
+                ? "Stand by your car and tap Save. Tap the map to move the pin."
+                : "Retry, search for a place, or confirm the pin before saving."
+        ) {
             VStack(alignment: .leading, spacing: 18) {
                 map
+                if let acquisitionFailure {
+                    Text(acquisitionFailure.guidance)
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("onboarding-location-failure")
+                    placeSearch
+                }
                 ForEach(ParkingDetailSection.order(for: settings.parkingStyle), id: \.self) { section in
                     switch section {
                     case .details: detailFields
@@ -217,6 +236,24 @@ private struct FirstSavePage: View {
                 }
             }
         } actions: {
+            if acquisitionFailure != nil {
+                SecondaryAction(
+                    title: "Retry Location",
+                    isBusy: model.isBusy,
+                    identifier: "onboarding-retry-location",
+                    hint: "Tries to find your location again. Notes and the meter stay as you left them."
+                ) {
+                    Task { await retryLocation() }
+                }
+                SecondaryAction(
+                    title: "Use the Pin on the Map",
+                    isBusy: model.isBusy,
+                    identifier: "onboarding-confirm-pin",
+                    hint: "Confirms the location shown on the map as your parking spot."
+                ) {
+                    draft.confirmExplicitSelection(source: .manualPin)
+                }
+            }
             PrimaryAction(title: "Save Parking Spot", isBusy: model.isBusy, identifier: "onboarding-save-first-spot") {
                 Task { await save() }
             }
@@ -224,6 +261,14 @@ private struct FirstSavePage: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+        }
+        .alert("Place Search", isPresented: Binding(
+            get: { searchModel.errorMessage != nil },
+            set: { if !$0 { searchModel.errorMessage = nil } }
+        )) {
+            Button("OK") { searchModel.errorMessage = nil }
+        } message: {
+            Text(searchModel.errorMessage ?? "")
         }
     }
 
@@ -249,12 +294,68 @@ private struct FirstSavePage: View {
             .onTapGesture { point in
                 guard let tapped = proxy.convert(point, from: .local) else { return }
                 draft.coordinate = GeoCoordinate(latitude: tapped.latitude, longitude: tapped.longitude)
-                draft.horizontalAccuracy = -1
-                draft.source = .manualPin
+                draft.confirmExplicitSelection(source: .manualPin)
             }
             .accessibilityElement()
-            .accessibilityLabel("Map with the spot to save")
+            .accessibilityLabel(
+                draft.locationConfirmation.isConfirmed
+                    ? "Map with the spot to save"
+                    : "Map showing an unconfirmed pin"
+            )
+            .accessibilityHint(
+                draft.locationConfirmation.isConfirmed
+                    ? "Tap to move the pin."
+                    : "Moves the pin and confirms that location. You can also use the confirm button or search for a place."
+            )
             .accessibilityIdentifier("onboarding-first-save-map")
+        }
+    }
+
+    private var placeSearch: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Find a place").font(.headline)
+            HStack {
+                TextField("Garage, address, or landmark", text: $searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
+                    .submitLabel(.search)
+                    .onSubmit { runSearch() }
+                    .accessibilityIdentifier("onboarding-place-search-field")
+                Button { runSearch() } label: {
+                    Group {
+                        if searchModel.isSearching {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "magnifyingglass")
+                        }
+                    }
+                    .frame(width: Theme.minimumHitTarget, height: Theme.minimumHitTarget)
+                    .contentShape(Rectangle())
+                }
+                .disabled(searchModel.isSearching || searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .accessibilityLabel("Search places")
+            }
+            ForEach(searchModel.results) { result in
+                Button {
+                    draft.locationLabel = result.name
+                    draft.coordinate = result.coordinate
+                    draft.confirmExplicitSelection(source: .searchedPlace)
+                    recenterMap()
+                    searchModel.clearResults()
+                    searchText = ""
+                } label: {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(result.name).foregroundStyle(.primary)
+                        if !result.detail.isEmpty {
+                            Text(result.detail)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 
@@ -302,7 +403,33 @@ private struct FirstSavePage: View {
         CLLocationCoordinate2D(latitude: draft.coordinate.latitude, longitude: draft.coordinate.longitude)
     }
 
+    private func retryLocation() async {
+        draft = await model.retryParkingLocation(keeping: draft)
+        recenterMap()
+    }
+
+    private func runSearch() {
+        Task { await searchModel.search(query: searchText, near: draft.coordinate) }
+    }
+
+    private func recenterMap() {
+        mapPosition = .region(MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: draft.coordinate.latitude,
+                longitude: draft.coordinate.longitude
+            ),
+            span: MKCoordinateSpan(latitudeDelta: 0.008, longitudeDelta: 0.008)
+        ))
+    }
+
     private func save() async {
+        guard draft.locationConfirmation.isConfirmed else {
+            UIAccessibility.post(
+                notification: .announcement,
+                argument: ParkingLocationError.unconfirmedLocation.localizedDescription
+            )
+            return
+        }
         var draft = draft
         // The deadline starts when the spot is saved, not when the screen opened.
         draft.meterExpiresAt = meterMinutes > 0 ? Date().addingTimeInterval(TimeInterval(meterMinutes * 60)) : nil
@@ -441,6 +568,28 @@ private struct OnboardingPage<Content: View, Actions: View>: View {
         // every child's own identifier instead of naming the container.
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("onboarding-step-\(step.rawValue)")
+    }
+}
+
+private struct SecondaryAction: View {
+    let title: String
+    var isBusy = false
+    let identifier: String
+    var hint: String?
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: Theme.minimumHitTarget)
+        }
+        .buttonStyle(.bordered)
+        .tint(Theme.brandInk)
+        .disabled(isBusy)
+        .accessibilityHint(hint ?? "")
+        .accessibilityIdentifier(identifier)
     }
 }
 

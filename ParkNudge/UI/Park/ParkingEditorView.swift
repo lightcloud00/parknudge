@@ -165,7 +165,22 @@ struct ParkingEditorView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
-            if draft.horizontalAccuracy >= 0 {
+            if let failure = draft.locationConfirmation.acquisitionFailure {
+                Text(failure.guidance)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("location-needs-confirmation")
+                Button("Retry Location") { retryLocation() }
+                    .disabled(model.isBusy)
+                    .accessibilityIdentifier("retry-location")
+                    .accessibilityHint("Tries to find your location again. Notes and the meter stay as you left them.")
+                Button("Use the Pin on the Map") {
+                    draft.confirmExplicitSelection(source: .manualPin)
+                }
+                .disabled(model.isBusy)
+                .accessibilityIdentifier("confirm-map-pin")
+                .accessibilityHint("Confirms the location shown on the map as your parking spot.")
+            } else if draft.horizontalAccuracy >= 0 {
                 LabeledContent("Captured accuracy", value: "±\(Int(draft.horizontalAccuracy.rounded())) m")
             } else {
                 LabeledContent("Location source", value: "Manual pin")
@@ -390,8 +405,21 @@ struct ParkingEditorView: View {
 
     private func setCoordinate(_ coordinate: CLLocationCoordinate2D, source: ParkingSource) {
         draft.coordinate = GeoCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        draft.horizontalAccuracy = -1
-        draft.source = source
+        draft.confirmExplicitSelection(source: source)
+        show(coordinate)
+    }
+
+    private func retryLocation() {
+        Task {
+            draft = await model.retryParkingLocation(keeping: draft)
+            show(CLLocationCoordinate2D(
+                latitude: draft.coordinate.latitude,
+                longitude: draft.coordinate.longitude
+            ))
+        }
+    }
+
+    private func show(_ coordinate: CLLocationCoordinate2D) {
         mapPosition = .region(MKCoordinateRegion(
             center: coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.012, longitudeDelta: 0.012)
@@ -399,6 +427,10 @@ struct ParkingEditorView: View {
     }
 
     private func save() {
+        guard draft.locationConfirmation.isConfirmed else {
+            validationMessage = ParkingLocationError.unconfirmedLocation.localizedDescription
+            return
+        }
         let trimmedCost = costText.trimmingCharacters(in: .whitespacesAndNewlines)
         if model.hasAccess(to: .parkingCosts), !trimmedCost.isEmpty {
             guard let amount = MoneyParser.minorUnits(

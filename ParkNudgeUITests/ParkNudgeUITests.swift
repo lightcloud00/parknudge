@@ -152,13 +152,31 @@ final class ParkNudgeUITests: XCTestCase {
     }
 
     @MainActor
-    func testDeniedLocationStillOpensManualPinEditor() {
+    func testDeniedLocationOpensEditorAndSavesOnlyAfterThePinIsConfirmed() {
         let app = launch(extraArguments: ["-ui-test-location-denied"])
         app.buttons["save-parking-spot"].tap()
         XCTAssertTrue(app.otherElements["parking-pin-map"].waitForExistence(timeout: 3))
         XCTAssertTrue(
+            app.descendants(matching: .any)["location-needs-confirmation"].waitForExistence(timeout: 3)
+        )
+        XCTAssertTrue(app.descendants(matching: .any)["retry-location"].exists)
+        XCTAssertTrue(app.textFields["place-search-field"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)["manual-pin-source"].exists)
+
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.alerts["Check Parking Details"].waitForExistence(timeout: 2))
+        app.alerts.buttons["OK"].tap()
+        XCTAssertFalse(app.buttons["walking-directions"].exists)
+
+        let confirm = app.descendants(matching: .any)["confirm-map-pin"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 3))
+        if !confirm.isHittable { scrollEditor(app) }
+        confirm.tap()
+        XCTAssertTrue(
             app.descendants(matching: .any)["manual-pin-source"].waitForExistence(timeout: 3)
         )
+        app.buttons["confirm-save-parking"].tap()
+        XCTAssertTrue(app.buttons["walking-directions"].waitForExistence(timeout: 3))
     }
 
     @MainActor

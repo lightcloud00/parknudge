@@ -28,6 +28,7 @@ final class ParkingCoordinator {
         reminderOffsets: [Int],
         requestsNotificationPermission: Bool = true
     ) async throws -> ParkingSaveOutcome {
+        try requireConfirmedLocation(draft)
         // Resolve failures and replacement consent before creating a photo.
         let previousActive = try repository.activeSession()
         guard previousActive == nil || replacingActive else {
@@ -75,6 +76,7 @@ final class ParkingCoordinator {
     }
 
     func updateActive(draft: ParkingDraft, reminderOffsets: [Int]) async throws -> ParkingSaveOutcome {
+        try requireConfirmedLocation(draft)
         guard var session = try repository.activeSession() else {
             throw ParkingRepositoryError.sessionNotFound
         }
@@ -160,6 +162,12 @@ final class ParkingCoordinator {
     func cleanOrphanedPhotos() throws {
         let sessions = ([try repository.activeSession()].compactMap { $0 } + (try repository.completedSessions()))
         try photos.removeOrphans(keeping: Set(sessions.compactMap(\.photoRelativePath)))
+    }
+
+    private func requireConfirmedLocation(_ draft: ParkingDraft) throws {
+        guard draft.locationConfirmation.isConfirmed else {
+            throw ParkingLocationError.unconfirmedLocation
+        }
     }
 
     private func makeSession(id: UUID, draft: ParkingDraft, photoPath: String?, now: Date) -> ParkingSession {

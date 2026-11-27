@@ -205,6 +205,173 @@ final class AppModelOnboardingTests: XCTestCase {
         XCTAssertEqual(harness.notifications.scheduled.count, ReminderPlanner.freeOffsets.count)
     }
 
+    func testCapturedLocationIsConfirmedAndSaveable() async throws {
+        let harness = try TestFixtures.appModel(onboardingCompleted: false)
+        defer { harness.cleanup() }
+
+        let draft = await harness.model.newParkingDraft()
+
+        XCTAssertEqual(draft.locationConfirmation, .captured)
+        XCTAssertEqual(draft.source, .currentLocation)
+        XCTAssertEqual(draft.coordinate, GeoCoordinate(latitude: 40, longitude: -74))
+        let result = await harness.model.saveFirstSpot(draft: draft)
+        XCTAssertEqual(result, .saved)
+        XCTAssertEqual(harness.model.activeSession?.coordinate, draft.coordinate)
+        XCTAssertEqual(harness.model.activeSession?.source, .currentLocation)
+    }
+
+    func testFailedLookupsStayUnconfirmedUntilThePinIsConfirmed() async throws {
+        let cases: [(ModelLocationFake.Script, LocationAcquisitionFailure)] = [
+            (.failure(.denied), .denied),
+            (.failure(.restricted), .restricted),
+            (.failure(.servicesDisabled), .servicesDisabled),
+            (.failure(.unavailable), .unavailable),
+            (.failure(.requestInProgress), .requestInProgress),
+            (.genericFailure, .unavailable)
+        ]
+        for (script, failure) in cases {
+            let harness = try TestFixtures.appModel(onboardingCompleted: false)
+            defer { harness.cleanup() }
+            harness.location.script = script
+
+            var draft = await harness.model.newParkingDraft()
+            draft.note = "Near the stairs"
+            draft.meterExpiresAt = TestFixtures.date.addingTimeInterval(1_800)
+
+            XCTAssertEqual(draft.locationConfirmation, .needsConfirmation(failure), "\(failure)")
+            XCTAssertEqual(draft.coordinate, ParkingDraft.unconfirmedPlaceholderCoordinate)
+            let blocked = await harness.model.saveFirstSpot(draft: draft)
+            XCTAssertEqual(blocked, .failed, "\(failure)")
+            XCTAssertNil(harness.model.activeSession, "\(failure)")
+            XCTAssertNil(harness.model.alertMessage, "\(failure)")
+
+            draft.confirmExplicitSelection(source: .manualPin)
+            XCTAssertEqual(draft.coordinate, ParkingDraft.unconfirmedPlaceholderCoordinate)
+            let saved = await harness.model.saveFirstSpot(draft: draft)
+            XCTAssertEqual(saved, .saved, "\(failure)")
+            XCTAssertEqual(harness.model.activeSession?.coordinate, ParkingDraft.unconfirmedPlaceholderCoordinate)
+            XCTAssertEqual(harness.model.activeSession?.source, .manualPin)
+            XCTAssertEqual(harness.model.activeSession?.note, "Near the stairs")
+            XCTAssertEqual(harness.model.activeSession?.meterExpiresAt, draft.meterExpiresAt)
+        }
+    }
+
+    func testMovingTheCoordinateWithoutConfirmingDoesNotSave() async throws {
+        let harness = try TestFixtures.appModel(onboardingCompleted: false)
+        defer { harness.cleanup() }
+        harness.location.script = .failure(.denied)
+
+        var draft = await harness.model.newParkingDraft()
+        draft.coordinate = GeoCoordinate(latitude: 41.2, longitude: -73.5)
+        draft.source = .manualPin
+        draft.note = "Not yet"
+        let blocked = await harness.model.saveFirstSpot(draft: draft)
+
+        XCTAssertEqual(blocked, .failed)
+        XCTAssertNil(harness.model.activeSession)
+        draft.confirmExplicitSelection(source: .manualPin)
+        XCTAssertEqual(draft.coordinate.latitude, 41.2)
+        let saved = await harness.model.saveFirstSpot(draft: draft)
+        XCTAssertEqual(saved, .saved)
+        XCTAssertEqual(harness.model.activeSession?.coordinate.latitude, 41.2)
+        XCTAssertEqual(harness.model.activeSession?.note, "Not yet")
+        XCTAssertEqual(harness.model.activeSession?.source, .manualPin)
+    }
+
+    func testRetryKeepsNotesAndMeterThroughFailureAndSuccess() async throws {
+        let harness = try TestFixtures.appModel(onboardingCompleted: false)
+        defer { harness.cleanup() }
+        harness.location.script = .failure(.denied)
+        var draft = await harness.model.newParkingDraft()
+        let deadline = TestFixtures.date.addingTimeInterval(1_800)
+        draft.note = "Row B"
+        draft.floor = "P2"
+        draft.locationLabel = "Market St"
+        draft.meterExpiresAt = deadline
+
+        harness.location.script = .failure(.unavailable)
+        let failedRetry = await harness.model.retryParkingLocation(keeping: draft)
+
+        XCTAssertEqual(failedRetry.note, "Row B")
+        XCTAssertEqual(failedRetry.floor, "P2")
+        XCTAssertEqual(failedRetry.locationLabel, "Market St")
+        XCTAssertEqual(failedRetry.meterExpiresAt, deadline)
+        XCTAssertEqual(failedRetry.locationConfirmation, .needsConfirmation(.unavailable))
+        XCTAssertNil(harness.model.activeSession)
+        XCTAssertEqual(harness.location.captureCount, 2)
+
+        harness.location.script = .fix
+        harness.location.coordinate = GeoCoordinate(latitude: 37.7, longitude: -122.4)
+        let fixed = await harness.model.retryParkingLocation(keeping: failedRetry)
+
+        XCTAssertEqual(fixed.note, "Row B")
+        XCTAssertEqual(fixed.floor, "P2")
+        XCTAssertEqual(fixed.locationLabel, "Market St")
+        XCTAssertEqual(fixed.meterExpiresAt, deadline)
+        XCTAssertEqual(fixed.locationConfirmation, .captured)
+        XCTAssertEqual(fixed.coordinate.latitude, 37.7)
+        let result = await harness.model.saveFirstSpot(draft: fixed)
+        XCTAssertEqual(result, .saved)
+        XCTAssertEqual(harness.model.activeSession?.coordinate.latitude, 37.7)
+        XCTAssertEqual(harness.model.activeSession?.note, "Row B")
+        XCTAssertEqual(harness.model.activeSession?.meterExpiresAt, deadline)
+    }
+
+    func testFailedRetryKeepsAConfirmedPin() async throws {
+        let harness = try TestFixtures.appModel(onboardingCompleted: false)
+        defer { harness.cleanup() }
+        var draft = await harness.model.newParkingDraft()
+        draft.note = "Keep"
+        let captured = draft.coordinate
+
+        harness.location.script = .failure(.restricted)
+        let retried = await harness.model.retryParkingLocation(keeping: draft)
+
+        XCTAssertEqual(retried.locationConfirmation, .captured)
+        XCTAssertEqual(retried.coordinate, captured)
+        XCTAssertEqual(retried.note, "Keep")
+        XCTAssertNil(harness.model.activeSession)
+    }
+
+    func testUnconfirmedSaveDoesNotReplaceAnExistingSpot() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        try harness.repository.create(TestFixtures.session())
+        await harness.model.reload()
+        let original = try XCTUnwrap(harness.model.activeSession)
+        harness.location.script = .failure(.denied)
+
+        let draft = await harness.model.newParkingDraft()
+        let replaced = await harness.model.saveNew(draft: draft, replacingActive: true)
+
+        XCTAssertFalse(replaced)
+        XCTAssertEqual(harness.model.activeSession, original)
+        XCTAssertEqual(harness.model.completedSessions.count, 0)
+        XCTAssertEqual(
+            harness.model.alertMessage,
+            ParkingLocationError.unconfirmedLocation.localizedDescription
+        )
+    }
+
+    func testUnconfirmedUpdateLeavesTheSavedSpot() async throws {
+        let harness = try TestFixtures.appModel()
+        defer { harness.cleanup() }
+        let draft = await harness.model.newParkingDraft()
+        XCTAssertTrue(await harness.model.saveNew(draft: draft, replacingActive: false))
+        let original = try XCTUnwrap(harness.model.activeSession)
+        var unconfirmed = ParkingDraft.unconfirmedPlaceholder(currencyCode: "USD", failure: .denied)
+        unconfirmed.note = "Should not land"
+
+        let updated = await harness.model.updateActive(draft: unconfirmed)
+
+        XCTAssertFalse(updated)
+        XCTAssertEqual(harness.model.activeSession, original)
+        XCTAssertEqual(
+            harness.model.alertMessage,
+            ParkingLocationError.unconfirmedLocation.localizedDescription
+        )
+    }
+
     func testParkingStyleIsRemembered() throws {
         let harness = try TestFixtures.appModel()
         defer { harness.cleanup() }

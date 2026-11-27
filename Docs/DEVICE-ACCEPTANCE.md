@@ -7,8 +7,8 @@ These checks cannot be proven by the simulator. Record device model, iOS version
 - [ ] When-In-Use prompt appears only after **Save Parking Spot** is tapped.
 - [ ] Authorized capture returns one current fix, shows realistic accuracy, and stops location activity.
 - [ ] Reduced accuracy is identified and the pin remains editable.
-- [ ] Denied and restricted flows open the manual pin/search editor without blocking save.
-- [ ] Airplane mode or location failure preserves manual fallback.
+- [ ] Denied and restricted flows open manual selection and place search. Saving stays blocked until the user retries successfully or explicitly confirms a pin (map, search, or the on-screen confirm control). A confirmed pin is saved even when its coordinates match the unconfirmed placeholder. Broad device location acceptance remains #2; this check is the #95 regression.
+- [ ] Airplane mode or another location failure keeps notes and meter choices, and does not persist the placeholder coordinate until the user confirms it.
 
 ## Camera and photo files
 

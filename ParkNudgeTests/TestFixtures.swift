@@ -166,11 +166,35 @@ final class ModelParkingRepositoryFake: ParkingRepository {
     }
 }
 
+struct ModelLocationGenericFailure: Error {}
+
 @MainActor
 final class ModelLocationFake: LocationProviding {
+    enum Script {
+        case fix
+        case failure(LocationServiceError)
+        case genericFailure
+    }
+
+    var script: Script = .fix
+    var coordinate = GeoCoordinate(latitude: 40, longitude: -74)
+    private(set) var captureCount = 0
+
     func captureCurrentLocation() async throws -> CapturedLocation {
-        CapturedLocation(coordinate: GeoCoordinate(latitude: 40, longitude: -74),
-                         horizontalAccuracy: 5, capturedAt: TestFixtures.date, isReducedAccuracy: false)
+        captureCount += 1
+        switch script {
+        case .fix:
+            return CapturedLocation(
+                coordinate: coordinate,
+                horizontalAccuracy: 5,
+                capturedAt: TestFixtures.date,
+                isReducedAccuracy: false
+            )
+        case .failure(let error):
+            throw error
+        case .genericFailure:
+            throw ModelLocationGenericFailure()
+        }
     }
 }
 
